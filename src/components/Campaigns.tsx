@@ -34,7 +34,7 @@ function Campaigns() {
       
       companiesSnapshot.docs.forEach(companyDoc => {
         const companyData = companyDoc.data();
-        companiesMap.set(companyDoc.id, companyData.companyTitle || companyData.company || "Firma Adı Yok");
+        companiesMap.set(companyDoc.id, companyData.company || companyData.companyTitle || "Firma Adı Yok");
       });
       
       const campaignsData: Campaign[] = [];
