@@ -195,8 +195,6 @@ function Companies() {
         const db = getFirestore();
         await deleteDoc(doc(db, "companies", companyId));
         
-        // Silinen firmanın onay durumunu kontrol et ve istatistikleri güncelle
-        const deletedCompany = companies.find(company => company.id === companyId);
         setCompanies(companies.filter(company => company.id !== companyId));
         alert("Firma başarıyla silindi.");
       } catch (error) {
