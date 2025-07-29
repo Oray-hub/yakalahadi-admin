@@ -109,43 +109,67 @@ button:focus-visible {
     padding: 16px !important;
     overflow-y: auto !important;
   }
-
+  
   /* Companies component responsive */
   .companies-container {
-    padding: 12px !important;
+    padding: 8px !important;
   }
-
+  
+  .companies-container h1 {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    padding-left: 40px !important;
+  }
+  
   .companies-stats {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .companies-stats > div {
+    padding: 6px !important;
+  }
+  
+  .companies-stats h3 {
+    font-size: 11px !important;
+  }
+  
+  .companies-stats > div > div:first-child {
+    font-size: 20px !important;
+  }
+  
   .companies-filters {
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
   .companies-filters select,
   .companies-filters input {
     width: 100% !important;
-    font-size: 14px !important;
-    padding: 8px !important;
+    font-size: 12px !important;
+    padding: 6px !important;
+    min-width: auto !important;
   }
-
+  
   .companies-table {
-    font-size: 11px !important;
-  }
-
-  .companies-table th,
-  .companies-table td {
-    padding: 6px 4px !important;
     font-size: 10px !important;
   }
-
-  .companies-table th {
-    font-size: 11px !important;
+  
+  .companies-table th,
+  .companies-table td {
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
-
+  
+  .companies-table th {
+    font-size: 10px !important;
+  }
+  
   /* Hide less important columns on mobile */
   .companies-table th:nth-child(5),
   .companies-table td:nth-child(5),
@@ -155,7 +179,7 @@ button:focus-visible {
   .companies-table td:nth-child(10) {
     display: none !important;
   }
-
+  
   /* Make dropdowns mobile-friendly */
   .dropdown-container {
     position: fixed !important;
@@ -167,104 +191,228 @@ button:focus-visible {
     overflow-y: auto !important;
   }
 
-  /* Users component responsive */
+    /* Users component responsive */
   .users-container {
-    padding: 12px !important;
+    padding: 8px !important;
   }
-
+  
+  .users-container h1 {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    padding-left: 40px !important;
+  }
+  
   .users-stats {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .users-stats > div {
+    padding: 6px !important;
+  }
+  
+  .users-stats h3 {
+    font-size: 11px !important;
+  }
+  
+  .users-stats > div > div:first-child {
+    font-size: 20px !important;
+  }
+  
   .users-filters {
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .users-filters select,
+  .users-filters input {
+    width: 100% !important;
+    font-size: 12px !important;
+    padding: 6px !important;
+    min-width: auto !important;
+  }
+  
   .users-table {
-    font-size: 11px !important;
+    font-size: 10px !important;
   }
-
+  
   .users-table th,
   .users-table td {
-    padding: 6px 4px !important;
-    font-size: 10px !important;
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  /* Campaigns component responsive */
+    /* Campaigns component responsive */
   .campaigns-container {
-    padding: 12px !important;
+    padding: 8px !important;
   }
-
+  
+  .campaigns-container h1 {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    padding-left: 40px !important;
+  }
+  
   .campaigns-stats {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .campaigns-stats > div {
+    padding: 6px !important;
+  }
+  
+  .campaigns-stats h3 {
+    font-size: 11px !important;
+  }
+  
+  .campaigns-stats > div > div:first-child {
+    font-size: 20px !important;
+  }
+  
   .campaigns-filters {
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .campaigns-filters select,
+  .campaigns-filters input {
+    width: 100% !important;
+    font-size: 12px !important;
+    padding: 6px !important;
+    min-width: auto !important;
+  }
+  
   .campaigns-table {
-    font-size: 11px !important;
+    font-size: 10px !important;
   }
-
+  
   .campaigns-table th,
   .campaigns-table td {
-    padding: 6px 4px !important;
-    font-size: 10px !important;
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  /* Reviews component responsive */
+    /* Reviews component responsive */
   .reviews-container {
-    padding: 12px !important;
+    padding: 8px !important;
   }
-
+  
+  .reviews-container h1 {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    padding-left: 40px !important;
+  }
+  
   .reviews-stats {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .reviews-stats > div {
+    padding: 6px !important;
+  }
+  
+  .reviews-stats h3 {
+    font-size: 11px !important;
+  }
+  
+  .reviews-stats > div > div:first-child {
+    font-size: 20px !important;
+  }
+  
   .reviews-filters {
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
+  
+  .reviews-filters select,
+  .reviews-filters input {
+    width: 100% !important;
+    font-size: 12px !important;
+    padding: 6px !important;
+    min-width: auto !important;
+  }
+  
   .reviews-table {
-    font-size: 11px !important;
+    font-size: 10px !important;
   }
-
+  
   .reviews-table th,
   .reviews-table td {
-    padding: 6px 4px !important;
-    font-size: 10px !important;
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  /* Accounting component responsive */
+    /* Accounting component responsive */
   .accounting-container {
-    padding: 12px !important;
+    padding: 8px !important;
   }
-
+  
+  .accounting-container h1 {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    padding-left: 40px !important;
+  }
+  
   .accounting-stats {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
   }
-
-  .accounting-filters {
-    flex-direction: column !important;
-    gap: 8px !important;
+  
+  .accounting-stats > div {
+    padding: 6px !important;
   }
-
-  .accounting-table {
+  
+  .accounting-stats h3 {
     font-size: 11px !important;
   }
-
+  
+  .accounting-stats > div > div:first-child {
+    font-size: 20px !important;
+  }
+  
+  .accounting-filters {
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .accounting-filters select,
+  .accounting-filters input {
+    width: 100% !important;
+    font-size: 12px !important;
+    padding: 6px !important;
+    min-width: auto !important;
+  }
+  
+  .accounting-table {
+    font-size: 10px !important;
+  }
+  
   .accounting-table th,
   .accounting-table td {
-    padding: 6px 4px !important;
-    font-size: 10px !important;
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 }
 
