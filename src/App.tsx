@@ -81,11 +81,26 @@ function Panel({ onLogout }: { onLogout: () => void }) {
           overflow: "hidden"
         }}
       >
-        <div style={{ marginBottom: 32 }}>
-          <h2 style={{ color: "#fff", fontSize: 20, margin: 0, fontWeight: "bold" }}>
-            🎯 YakalaHadi Admin
-          </h2>
-          <p style={{ color: "#e0e0e0", fontSize: 12, margin: "6px 0 0 0" }}>
+        <div style={{ marginBottom: 32, textAlign: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+            <img 
+              src="/logo.gif" 
+              alt="YakalaHadi Logo" 
+              style={{ 
+                width: 32, 
+                height: 32, 
+                marginRight: 8,
+                borderRadius: 4
+              }} 
+            />
+            <h2 style={{ color: "#fff", fontSize: 20, margin: 0, fontWeight: "bold" }}>
+              YakalaHadi
+            </h2>
+          </div>
+          <p style={{ color: "#e0e0e0", fontSize: 12, margin: "6px 0 0 0", textAlign: "center" }}>
+            Admin
+          </p>
+          <p style={{ color: "#e0e0e0", fontSize: 10, margin: "4px 0 0 0", textAlign: "center" }}>
             Yönetim Paneli
           </p>
         </div>
