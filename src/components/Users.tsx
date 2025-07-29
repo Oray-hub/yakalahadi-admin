@@ -73,7 +73,10 @@ function Users() {
               data.status === 'completed' ||
               data.isCompleted === true ||
               data.qrCodeStatus === 'scanned' ||
-              data.campaignStatus === 'completed';
+              data.campaignStatus === 'completed' ||
+              data.isUsed === true ||
+              data.usedAt ||
+              data.feedbackGiven === true;
               
           console.log(`Has scanned: ${hasScanned}`);
           
@@ -110,7 +113,10 @@ function Users() {
               data.status === 'completed' ||
               data.isCompleted === true ||
               data.qrCodeStatus === 'scanned' ||
-              data.campaignStatus === 'completed';
+              data.campaignStatus === 'completed' ||
+              data.isUsed === true ||
+              data.usedAt ||
+              data.feedbackGiven === true;
               
           console.log(`Has scanned: ${hasScanned}`);
           
