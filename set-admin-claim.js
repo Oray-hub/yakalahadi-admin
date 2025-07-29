@@ -4,37 +4,36 @@
 
 const admin = require('firebase-admin');
 
-// Firebase Admin SDK'yı başlat
-// Service account key dosyanızı buraya ekleyin
-const serviceAccount = require('./serviceAccountKey.json'); // Bu dosyayı Firebase Console'dan indirin
+// Service account key dosyasını yükleyin
+// Firebase Console > Project Settings > Service Accounts > Generate new private key
+const serviceAccount = require('./serviceAccountKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-// Admin olacak kullanıcının UID'sini buraya yazın
-const targetUID = 'cvtXMH7IY0P8uCW7aAupqcd...'; // admin@yakalahadi.com kullanıcısının UID'si
+// Admin claim'i vereceğiniz kullanıcının UID'si
+const targetUID = 'cvtXMH7IY0P8uCW7aAupqcdNUY13'; // admin@yakalahadi.com kullanıcısının UID'si
 
 async function setAdminClaim() {
   try {
     // Admin claim'i ver
     await admin.auth().setCustomUserClaims(targetUID, { admin: true });
-    
-    console.log('✅ Admin yetkisi başarıyla verildi!');
-    console.log('Kullanıcı UID:', targetUID);
+    console.log('✅ Admin yetkisi başarıyla verildi:', targetUID);
     
     // Kullanıcı bilgilerini kontrol et
     const userRecord = await admin.auth().getUser(targetUID);
-    console.log('Kullanıcı E-posta:', userRecord.email);
-    console.log('Custom Claims:', userRecord.customClaims);
+    console.log('👤 Kullanıcı bilgileri:', {
+      uid: userRecord.uid,
+      email: userRecord.email,
+      customClaims: userRecord.customClaims
+    });
     
   } catch (error) {
     console.error('❌ Hata:', error.message);
+  } finally {
+    process.exit(0);
   }
-  
-  // Uygulamayı kapat
-  process.exit(0);
 }
 
-// Script'i çalıştır
 setAdminClaim(); 
