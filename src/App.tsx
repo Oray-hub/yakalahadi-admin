@@ -6,6 +6,8 @@ import Users from "./components/Users";
 import Companies from "./components/Companies";
 import Reviews from "./components/Reviews";
 import Accounting from "./components/Accounting";
+import FirebaseTest from "./components/FirebaseTest";
+import "./firebase"; // Firebase'i başlat
 
 const menu = [
   { path: "/users", label: "Kullanıcılar", icon: "👥" },
@@ -14,6 +16,7 @@ const menu = [
   { path: "/reviews", label: "Yorumlar ve Puanlar", icon: "⭐" },
   { path: "/accounting", label: "Muhasebe Verileri", icon: "💰" },
   { path: "/export", label: "Dışa Aktar", icon: "📊" },
+  { path: "/firebase-test", label: "Firebase Test", icon: "🔥" },
 ];
 
 function Placeholder({ title }: { title: string }) {
@@ -190,6 +193,7 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/accounting" element={<Accounting />} />
             <Route path="/export" element={<Placeholder title="Dışa Aktar" />} />
+            <Route path="/firebase-test" element={<FirebaseTest />} />
             <Route path="*" element={<Navigate to="/users" />} />
           </Routes>
         </div>
