@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 
 interface Campaign {
   id: string;
@@ -189,6 +189,34 @@ function Campaigns() {
       } catch (error) {
         console.error("Kampanya silinirken hata:", error);
         alert("Kampanya silinirken bir hata oluştu.");
+      }
+    }
+  };
+
+  const handleToggleCampaignStatus = async (campaignId: string, companyName: string, campaignType: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    const statusText = newStatus ? "aktif" : "bitmiş";
+    
+    if (window.confirm(`${companyName} için kampanyayı ${statusText} olarak işaretlemek istediğinizden emin misiniz?`)) {
+      try {
+        const db = getFirestore();
+        
+        // Kampanya tipine göre hangi koleksiyondan güncelleneceğini belirle
+        const collectionName = campaignType.toLowerCase().includes("indirim") ? "discounts" : "campaigns";
+        
+        await updateDoc(doc(db, collectionName, campaignId), { isActive: newStatus });
+        
+        // Local state'i güncelle
+        setCampaigns(prev => prev.map(campaign => 
+          campaign.id === campaignId 
+            ? { ...campaign, isActive: newStatus }
+            : campaign
+        ));
+        
+        alert(`Kampanya başarıyla ${statusText} olarak güncellendi.`);
+      } catch (error) {
+        console.error("Kampanya durumu güncellenirken hata:", error);
+        alert("Kampanya durumu güncellenirken bir hata oluştu.");
       }
     }
   };
@@ -428,15 +456,29 @@ function Campaigns() {
                     </div>
                   </td>
                   <td style={{ padding: 12 }}>
-                    <span style={{
-                      padding: "4px 8px",
-                      borderRadius: 12,
-                      fontSize: "0.8em",
-                      backgroundColor: isActive ? "#d4edda" : "#f8d7da",
-                      color: isActive ? "#155724" : "#721c24"
-                    }}>
+                    <button
+                      onClick={() => handleToggleCampaignStatus(campaign.id, campaign.companyName, campaign.type, campaign.isActive)}
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: 12,
+                        fontSize: "0.8em",
+                        backgroundColor: isActive ? "#d4edda" : "#f8d7da",
+                        color: isActive ? "#155724" : "#721c24",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = "0.8";
+                        e.currentTarget.style.transform = "scale(1.05)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = "1";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }}
+                    >
                       {isActive ? "✅ Aktif" : "❌ Bitti"}
-                    </span>
+                    </button>
                   </td>
                   <td style={{ padding: 12 }}>
                     <button
