@@ -12,6 +12,9 @@ interface User {
   claimedCount?: number;
   privacyAccepted?: boolean;
   termsAccepted?: boolean;
+  // Yakalanan kampanya ve QR verileri
+  claimedCampaigns?: number;
+  qrScanned?: boolean;
 }
 
 function Users() {
@@ -28,14 +31,40 @@ function Users() {
   const fetchUsers = async () => {
     try {
       const db = getFirestore();
+      
+      // Kullanıcıları çek
       const usersRef = collection(db, "users");
-      const snapshot = await getDocs(usersRef);
+      const usersSnapshot = await getDocs(usersRef);
+      
+      // Yakalanan kampanyaları çek
+      const claimedCampaignsRef = collection(db, "claimedCampaigns");
+      const claimedCampaignsSnapshot = await getDocs(claimedCampaignsRef);
+      
+      // Kullanıcı başına yakalanan kampanya sayısını hesapla
+      const userClaimedCounts = new Map<string, number>();
+      const userQrScanned = new Map<string, boolean>();
+      
+      claimedCampaignsSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const userId = data.userId;
+        if (userId) {
+          // Yakalanan kampanya sayısını artır
+          userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
+          
+          // QR kod okutulmuş mu kontrol et
+          if (data.qrScanned || data.scanned || data.isScanned) {
+            userQrScanned.set(userId, true);
+          }
+        }
+      });
       
       const usersData: User[] = [];
-      for (const doc of snapshot.docs) {
+      for (const doc of usersSnapshot.docs) {
         const data = doc.data();
+        const userId = doc.id;
+        
         usersData.push({
-          id: doc.id,
+          id: userId,
           email: data.email || "E-posta yok",
           name: data.name || "İsim yok",
           createdAt: data.createdAt,
@@ -45,6 +74,9 @@ function Users() {
           claimedCount: data.claimedCount || 0,
           privacyAccepted: data.privacyAccepted || false,
           termsAccepted: data.termsAccepted || false,
+          // Yakalanan kampanya ve QR verileri
+          claimedCampaigns: userClaimedCounts.get(userId) || 0,
+          qrScanned: userQrScanned.get(userId) || false,
         });
       }
       setUsers(usersData);
@@ -99,10 +131,10 @@ function Users() {
         const termsText = user.termsAccepted ? "kabul edildi" : "kabul edilmedi";
         return termsText.includes(searchLower);
       case 'claimedCount':
-        return (user.claimedCount || 0).toString().includes(searchLower);
+        return (user.claimedCampaigns || 0).toString().includes(searchLower);
       case 'notificationsStatus':
-        const notificationText = user.notificationsStatus?.enabled ? "evet" : "hayır";
-        return notificationText.includes(searchLower);
+        const qrText = user.qrScanned ? "evet" : "hayır";
+        return qrText.includes(searchLower);
       case 'selectedCategories':
         return user.selectedCategories.some(category => 
           category.toLowerCase().includes(searchLower)
@@ -112,7 +144,7 @@ function Users() {
         const verifiedTextAll = user.emailVerified ? "doğrulandı" : "doğrulanmadı";
         const privacyTextAll = user.privacyAccepted ? "kabul edildi" : "kabul edilmedi";
         const termsTextAll = user.termsAccepted ? "kabul edildi" : "kabul edilmedi";
-        const notificationTextAll = user.notificationsStatus?.enabled ? "evet" : "hayır";
+        const qrTextAll = user.qrScanned ? "evet" : "hayır";
         
         return (
           user.name.toLowerCase().includes(searchLower) ||
@@ -120,8 +152,8 @@ function Users() {
           verifiedTextAll.includes(searchLower) ||
           privacyTextAll.includes(searchLower) ||
           termsTextAll.includes(searchLower) ||
-          (user.claimedCount || 0).toString().includes(searchLower) ||
-          notificationTextAll.includes(searchLower) ||
+          (user.claimedCampaigns || 0).toString().includes(searchLower) ||
+          qrTextAll.includes(searchLower) ||
           user.selectedCategories.some(category => 
             category.toLowerCase().includes(searchLower)
           )
@@ -348,7 +380,7 @@ function Users() {
                     backgroundColor: "#e3f2fd",
                     color: "#1976d2"
                   }}>
-                    {user.claimedCount || 0}
+                    {user.claimedCampaigns || 0}
                   </span>
                 </td>
                 <td style={{ padding: 12 }}>
@@ -356,10 +388,10 @@ function Users() {
                     padding: "4px 8px",
                     borderRadius: 12,
                     fontSize: "0.8em",
-                    backgroundColor: user.notificationsStatus?.enabled ? "#d4edda" : "#f8d7da",
-                    color: user.notificationsStatus?.enabled ? "#155724" : "#721c24"
+                    backgroundColor: user.qrScanned ? "#d4edda" : "#f8d7da",
+                    color: user.qrScanned ? "#155724" : "#721c24"
                   }}>
-                    {user.notificationsStatus?.enabled ? "Evet" : "Hayır"}
+                    {user.qrScanned ? "Evet" : "Hayır"}
                   </span>
                 </td>
                 <td style={{ padding: 12 }}>
