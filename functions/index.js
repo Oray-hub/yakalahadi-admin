@@ -1,10 +1,19 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { setGlobalOptions } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
 
 admin.initializeApp();
 
+// Global options for callable functions
+setGlobalOptions({
+  maxInstances: 10,
+});
+
 // Admin claim'i verme fonksiyonu
-exports.setAdminClaim = onCall((request) => {
+exports.setAdminClaim = onCall({
+  cors: true,
+  maxInstances: 10,
+}, (request) => {
   const { data } = request;
   const uid = data.uid;
   
@@ -22,7 +31,10 @@ exports.setAdminClaim = onCall((request) => {
 });
 
 // Admin claim'i kaldırma fonksiyonu
-exports.removeAdminClaim = onCall((request) => {
+exports.removeAdminClaim = onCall({
+  cors: true,
+  maxInstances: 10,
+}, (request) => {
   const { data } = request;
   const uid = data.uid;
   
@@ -40,7 +52,10 @@ exports.removeAdminClaim = onCall((request) => {
 });
 
 // Admin kullanıcılarını listeleme fonksiyonu
-exports.listAdminUsers = onCall(async (request) => {
+exports.listAdminUsers = onCall({
+  cors: true,
+  maxInstances: 10,
+}, async (request) => {
   try {
     const listUsersResult = await admin.auth().listUsers();
     const adminUsers = listUsersResult.users.filter(user => 
