@@ -27,6 +27,15 @@ function Placeholder({ title }: { title: string }) {
 
 function Panel({ onLogout }: { onLogout: () => void }) {
   const [activeMenu, setActiveMenu] = useState("/users");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
 
   return (
     <div style={{ 
@@ -39,17 +48,36 @@ function Panel({ onLogout }: { onLogout: () => void }) {
       top: 0,
       left: 0
     }}>
-      {/* Sidebar - Sabit */}
-      <aside style={{ 
-        width: 180, 
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", 
-        color: "#fff", 
-        padding: 16,
-        boxShadow: "2px 0 10px rgba(0,0,0,0.1)",
-        height: "100vh",
-        flexShrink: 0,
-        overflow: "hidden"
-      }}>
+      {/* Mobile Menu Toggle */}
+      <button 
+        className="mobile-menu-toggle"
+        onClick={toggleSidebar}
+        style={{ display: "none" }}
+      >
+        ☰
+      </button>
+
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={closeSidebar}
+        style={{ display: "none" }}
+      />
+
+      {/* Sidebar */}
+      <aside 
+        className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
+        style={{ 
+          width: 180, 
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", 
+          color: "#fff", 
+          padding: 16,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.1)",
+          height: "100vh",
+          flexShrink: 0,
+          overflow: "hidden"
+        }}
+      >
         <div style={{ marginBottom: 32 }}>
           <h2 style={{ color: "#fff", fontSize: 20, margin: 0, fontWeight: "bold" }}>
             🎯 YakalaHadi Admin
@@ -64,7 +92,10 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <div key={item.path}>
               <Link 
                 to={item.path} 
-                onClick={() => setActiveMenu(item.path)}
+                onClick={() => {
+                  setActiveMenu(item.path);
+                  closeSidebar(); // Mobile'da menüyü kapat
+                }}
                 style={{ 
                   color: "#fff", 
                   textDecoration: "none", 
@@ -92,7 +123,10 @@ function Panel({ onLogout }: { onLogout: () => void }) {
           borderTop: "1px solid rgba(255,255,255,0.1)"
         }}>
           <button
-            onClick={onLogout}
+            onClick={() => {
+              onLogout();
+              closeSidebar(); // Mobile'da menüyü kapat
+            }}
             style={{
               width: "100%",
               color: "#fff",
@@ -121,28 +155,34 @@ function Panel({ onLogout }: { onLogout: () => void }) {
         </div>
       </aside>
 
-      {/* Main Content - Tam Ekran */}
-      <main style={{ 
-        flex: 1, 
-        background: "#fff", 
-        height: "100vh",
-        width: "calc(100vw - 180px)",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        minWidth: 0,
-        maxWidth: "calc(100vw - 180px)"
-      }}>
-        <div style={{ 
+      {/* Main Content */}
+      <main 
+        className="admin-main"
+        style={{ 
+          flex: 1, 
           background: "#fff", 
-          height: "100%",
-          width: "100%",
+          height: "100vh",
+          width: "calc(100vw - 180px)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
           minWidth: 0,
-          maxWidth: "100%"
-        }}>
+          maxWidth: "calc(100vw - 180px)"
+        }}
+      >
+        <div 
+          className="admin-content"
+          style={{ 
+            background: "#fff", 
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            minWidth: 0,
+            maxWidth: "100%"
+          }}
+        >
           <Routes>
             <Route path="/users" element={<Users />} />
             <Route path="/companies" element={<Companies />} />
