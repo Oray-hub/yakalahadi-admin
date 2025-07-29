@@ -54,6 +54,19 @@ button:focus-visible {
 /* Responsive Design */
 @media (max-width: 768px) {
   /* Mobile styles */
+  /* Ana container tam ekran */
+  #root {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  
+  #app {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  
   .admin-sidebar {
     position: fixed !important;
     left: -180px !important;
@@ -68,6 +81,7 @@ button:focus-visible {
   .admin-main {
     width: 100vw !important;
     margin-left: 0 !important;
+    max-width: 100vw !important;
   }
   
   .mobile-menu-toggle {
