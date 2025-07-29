@@ -35,8 +35,6 @@ function Companies() {
   const [editValue, setEditValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchField, setSearchField] = useState<string>('all');
-  const [totalCompanies, setTotalCompanies] = useState<number>(0);
-  const [totalRegisteredCompanies, setTotalRegisteredCompanies] = useState<number>(0);
 
   // Kategori seçenekleri
   const categoryOptions = [
@@ -100,7 +98,6 @@ function Companies() {
       const snapshot = await getDocs(companiesRef);
       
       const companiesData: Company[] = [];
-      let registeredCount = 0;
       
       for (const doc of snapshot.docs) {
         const data = doc.data();
@@ -123,16 +120,9 @@ function Companies() {
         };
         
         companiesData.push(company);
-        
-        // Kayıtlı firma sayısını hesapla (onaylanmış firmalar)
-        if (company.approved) {
-          registeredCount++;
-        }
       }
       
       setCompanies(companiesData);
-      setTotalCompanies(companiesData.length);
-      setTotalRegisteredCompanies(registeredCount);
     } catch (error) {
       console.error("Firmalar yüklenirken hata:", error);
     } finally {
@@ -146,18 +136,12 @@ function Companies() {
       const companyRef = doc(db, "companies", companyId);
       await updateDoc(companyRef, { approved });
       
+      // Firmaları güncelle - kart sayıları otomatik olarak güncellenecek
       setCompanies(prev => prev.map(company => 
         company.id === companyId 
           ? { ...company, approved }
           : company
       ));
-      
-      // İstatistikleri güncelle
-      if (approved) {
-        setTotalRegisteredCompanies(prev => prev + 1);
-      } else {
-        setTotalRegisteredCompanies(prev => prev - 1);
-      }
       
       console.log(`Firma ${companyId} onay durumu ${approved ? 'onaylandı' : 'onay bekliyor'} olarak güncellendi`);
     } catch (error) {
@@ -213,12 +197,7 @@ function Companies() {
         
         // Silinen firmanın onay durumunu kontrol et ve istatistikleri güncelle
         const deletedCompany = companies.find(company => company.id === companyId);
-        if (deletedCompany?.approved) {
-          setTotalRegisteredCompanies(prev => prev - 1);
-        }
-        
         setCompanies(companies.filter(company => company.id !== companyId));
-        setTotalCompanies(prev => prev - 1);
         alert("Firma başarıyla silindi.");
       } catch (error) {
         console.error("Firma silinirken hata:", error);
@@ -540,7 +519,7 @@ function Companies() {
               <h3 style={{ margin: 0, color: "#1976d2", fontSize: "13px" }}>Toplam Firma</h3>
             </div>
             <div style={{ fontSize: "25px", fontWeight: "bold", color: "#1976d2", marginBottom: "2px" }}>
-              {totalCompanies}
+              {companies.length}
             </div>
           </div>
 
@@ -557,7 +536,7 @@ function Companies() {
               <h3 style={{ margin: 0, color: "#2e7d32", fontSize: "13px" }}>Kayıtlı Firma</h3>
             </div>
             <div style={{ fontSize: "25px", fontWeight: "bold", color: "#2e7d32", marginBottom: "2px" }}>
-              {totalRegisteredCompanies}
+              {companies.filter(company => company.approved).length}
             </div>
           </div>
 
@@ -574,7 +553,7 @@ function Companies() {
               <h3 style={{ margin: 0, color: "#856404", fontSize: "13px" }}>Bekleyen Firma</h3>
             </div>
             <div style={{ fontSize: "25px", fontWeight: "bold", color: "#856404", marginBottom: "2px" }}>
-              {totalCompanies - totalRegisteredCompanies}
+              {companies.filter(company => !company.approved).length}
             </div>
           </div>
         </div>
