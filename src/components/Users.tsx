@@ -36,14 +36,19 @@ function Users() {
       const usersRef = collection(db, "users");
       const usersSnapshot = await getDocs(usersRef);
       
-      // Yakalanan kampanyaları çek
+      // Yakalanan kampanyaları çek (yeni sistem)
       const claimedCampaignsRef = collection(db, "claimedCampaigns");
       const claimedCampaignsSnapshot = await getDocs(claimedCampaignsRef);
+      
+      // Eski sistem yakalanan kampanyaları da çek
+      const caughtCampaignsRef = collection(db, "caught_campaigns");
+      const caughtCampaignsSnapshot = await getDocs(caughtCampaignsRef);
       
       // Kullanıcı başına yakalanan kampanya sayısını hesapla
       const userClaimedCounts = new Map<string, number>();
       const userQrScanned = new Map<string, boolean>();
       
+      // Yeni sistem claimedCampaigns
       claimedCampaignsSnapshot.docs.forEach(doc => {
         const data = doc.data();
         const userId = data.userId;
@@ -51,9 +56,48 @@ function Users() {
           // Yakalanan kampanya sayısını artır
           userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
           
-          // QR kod okutulmuş mu kontrol et
-          if (data.qrScanned || data.scanned || data.isScanned) {
+          // QR kod okutulmuş mu kontrol et - daha kapsamlı kontrol
+          console.log(`User ${userId} claimed campaign data:`, data); // Debug için
+          
+          if (data.qrScanned === true || 
+              data.scanned === true || 
+              data.isScanned === true ||
+              data.qrCodeScanned === true ||
+              data.qrScannedAt ||
+              data.scannedAt ||
+              data.qrCodeScannedAt ||
+              data.status === 'scanned' ||
+              data.status === 'completed' ||
+              data.isCompleted === true) {
             userQrScanned.set(userId, true);
+            console.log(`User ${userId} has scanned QR code`); // Debug için
+          }
+        }
+      });
+      
+      // Eski sistem caught_campaigns
+      caughtCampaignsSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const userId = data.userId;
+        if (userId) {
+          // Yakalanan kampanya sayısını artır
+          userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
+          
+          // QR kod okutulmuş mu kontrol et
+          console.log(`User ${userId} caught campaign data:`, data); // Debug için
+          
+          if (data.qrScanned === true || 
+              data.scanned === true || 
+              data.isScanned === true ||
+              data.qrCodeScanned === true ||
+              data.qrScannedAt ||
+              data.scannedAt ||
+              data.qrCodeScannedAt ||
+              data.status === 'scanned' ||
+              data.status === 'completed' ||
+              data.isCompleted === true) {
+            userQrScanned.set(userId, true);
+            console.log(`User ${userId} has scanned QR code (caught_campaigns)`); // Debug için
           }
         }
       });
