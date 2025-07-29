@@ -49,17 +49,20 @@ function Users() {
       const userQrScanned = new Map<string, boolean>();
       
       // Yeni sistem claimedCampaigns
+      console.log("=== CLAIMED CAMPAIGNS DATA ===");
       claimedCampaignsSnapshot.docs.forEach(doc => {
         const data = doc.data();
         const userId = data.userId;
+        console.log(`Document ID: ${doc.id}`);
+        console.log(`User ID: ${userId}`);
+        console.log(`Full data:`, JSON.stringify(data, null, 2));
+        
         if (userId) {
           // Yakalanan kampanya sayısını artır
           userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
           
           // QR kod okutulmuş mu kontrol et - daha kapsamlı kontrol
-          console.log(`User ${userId} claimed campaign data:`, data); // Debug için
-          
-          if (data.qrScanned === true || 
+          const hasScanned = data.qrScanned === true || 
               data.scanned === true || 
               data.isScanned === true ||
               data.qrCodeScanned === true ||
@@ -68,25 +71,35 @@ function Users() {
               data.qrCodeScannedAt ||
               data.status === 'scanned' ||
               data.status === 'completed' ||
-              data.isCompleted === true) {
+              data.isCompleted === true ||
+              data.qrCodeStatus === 'scanned' ||
+              data.campaignStatus === 'completed';
+              
+          console.log(`Has scanned: ${hasScanned}`);
+          
+          if (hasScanned) {
             userQrScanned.set(userId, true);
-            console.log(`User ${userId} has scanned QR code`); // Debug için
+            console.log(`✅ User ${userId} has scanned QR code`);
           }
         }
+        console.log("---");
       });
       
       // Eski sistem caught_campaigns
+      console.log("=== CAUGHT CAMPAIGNS DATA ===");
       caughtCampaignsSnapshot.docs.forEach(doc => {
         const data = doc.data();
         const userId = data.userId;
+        console.log(`Document ID: ${doc.id}`);
+        console.log(`User ID: ${userId}`);
+        console.log(`Full data:`, JSON.stringify(data, null, 2));
+        
         if (userId) {
           // Yakalanan kampanya sayısını artır
           userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
           
           // QR kod okutulmuş mu kontrol et
-          console.log(`User ${userId} caught campaign data:`, data); // Debug için
-          
-          if (data.qrScanned === true || 
+          const hasScanned = data.qrScanned === true || 
               data.scanned === true || 
               data.isScanned === true ||
               data.qrCodeScanned === true ||
@@ -95,11 +108,18 @@ function Users() {
               data.qrCodeScannedAt ||
               data.status === 'scanned' ||
               data.status === 'completed' ||
-              data.isCompleted === true) {
+              data.isCompleted === true ||
+              data.qrCodeStatus === 'scanned' ||
+              data.campaignStatus === 'completed';
+              
+          console.log(`Has scanned: ${hasScanned}`);
+          
+          if (hasScanned) {
             userQrScanned.set(userId, true);
-            console.log(`User ${userId} has scanned QR code (caught_campaigns)`); // Debug için
+            console.log(`✅ User ${userId} has scanned QR code (caught_campaigns)`);
           }
         }
+        console.log("---");
       });
       
       const usersData: User[] = [];
@@ -123,6 +143,11 @@ function Users() {
           qrScanned: userQrScanned.get(userId) || false,
         });
       }
+      
+      console.log("=== FINAL RESULTS ===");
+      console.log("User Claimed Counts:", Object.fromEntries(userClaimedCounts));
+      console.log("User QR Scanned:", Object.fromEntries(userQrScanned));
+      
       setUsers(usersData);
     } catch (error) {
       console.error("Kullanıcılar yüklenirken hata:", error);
