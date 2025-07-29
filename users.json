@@ -1,0 +1,40 @@
+{"users": [
+{
+  "localId": "Nr12P93WEjcnbv4W8UaeemrV1ZG3",
+  "email": "orayozyigit@hotmail.com",
+  "emailVerified": true,
+  "passwordHash": "p1YUxpXKwE1/bOTLMtWBzZmyUDZ09rWRRcex17+Xz4IZNaqMZHT8EcqkUwal2yz92BdVlDyRK0tN8XFVVcx5ug==",
+  "salt": "v7OsJKSJFLhsPg==",
+  "lastSignedInAt": "1753476617551",
+  "createdAt": "1753453841513",
+  "providerUserInfo": []
+},
+{
+  "localId": "cvtXMH7IY0P8uCW7aAupqcdNUY13",
+  "email": "admin@yakalahadi.com",
+  "emailVerified": false,
+  "passwordHash": "vvNl/GvZt6RrR42+ffdUeC/Xkx0ioU7sj/Lo+O7WeV0JxKXQiKYiaHKLGLyrtSpuZEEPHkDvWbaSLYUEWqZhCg==",
+  "salt": "zscxL2W1Z8cROQ==",
+  "lastSignedInAt": "1753801196394",
+  "createdAt": "1753693826031",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "lqGOMWdS7kV6tsagtwEvJtEouqz1",
+  "email": "orayozyigit@gmail.com",
+  "emailVerified": true,
+  "displayName": "oray ozyigit",
+  "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocJhHj9Qh5gS4e1aVplxlHph8h6tafH0NiOtC5tORnv0ux3bRjGQVA=s96-c",
+  "lastSignedInAt": "1753700259873",
+  "createdAt": "1753476145188",
+  "providerUserInfo": [
+    {
+      "providerId": "google.com",
+      "rawId": "109957432704645582136",
+      "email": "orayozyigit@gmail.com",
+      "displayName": "oray ozyigit",
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocJhHj9Qh5gS4e1aVplxlHph8h6tafH0NiOtC5tORnv0ux3bRjGQVA=s96-c"
+    }
+  ]
+}]}
