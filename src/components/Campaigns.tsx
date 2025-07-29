@@ -198,7 +198,7 @@ function Campaigns() {
   }
 
   return (
-    <div style={{
+    <div className="campaigns-container" style={{
       height: "100vh",
       width: "100%",
       display: "flex",
@@ -229,7 +229,7 @@ function Campaigns() {
         marginBottom: "16px",
         width: "100%"
       }}>
-        <div style={{ 
+        <div className="campaigns-stats" style={{ 
           display: "grid", 
           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
           gap: "12px", 
@@ -322,7 +322,7 @@ function Campaigns() {
       </div>
 
       {/* Sabit Filtre Kısmı */}
-      <div style={{
+      <div className="campaigns-filters" style={{
         flexShrink: 0,
         display: "flex",
         gap: "12px",
@@ -376,7 +376,7 @@ function Campaigns() {
         border: "1px solid #e0e0e0",
         borderRadius: "8px"
       }}>
-        <table style={{ 
+        <table className="campaigns-table" style={{ 
           width: "100%", 
           borderCollapse: "collapse", 
           backgroundColor: "white"

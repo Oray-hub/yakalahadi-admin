@@ -380,7 +380,7 @@ function Accounting() {
   }
 
   return (
-    <div style={{
+    <div className="accounting-container" style={{
       height: "100vh",
       width: "100%",
       maxWidth: "100%",
@@ -402,7 +402,7 @@ function Accounting() {
       </div>
 
       {/* Ana İstatistik Kartları */}
-      <div style={{ 
+      <div className="accounting-stats" style={{ 
         display: "grid", 
         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
         gap: "8px", 
@@ -529,7 +529,7 @@ function Accounting() {
             <h3 style={{ margin: "0 0 8px 0", color: "#333", fontSize: "14px" }}>Kredi Gelirleri</h3>
             
             {/* Tarih Filtresi */}
-            <div style={{ 
+            <div className="accounting-filters" style={{ 
               display: "flex", 
               alignItems: "center", 
               gap: "8px", 
@@ -624,7 +624,7 @@ function Accounting() {
             </div>
           </div>
           <div style={{ overflowX: "auto", minWidth: 0, maxWidth: "100%", marginLeft: "-8px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "white", borderRadius: 8, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", minWidth: 0, maxWidth: "100%" }}>
+            <table className="accounting-table" style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "white", borderRadius: 8, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", minWidth: 0, maxWidth: "100%" }}>
               <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
                 <tr>
                   <th style={{ padding: 12, textAlign: "center", borderBottom: "1px solid #dee2e6", fontSize: "13px", minWidth: 0, maxWidth: "100%", wordWrap: "break-word" }}>Ay</th>

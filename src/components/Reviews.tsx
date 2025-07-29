@@ -175,12 +175,12 @@ function Reviews() {
     return <div style={{ padding: 20 }}>Yorumlar yükleniyor...</div>;
   }
 
-  return (
-    <div style={{ 
-      height: "100vh", 
+    return (
+    <div className="reviews-container" style={{
+      height: "100vh",
       width: "100%",
-      display: "flex", 
-      flexDirection: "column", 
+      display: "flex",
+      flexDirection: "column",
       overflow: "hidden",
       padding: "16px",
       minWidth: 0,
@@ -207,7 +207,7 @@ function Reviews() {
         marginBottom: "16px",
         width: "100%"
       }}>
-        <div style={{ 
+        <div className="reviews-stats" style={{ 
           display: "grid", 
           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
           gap: "12px", 
@@ -264,7 +264,7 @@ function Reviews() {
       </div>
 
       {/* Sabit Filtre Kısmı */}
-      <div style={{
+      <div className="reviews-filters" style={{
         flexShrink: 0,
         display: "flex",
         gap: "12px",
@@ -318,7 +318,7 @@ function Reviews() {
         border: "1px solid #e0e0e0",
         borderRadius: "8px"
       }}>
-        <table style={{ 
+        <table className="reviews-table" style={{ 
           width: "100%", 
           borderCollapse: "collapse", 
           backgroundColor: "white"
