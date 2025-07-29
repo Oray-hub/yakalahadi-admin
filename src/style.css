@@ -116,9 +116,13 @@ button:focus-visible {
   }
   
   .companies-container h1 {
-    font-size: 16px !important;
+    font-size: 14px !important;
     margin-bottom: 8px !important;
-    padding-left: 40px !important;
+    padding-left: 45px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100vw - 60px) !important;
   }
   
   .companies-stats {
@@ -148,9 +152,20 @@ button:focus-visible {
   .companies-filters select,
   .companies-filters input {
     width: 100% !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     padding: 6px !important;
     min-width: auto !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  .companies-filters button {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   
   .companies-table {
@@ -159,15 +174,20 @@ button:focus-visible {
   
   .companies-table th,
   .companies-table td {
-    padding: 4px 2px !important;
-    font-size: 9px !important;
+    padding: 3px 1px !important;
+    font-size: 8px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    max-width: 80px !important;
   }
   
   .companies-table th {
-    font-size: 10px !important;
+    font-size: 9px !important;
+  }
+  
+  .companies-table td {
+    max-width: 80px !important;
   }
   
   /* Hide less important columns on mobile */
@@ -197,9 +217,13 @@ button:focus-visible {
   }
   
   .users-container h1 {
-    font-size: 16px !important;
+    font-size: 14px !important;
     margin-bottom: 8px !important;
-    padding-left: 40px !important;
+    padding-left: 45px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100vw - 60px) !important;
   }
   
   .users-stats {
@@ -253,9 +277,13 @@ button:focus-visible {
   }
   
   .campaigns-container h1 {
-    font-size: 16px !important;
+    font-size: 14px !important;
     margin-bottom: 8px !important;
-    padding-left: 40px !important;
+    padding-left: 45px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100vw - 60px) !important;
   }
   
   .campaigns-stats {
@@ -309,9 +337,13 @@ button:focus-visible {
   }
   
   .reviews-container h1 {
-    font-size: 16px !important;
+    font-size: 14px !important;
     margin-bottom: 8px !important;
-    padding-left: 40px !important;
+    padding-left: 45px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100vw - 60px) !important;
   }
   
   .reviews-stats {
@@ -365,9 +397,13 @@ button:focus-visible {
   }
   
   .accounting-container h1 {
-    font-size: 16px !important;
+    font-size: 14px !important;
     margin-bottom: 8px !important;
-    padding-left: 40px !important;
+    padding-left: 45px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100vw - 60px) !important;
   }
   
   .accounting-stats {
