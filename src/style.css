@@ -109,6 +109,163 @@ button:focus-visible {
     padding: 16px !important;
     overflow-y: auto !important;
   }
+
+  /* Companies component responsive */
+  .companies-container {
+    padding: 12px !important;
+  }
+
+  .companies-stats {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .companies-filters {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .companies-filters select,
+  .companies-filters input {
+    width: 100% !important;
+    font-size: 14px !important;
+    padding: 8px !important;
+  }
+
+  .companies-table {
+    font-size: 11px !important;
+  }
+
+  .companies-table th,
+  .companies-table td {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
+
+  .companies-table th {
+    font-size: 11px !important;
+  }
+
+  /* Hide less important columns on mobile */
+  .companies-table th:nth-child(5),
+  .companies-table td:nth-child(5),
+  .companies-table th:nth-child(9),
+  .companies-table td:nth-child(9),
+  .companies-table th:nth-child(10),
+  .companies-table td:nth-child(10) {
+    display: none !important;
+  }
+
+  /* Make dropdowns mobile-friendly */
+  .dropdown-container {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    max-width: 90vw !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Users component responsive */
+  .users-container {
+    padding: 12px !important;
+  }
+
+  .users-stats {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .users-filters {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .users-table {
+    font-size: 11px !important;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
+
+  /* Campaigns component responsive */
+  .campaigns-container {
+    padding: 12px !important;
+  }
+
+  .campaigns-stats {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .campaigns-filters {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .campaigns-table {
+    font-size: 11px !important;
+  }
+
+  .campaigns-table th,
+  .campaigns-table td {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
+
+  /* Reviews component responsive */
+  .reviews-container {
+    padding: 12px !important;
+  }
+
+  .reviews-stats {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .reviews-filters {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .reviews-table {
+    font-size: 11px !important;
+  }
+
+  .reviews-table th,
+  .reviews-table td {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
+
+  /* Accounting component responsive */
+  .accounting-container {
+    padding: 12px !important;
+  }
+
+  .accounting-stats {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .accounting-filters {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .accounting-table {
+    font-size: 11px !important;
+  }
+
+  .accounting-table th,
+  .accounting-table td {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -128,6 +285,37 @@ button:focus-visible {
     padding: 10px !important;
     font-size: 16px !important;
   }
+
+  /* Even smaller text for very small screens */
+  .companies-table,
+  .users-table,
+  .campaigns-table,
+  .reviews-table,
+  .accounting-table {
+    font-size: 10px !important;
+  }
+
+  .companies-table th,
+  .companies-table td,
+  .users-table th,
+  .users-table td,
+  .campaigns-table th,
+  .campaigns-table td,
+  .reviews-table th,
+  .reviews-table td,
+  .accounting-table th,
+  .accounting-table td {
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+  }
+
+  /* Hide more columns on very small screens */
+  .companies-table th:nth-child(4),
+  .companies-table td:nth-child(4),
+  .companies-table th:nth-child(6),
+  .companies-table td:nth-child(6) {
+    display: none !important;
+  }
 }
 
 /* Tablet styles */
@@ -146,5 +334,28 @@ button:focus-visible {
   
   .admin-content {
     padding: 20px !important;
+  }
+
+  /* Tablet-specific table adjustments */
+  .companies-table,
+  .users-table,
+  .campaigns-table,
+  .reviews-table,
+  .accounting-table {
+    font-size: 12px !important;
+  }
+
+  .companies-table th,
+  .companies-table td,
+  .users-table th,
+  .users-table td,
+  .campaigns-table th,
+  .campaigns-table td,
+  .reviews-table th,
+  .reviews-table td,
+  .accounting-table th,
+  .accounting-table td {
+    padding: 8px 6px !important;
+    font-size: 11px !important;
   }
 }

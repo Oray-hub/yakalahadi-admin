@@ -489,7 +489,7 @@ function Companies() {
   }
 
   return (
-    <div style={{
+    <div className="companies-container" style={{
       height: "100vh",
       width: "100%",
       display: "flex",
@@ -520,7 +520,7 @@ function Companies() {
         marginBottom: "16px",
         width: "100%"
       }}>
-        <div style={{ 
+        <div className="companies-stats" style={{ 
           display: "grid", 
           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
           gap: "12px", 
@@ -581,7 +581,7 @@ function Companies() {
       </div>
 
       {/* Sabit Filtre Kısmı */}
-      <div style={{
+      <div className="companies-filters" style={{
         flexShrink: 0,
         display: "flex",
         gap: "12px",
@@ -649,7 +649,7 @@ function Companies() {
         border: "1px solid #e0e0e0",
         borderRadius: "8px"
       }}>
-        <table style={{ 
+        <table className="companies-table" style={{ 
           width: "100%", 
           borderCollapse: "collapse", 
           backgroundColor: "white"

@@ -380,7 +380,7 @@ function Accounting() {
   }
 
   return (
-    <div style={{
+    <div className="accounting-container" style={{
       height: "100vh",
       width: "100%",
       maxWidth: "100%",

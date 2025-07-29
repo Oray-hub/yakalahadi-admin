@@ -198,7 +198,7 @@ function Campaigns() {
   }
 
   return (
-    <div style={{
+    <div className="campaigns-container" style={{
       height: "100vh",
       width: "100%",
       display: "flex",

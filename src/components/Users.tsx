@@ -151,7 +151,7 @@ function Users() {
   }
 
   return (
-    <div style={{
+    <div className="users-container" style={{
       height: "100vh",
       width: "100%",
       display: "flex",

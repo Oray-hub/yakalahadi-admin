@@ -175,12 +175,12 @@ function Reviews() {
     return <div style={{ padding: 20 }}>Yorumlar yükleniyor...</div>;
   }
 
-  return (
-    <div style={{ 
-      height: "100vh", 
+    return (
+    <div className="reviews-container" style={{
+      height: "100vh",
       width: "100%",
-      display: "flex", 
-      flexDirection: "column", 
+      display: "flex",
+      flexDirection: "column",
       overflow: "hidden",
       padding: "16px",
       minWidth: 0,
