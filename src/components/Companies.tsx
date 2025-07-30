@@ -35,7 +35,7 @@ function Companies() {
   const [editValue, setEditValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchField, setSearchField] = useState<string>('all');
-  const [fcmTokenStatus, setFcmTokenStatus] = useState<{[key: string]: boolean}>({});
+
   
 
 
@@ -127,8 +127,7 @@ function Companies() {
       
       setCompanies(companiesData);
       
-      // FCM token durumlarını kontrol et
-      await checkFCMTokenStatus(companiesData);
+
     } catch (error) {
       console.error("Firmalar yüklenirken hata:", error);
     } finally {
@@ -136,33 +135,7 @@ function Companies() {
     }
   };
 
-  const checkFCMTokenStatus = async (companiesList: Company[]) => {
-    try {
-      const db = getFirestore();
-      const status: {[key: string]: boolean} = {};
-      
-      for (const company of companiesList) {
-        if (company.email && company.email !== "E-posta Yok") {
-          const usersQuery = query(collection(db, "users"), where("email", "==", company.email));
-          const usersSnapshot = await getDocs(usersQuery);
-          
-          if (!usersSnapshot.empty) {
-            const userData = usersSnapshot.docs[0].data();
-            status[company.id] = !!userData.fcmToken;
-          } else {
-            status[company.id] = false;
-          }
-        } else {
-          status[company.id] = false;
-        }
-      }
-      
-      setFcmTokenStatus(status);
-      console.log("📱 FCM Token Durumları:", status);
-    } catch (error) {
-      console.error("FCM token durumları kontrol edilirken hata:", error);
-    }
-  };
+
 
   const updateCompanyApproval = async (companyId: string, approved: boolean) => {
     try {
@@ -378,12 +351,7 @@ function Companies() {
             },
           };
           
-          // FCM API'ye gönder (Firebase Functions yerine direkt)
-          const { getMessaging, send } = await import('firebase/messaging');
-          const messaging = getMessaging();
-          
-          // Not: Frontend'den direkt FCM gönderimi güvenlik nedeniyle kısıtlı
-          // Bu yüzden sadece log kaydediyoruz
+          // FCM mesajı hazırlandı (güvenlik nedeniyle sadece log)
           console.log("📨 FCM Mesajı hazırlandı:", message);
           
           // Bildirim log'unu kaydet
