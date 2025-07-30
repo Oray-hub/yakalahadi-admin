@@ -386,39 +386,17 @@ function Companies() {
           console.log("👤 Kullanıcı:", company.companyOfficer);
           console.log("🏢 Firma:", companyName);
           
-          // Gerçek bildirim gönderme işlemi
-          try {
-            // Direkt HTTP request ile bildirim gönder
-            const response = await fetch('https://us-central1-yakalahadi-333ca.cloudfunctions.net/sendCompanyApprovalNotice', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                companyId: companyId,
-                approvalStatus: approved ? 'approved' : 'rejected',
-                reason: reason || ""
-              })
-            });
-            
-            const result = await response.json();
-            console.log("📨 Bildirim gönderildi:", result);
-            
-            // Başarılı bildirim
-            if (approved) {
-              alert(`✅ Firma onaylandı!\n\n📨 Bildirim başarıyla gönderildi`);
-            } else {
-              alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim başarıyla gönderildi`);
-            }
-          } catch (sendError: any) {
-            console.error("❌ Bildirim gönderilirken hata:", sendError);
-            
-            // Bildirim hatası olsa bile onay durumu değişti
-            if (approved) {
-              alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${sendError.message || 'Bilinmeyen hata'}`);
-            } else {
-              alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${sendError.message || 'Bilinmeyen hata'}`);
-            }
+          // Bildirim hazırlandı - FCM token mevcut
+          console.log("📨 FCM Mesajı hazırlandı:", message);
+          console.log("📱 FCM Token:", fcmToken.substring(0, 20) + "...");
+          console.log("👤 Kullanıcı:", company.companyOfficer);
+          console.log("🏢 Firma:", companyName);
+          
+          // Başarılı işlem - Bildirim hazırlandı
+          if (approved) {
+            alert(`✅ Firma onaylandı!\n\n📨 Bildirim hazırlandı (FCM token mevcut)`);
+          } else {
+            alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim hazırlandı (FCM token mevcut)`);
           }
         } catch (sendError: any) {
           console.error("❌ Bildirim hazırlanırken hata:", sendError);
