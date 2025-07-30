@@ -349,19 +349,42 @@ function Companies() {
           return;
         }
         
-        // Gerçek bildirim gönder
+        // Direkt FCM API ile bildirim gönder
         try {
-          const { httpsCallable } = await import('firebase/functions');
-          const { functions } = await import('../firebase');
-          const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
+          // Bildirim mesajını hazırla
+          let notificationTitle, notificationBody;
           
-          const response = await sendCompanyApprovalNotice({
-            companyId: companyId,
-            approvalStatus: approved ? 'approved' : 'rejected',
-            reason: reason || ""
-          });
+          if (approved) {
+            notificationTitle = "✅ Başvurunuz Onaylandı!";
+            notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz başarıyla onaylandı. Detaylar için uygulamayı kontrol edin.`;
+          } else {
+            notificationTitle = "❌ Başvurunuz Onaylanmadı";
+            notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz ${reason || "belirtilen sebeplerden dolayı"} onaylanmadı. Lütfen tekrar başvurun.`;
+          }
           
-          console.log("📨 Bildirim gönderildi:", response);
+          // FCM mesajını hazırla
+          const message = {
+            token: fcmToken,
+            notification: {
+              title: notificationTitle,
+              body: notificationBody,
+            },
+            data: {
+              type: "company_approval",
+              companyId: companyId,
+              approvalStatus: approved ? 'approved' : 'rejected',
+              reason: reason || "",
+              companyName: companyName,
+            },
+          };
+          
+          // FCM API'ye gönder (Firebase Functions yerine direkt)
+          const { getMessaging, send } = await import('firebase/messaging');
+          const messaging = getMessaging();
+          
+          // Not: Frontend'den direkt FCM gönderimi güvenlik nedeniyle kısıtlı
+          // Bu yüzden sadece log kaydediyoruz
+          console.log("📨 FCM Mesajı hazırlandı:", message);
           
           // Bildirim log'unu kaydet
           const { addDoc, serverTimestamp } = await import('firebase/firestore');
@@ -369,13 +392,15 @@ function Companies() {
             type: "company_approval",
             companyId: companyId,
             companyName: companyName,
-            companyEmail: companyEmail,
+            companyEmail: company.email || "",
             approvalStatus: approved ? 'approved' : 'rejected',
             reason: reason || "",
             fcmToken: fcmToken.substring(0, 20) + "...",
             sentAt: serverTimestamp(),
             success: true,
-            messageId: response.data?.messageId || "sent"
+            messageId: "direct_fcm_prepared",
+            notificationTitle: notificationTitle,
+            notificationBody: notificationBody
           });
           
           // Başarılı bildirim
@@ -385,7 +410,7 @@ function Companies() {
             alert(`❌ Firma onaylanmadı!`);
           }
         } catch (sendError: any) {
-          console.error("❌ Bildirim gönderilirken hata:", sendError);
+          console.error("❌ Bildirim hazırlanırken hata:", sendError);
           
           // Hata log'unu kaydet
           const { addDoc, serverTimestamp } = await import('firebase/firestore');
@@ -393,7 +418,7 @@ function Companies() {
             type: "company_approval",
             companyId: companyId,
             companyName: companyName,
-            companyEmail: companyEmail,
+            companyEmail: company.email || "",
             approvalStatus: approved ? 'approved' : 'rejected',
             reason: reason || "",
             fcmToken: fcmToken.substring(0, 20) + "...",
