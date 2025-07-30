@@ -265,10 +265,43 @@ function Companies() {
     try {
       await updateCompanyApproval(companyId, approved);
       console.log("updateCompanyApproval completed successfully");
+      
+      // Bildirim gönderme
+      try {
+        const { getFunctions, httpsCallable } = await import('firebase/functions');
+        const functions = getFunctions();
+        const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
+        
+        const result = await sendCompanyApprovalNotice({
+          companyId: companyId,
+          approvalStatus: approved ? 'approved' : 'rejected',
+          reason: approved ? '' : 'Belirtilen sebeplerden dolayı'
+        });
+        
+        console.log("Bildirim gönderme sonucu:", result);
+        
+        // Başarı mesajı göster
+        if (approved) {
+          alert("✅ Firma onaylandı ve bildirim gönderildi!");
+        } else {
+          alert("❌ Firma onaylanmadı ve bildirim gönderildi!");
+        }
+        
+      } catch (notificationError) {
+        console.error("Bildirim gönderilirken hata:", notificationError);
+        // Bildirim hatası olsa bile onay durumu değişti
+        if (approved) {
+          alert("✅ Firma onaylandı! (Bildirim gönderilemedi)");
+        } else {
+          alert("❌ Firma onaylanmadı! (Bildirim gönderilemedi)");
+        }
+      }
+      
       setOpenDropdown(null);
       setDropdownPosition(null);
     } catch (error) {
       console.error("Onay durumu değiştirilirken hata:", error);
+      alert("❌ Onay durumu değiştirilirken hata oluştu!");
     }
   };
 
