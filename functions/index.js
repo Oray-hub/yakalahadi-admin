@@ -1,17 +1,20 @@
-const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
+const { setGlobalOptions } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true });
 
 admin.initializeApp();
 
+// Global options
+setGlobalOptions({
+  maxInstances: 100,
+  region: 'europe-west1'
+});
+
 // 🏢 Firma onay/red bildirimi fonksiyonu
-exports.sendCompanyApprovalNotice = functions
-  .runWith({
-    minInstances: 0,
-    maxInstances: 3000
-  })
-  .region('us-central1')
-  .https.onRequest(async (req, res) => {
+exports.sendCompanyApprovalNotice = onRequest({
+  invoker: 'public'
+}, async (req, res) => {
     // CORS header'larını ekle
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET, POST');

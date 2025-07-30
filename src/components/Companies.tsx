@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { NotificationService } from "../services/notificationService";
 
 interface Company {
   id: string;
@@ -305,118 +306,54 @@ function Companies() {
 
   const processApprovalChange = async (companyId: string, approved: boolean, reason: string) => {
     try {
-      await updateCompanyApproval(companyId, approved);
-      console.log("updateCompanyApproval completed successfully");
+      console.log("🚀 processApprovalChange başladı:", { companyId, approved, reason });
       
-      // Bildirim gönderme - FCM Token kontrolü
+      // Önce firma onay durumunu güncelle
+      await updateCompanyApproval(companyId, approved);
+      console.log("✅ Firma onay durumu güncellendi");
+      
+      // Cloud Function ile bildirim gönder
       try {
-        console.log("📨 Bildirim gönderiliyor...", { companyId, approvalStatus: approved ? 'approved' : 'rejected', reason });
+        console.log("📨 Cloud Function ile bildirim gönderiliyor...", { 
+          companyId, 
+          approvalStatus: approved ? 'approved' : 'rejected', 
+          reason 
+        });
         
-        // Firma bilgilerini al
-        const { getFirestore, doc, getDoc } = await import('firebase/firestore');
-        const db = getFirestore();
-        const companyDoc = await getDoc(doc(db, "companies", companyId));
+        console.log("🔗 NotificationService.sendCompanyApprovalNotice çağrılıyor...");
+        const notificationResult = await NotificationService.sendCompanyApprovalNotice(
+          companyId,
+          approved ? 'approved' : 'rejected',
+          reason
+        );
         
-        if (!companyDoc.exists()) {
-          throw new Error('Firma bulunamadı');
-        }
+        console.log("📋 NotificationService sonucu:", notificationResult);
         
-        const company = companyDoc.data();
-        const companyName = company.company || company.companyTitle || "Firma";
-        
-        // Company ID'si ile user'ı bul (aynı ID kullanılıyor)
-        const userDoc = await getDoc(doc(db, "users", companyId));
-        
-        if (!userDoc.exists()) {
-          // Kullanıcı bulunamadı
-          console.log(`📧 Company ID ${companyId} için kullanıcı bulunamadı`);
+        if (notificationResult.success) {
+          console.log("✅ Bildirim başarıyla gönderildi:", notificationResult.message);
           if (approved) {
-            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+            alert(`✅ Firma onaylandı!\n\n📨 Bildirim başarıyla gönderildi`);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+            alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim başarıyla gönderildi`);
           }
-          return;
-        }
-        
-        const userData = userDoc.data();
-        const fcmToken = userData.fcmToken;
-        
-        if (!fcmToken) {
-          console.log(`📱 Company ID ${companyId} için FCM token bulunamadı`);
+        } else {
+          console.error("❌ Bildirim gönderilemedi:", notificationResult.message);
           if (approved) {
-            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${notificationResult.message}`);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
-          }
-          return;
-        }
-        
-        // Direkt FCM API ile bildirim gönder
-        try {
-          // Bildirim mesajını hazırla
-          let notificationTitle, notificationBody;
-          
-          if (approved) {
-            notificationTitle = "✅ Başvurunuz Onaylandı!";
-            notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz başarıyla onaylandı. Detaylar için uygulamayı kontrol edin.`;
-          } else {
-            notificationTitle = "❌ Başvurunuz Onaylanmadı";
-            notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz ${reason || "belirtilen sebeplerden dolayı"} onaylanmadı. Lütfen tekrar başvurun.`;
-          }
-          
-          // FCM mesajını hazırla
-          const message = {
-            token: fcmToken,
-            notification: {
-              title: notificationTitle,
-              body: notificationBody,
-            },
-            data: {
-              type: "company_approval",
-              companyId: companyId,
-              approvalStatus: approved ? 'approved' : 'rejected',
-              reason: reason || "",
-              companyName: companyName,
-            },
-          };
-          
-          // FCM mesajı hazırlandı
-          console.log("📨 FCM Mesajı hazırlandı:", message);
-          console.log("📱 FCM Token:", fcmToken.substring(0, 20) + "...");
-          console.log("👤 Kullanıcı:", company.companyOfficer);
-          console.log("🏢 Firma:", companyName);
-          
-          // Bildirim hazırlandı - FCM token mevcut
-          console.log("📨 FCM Mesajı hazırlandı:", message);
-          console.log("📱 FCM Token:", fcmToken.substring(0, 20) + "...");
-          console.log("👤 Kullanıcı:", company.companyOfficer);
-          console.log("🏢 Firma:", companyName);
-          
-          // Başarılı işlem - Bildirim hazırlandı
-          if (approved) {
-            alert(`✅ Firma onaylandı!\n\n📨 Bildirim hazırlandı (FCM token mevcut)`);
-          } else {
-            alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim hazırlandı (FCM token mevcut)`);
-          }
-        } catch (sendError: any) {
-          console.error("❌ Bildirim hazırlanırken hata:", sendError);
-          
-          // Bildirim hatası olsa bile onay durumu değişti
-          if (approved) {
-            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
-          } else {
-            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${notificationResult.message}`);
           }
         }
         
       } catch (notificationError: any) {
         console.error("❌ Bildirim gönderilirken hata:", notificationError);
+        console.error("❌ Hata detayı:", notificationError.stack);
         
         // Bildirim hatası olsa bile onay durumu değişti
         if (approved) {
-          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${notificationError.message}`);
         } else {
-          alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+          alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${notificationError.message}`);
         }
       }
       
