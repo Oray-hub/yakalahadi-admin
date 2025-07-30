@@ -393,8 +393,13 @@ function Export() {
         </div>
       )}
 
-      {!loading && (
-        <div style={{ display: 'grid', gap: '24px' }}>
+             {!loading && (
+         <div style={{ 
+           display: 'grid', 
+           gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+           gap: '24px',
+           maxWidth: '100%'
+         }}>
           {/* Kullanıcı Export */}
           <div style={{
             backgroundColor: '#f8f9fa',
