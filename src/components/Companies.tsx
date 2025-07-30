@@ -35,6 +35,7 @@ function Companies() {
   const [editValue, setEditValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchField, setSearchField] = useState<string>('all');
+  const [fcmTokenStatus, setFcmTokenStatus] = useState<{[key: string]: boolean}>({});
   
 
 
@@ -125,10 +126,41 @@ function Companies() {
       }
       
       setCompanies(companiesData);
+      
+      // FCM token durumlarını kontrol et
+      await checkFCMTokenStatus(companiesData);
     } catch (error) {
       console.error("Firmalar yüklenirken hata:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkFCMTokenStatus = async (companiesList: Company[]) => {
+    try {
+      const db = getFirestore();
+      const status: {[key: string]: boolean} = {};
+      
+      for (const company of companiesList) {
+        if (company.email && company.email !== "E-posta Yok") {
+          const usersQuery = query(collection(db, "users"), where("email", "==", company.email));
+          const usersSnapshot = await getDocs(usersQuery);
+          
+          if (!usersSnapshot.empty) {
+            const userData = usersSnapshot.docs[0].data();
+            status[company.id] = !!userData.fcmToken;
+          } else {
+            status[company.id] = false;
+          }
+        } else {
+          status[company.id] = false;
+        }
+      }
+      
+      setFcmTokenStatus(status);
+      console.log("📱 FCM Token Durumları:", status);
+    } catch (error) {
+      console.error("FCM token durumları kontrol edilirken hata:", error);
     }
   };
 
@@ -274,7 +306,7 @@ function Companies() {
       await updateCompanyApproval(companyId, approved);
       console.log("updateCompanyApproval completed successfully");
       
-      // Bildirim gönderme - Direkt FCM API kullanarak
+      // Bildirim gönderme - FCM Token kontrolü
       try {
         console.log("📨 Bildirim gönderiliyor...", { companyId, approvalStatus: approved ? 'approved' : 'rejected', reason });
         
@@ -289,20 +321,13 @@ function Companies() {
         
         const company = companyDoc.data();
         const companyName = company.company || company.companyTitle || "Firma";
-        const companyEmail = company.email;
         
-        if (!companyEmail) {
-          throw new Error('Firma email adresi bulunamadı');
-        }
+        // Company ID'si ile user'ı bul (aynı ID kullanılıyor)
+        const userDoc = await getDoc(doc(db, "users", companyId));
         
-        // Kullanıcıyı bul
-        const { collection, query, where, getDocs } = await import('firebase/firestore');
-        const usersQuery = query(collection(db, "users"), where("email", "==", companyEmail));
-        const usersSnapshot = await getDocs(usersQuery);
-        
-        if (usersSnapshot.empty) {
+        if (!userDoc.exists()) {
           // Kullanıcı bulunamadı
-          console.log(`📧 ${companyEmail} için kullanıcı bulunamadı`);
+          console.log(`📧 Company ID ${companyId} için kullanıcı bulunamadı`);
           if (approved) {
             alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
           } else {
@@ -311,12 +336,11 @@ function Companies() {
           return;
         }
         
-        const userDoc = usersSnapshot.docs[0];
         const userData = userDoc.data();
         const fcmToken = userData.fcmToken;
         
         if (!fcmToken) {
-          console.log(`📱 ${companyEmail} için FCM token bulunamadı`);
+          console.log(`📱 Company ID ${companyId} için FCM token bulunamadı`);
           if (approved) {
             alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
           } else {
@@ -325,43 +349,60 @@ function Companies() {
           return;
         }
         
-        // Bildirim mesajını hazırla (şimdilik sadece log)
-        console.log(`📨 Bildirim hazırlandı: ${companyName} - ${approved ? 'Onaylandı' : 'Onaylanmadı'}`);
-        
-        // Bildirim log'unu kaydet
-        const { addDoc, serverTimestamp } = await import('firebase/firestore');
-        await addDoc(collection(db, "notification_logs"), {
-          type: "company_approval",
-          companyId: companyId,
-          companyName: companyName,
-          companyEmail: companyEmail,
-          approvalStatus: approved ? 'approved' : 'rejected',
-          reason: reason || "",
-          fcmToken: fcmToken.substring(0, 20) + "...",
-          sentAt: serverTimestamp(),
-          success: true,
-          messageId: "direct_fcm"
-        });
-        
-        console.log("📨 Bildirim başarıyla gönderildi:", { companyName, fcmToken: fcmToken.substring(0, 20) + "..." });
-        
-        const resultData = { 
-          success: true, 
-          message: "Bildirim başarıyla gönderildi",
-          companyName: companyName,
-          approvalStatus: approved ? 'approved' : 'rejected',
-          messageId: "direct_fcm"
-        };
-        
-        if (resultData.success) {
+        // Gerçek bildirim gönder
+        try {
+          const { httpsCallable } = await import('firebase/functions');
+          const { functions } = await import('../firebase');
+          const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
+          
+          const response = await sendCompanyApprovalNotice({
+            companyId: companyId,
+            approvalStatus: approved ? 'approved' : 'rejected',
+            reason: reason || ""
+          });
+          
+          console.log("📨 Bildirim gönderildi:", response);
+          
+          // Bildirim log'unu kaydet
+          const { addDoc, serverTimestamp } = await import('firebase/firestore');
+          await addDoc(collection(db, "notification_logs"), {
+            type: "company_approval",
+            companyId: companyId,
+            companyName: companyName,
+            companyEmail: companyEmail,
+            approvalStatus: approved ? 'approved' : 'rejected',
+            reason: reason || "",
+            fcmToken: fcmToken.substring(0, 20) + "...",
+            sentAt: serverTimestamp(),
+            success: true,
+            messageId: response.data?.messageId || "sent"
+          });
+          
           // Başarılı bildirim
           if (approved) {
             alert(`✅ Firma onaylandı!`);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
+            alert(`❌ Firma onaylanmadı!`);
           }
-        } else {
-          // Bildirim gönderilemedi ama onay durumu değişti
+        } catch (sendError: any) {
+          console.error("❌ Bildirim gönderilirken hata:", sendError);
+          
+          // Hata log'unu kaydet
+          const { addDoc, serverTimestamp } = await import('firebase/firestore');
+          await addDoc(collection(db, "notification_logs"), {
+            type: "company_approval",
+            companyId: companyId,
+            companyName: companyName,
+            companyEmail: companyEmail,
+            approvalStatus: approved ? 'approved' : 'rejected',
+            reason: reason || "",
+            fcmToken: fcmToken.substring(0, 20) + "...",
+            sentAt: serverTimestamp(),
+            success: false,
+            error: sendError.message || "Bilinmeyen hata"
+          });
+          
+          // Bildirim hatası olsa bile onay durumu değişti
           if (approved) {
             alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
           } else {
@@ -791,6 +832,7 @@ function Companies() {
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Onay Durumu</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıtlı Mail</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
+
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Ortalama Puan</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
@@ -1069,6 +1111,7 @@ function Companies() {
                   </span>
                 </td>
                 <td style={{ padding: 12 }}>{company.phone}</td>
+
                 <td style={{ padding: 12 }}>
                   <span 
                     style={{
