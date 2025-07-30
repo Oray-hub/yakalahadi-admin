@@ -93,12 +93,13 @@ function Reviews() {
 
 
 
-  const handleDeleteReview = async (reviewId: string, companyName: string) => {
+  const handleDeleteReview = async (reviewId: string, companyName: string, companyId: string) => {
     if (window.confirm(`${companyName} için yapılan yorumu silmek istediğinizden emin misiniz?`)) {
       setDeletingReview(reviewId);
       try {
         const db = getFirestore();
-        await deleteDoc(doc(db, "reviews", reviewId));
+        // Doğru koleksiyon yolunu kullan: companies/{companyId}/reviews/{reviewId}
+        await deleteDoc(doc(db, "companies", companyId, "reviews", reviewId));
         setReviews(reviews.filter(review => review.id !== reviewId));
         alert("Yorum başarıyla silindi.");
       } catch (error) {
@@ -376,7 +377,7 @@ function Reviews() {
                  </td>
                                   <td style={{ padding: 12 }}>
                    <button
-                     onClick={() => handleDeleteReview(review.id, review.companyName)}
+                     onClick={() => handleDeleteReview(review.id, review.companyName, review.companyId)}
                      disabled={deletingReview === review.id}
                      style={{
                        padding: "6px 12px",
