@@ -1,20 +1,13 @@
-const { onRequest } = require('firebase-functions/v2/https');
-const { setGlobalOptions } = require('firebase-functions/v2');
+const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// Global options
-setGlobalOptions({
-  maxInstances: 100,
-  region: 'europe-west1'
-});
-
 // 🏢 Firma onay/red bildirimi fonksiyonu
-exports.sendCompanyApprovalNotice = onRequest({
-  invoker: 'public'
-}, async (req, res) => {
-    // Basit CORS header'ları
+exports.sendCompanyApprovalNotice = functions
+  .region('europe-west1')
+  .https.onRequest(async (req, res) => {
+    // CORS header'ları
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type');
@@ -104,4 +97,4 @@ exports.sendCompanyApprovalNotice = onRequest({
       console.error("❌ Firma onay bildirimi gönderilirken hata:", error);
       res.status(500).json({ error: 'Bildirim gönderilirken hata oluştu', details: error.message });
     }
-});
+  });
