@@ -35,6 +35,19 @@ function Companies() {
   const [editValue, setEditValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchField, setSearchField] = useState<string>('all');
+  
+  // Firma onay red sebebi modal state'leri
+  const [rejectionModal, setRejectionModal] = useState<{
+    isOpen: boolean;
+    companyId: string | null;
+    companyName: string;
+    reason: string;
+  }>({
+    isOpen: false,
+    companyId: null,
+    companyName: '',
+    reason: ''
+  });
 
   
 
@@ -270,7 +283,23 @@ function Companies() {
   const handleApprovalChange = async (companyId: string, approved: boolean) => {
     console.log("handleApprovalChange called with:", { companyId, approved });
     
-    // Direkt işlemi yap
+    // Eğer onaylanmıyorsa, red sebebi modal'ını aç
+    if (!approved) {
+      const company = companies.find(c => c.id === companyId);
+      if (company) {
+        setRejectionModal({
+          isOpen: true,
+          companyId: companyId,
+          companyName: company.company || company.companyTitle || 'Firma',
+          reason: ''
+        });
+        setOpenDropdown(null);
+        setDropdownPosition(null);
+        return;
+      }
+    }
+    
+    // Onaylanıyorsa direkt işlemi yap
     await processApprovalChange(companyId, approved, '');
   };
 
@@ -357,11 +386,36 @@ function Companies() {
           console.log("👤 Kullanıcı:", company.companyOfficer);
           console.log("🏢 Firma:", companyName);
           
-          // Başarılı bildirim
-          if (approved) {
-            alert(`✅ Firma onaylandı!`);
-          } else {
-            alert(`❌ Firma onaylanmadı!`);
+          // Gerçek bildirim gönderme işlemi
+          try {
+            // Firebase Functions kullanarak bildirim gönder
+            const { httpsCallable } = await import('firebase/functions');
+            const { functions } = await import('../firebase');
+            const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
+            
+            const response = await sendCompanyApprovalNotice({
+              companyId: companyId,
+              approvalStatus: approved ? 'approved' : 'rejected',
+              reason: reason || ""
+            });
+            
+            console.log("📨 Bildirim gönderildi:", response);
+            
+            // Başarılı bildirim
+            if (approved) {
+              alert(`✅ Firma onaylandı!\n\n📨 Bildirim başarıyla gönderildi`);
+            } else {
+              alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim başarıyla gönderildi`);
+            }
+          } catch (sendError: any) {
+            console.error("❌ Bildirim gönderilirken hata:", sendError);
+            
+            // Bildirim hatası olsa bile onay durumu değişti
+            if (approved) {
+              alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${sendError.message || 'Bilinmeyen hata'}`);
+            } else {
+              alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${sendError.message || 'Bilinmeyen hata'}`);
+            }
           }
         } catch (sendError: any) {
           console.error("❌ Bildirim hazırlanırken hata:", sendError);
@@ -529,6 +583,22 @@ function Companies() {
     } else if (e.key === 'Escape') {
       handleCancelEdit();
     }
+  };
+
+  const handleRejectionSubmit = async () => {
+    if (!rejectionModal.companyId) return;
+    
+    if (!rejectionModal.reason.trim()) {
+      alert("❌ Lütfen red sebebini belirtin!");
+      return;
+    }
+    
+    await processApprovalChange(rejectionModal.companyId, false, rejectionModal.reason);
+    setRejectionModal({ isOpen: false, companyId: null, companyName: '', reason: '' });
+  };
+
+  const handleRejectionCancel = () => {
+    setRejectionModal({ isOpen: false, companyId: null, companyName: '', reason: '' });
   };
 
 
@@ -1209,6 +1279,103 @@ function Companies() {
         </div>
       )}
 
+      {/* Firma Onay Red Sebebi Modal */}
+      {rejectionModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999999
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+          }}>
+            <h3 style={{
+              margin: '0 0 16px 0',
+              color: '#dc3545',
+              fontSize: '18px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              ❌ Firma Onayını Reddet
+            </h3>
+            
+            <p style={{
+              margin: '0 0 16px 0',
+              color: '#666',
+              fontSize: '14px'
+            }}>
+              <strong>{rejectionModal.companyName}</strong> firmasının onayını reddetmek üzeresiniz.
+              Lütfen red sebebini belirtin:
+            </p>
+            
+            <textarea
+              value={rejectionModal.reason}
+              onChange={(e) => setRejectionModal(prev => ({ ...prev, reason: e.target.value }))}
+              placeholder="Red sebebini buraya yazın... (Örn: Eksik belge, yanlış bilgi, vb.)"
+              style={{
+                width: '100%',
+                minHeight: '120px',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+                marginBottom: '16px'
+              }}
+              autoFocus
+            />
+            
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'flex-end'
+            }}>
+              <button
+                onClick={handleRejectionCancel}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleRejectionSubmit}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Reddet ve Bildirim Gönder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
