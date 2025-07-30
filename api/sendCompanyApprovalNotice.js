@@ -1,17 +1,34 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
 
-// 🏢 Firma onay/red bildirimi fonksiyonu
-exports.sendCompanyApprovalNotice = functions
-  .https.onRequest(async (req, res) => {
-  // CORS header'ları - v1 için
-  res.set('Access-Control-Allow-Origin', 'https://adminoray.yakalahadi.com');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+// Firebase Admin SDK'yı başlat
+if (!getApps().length) {
+  initializeApp({
+    credential: cert({
+      projectId: "yakalahadi-333ca",
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+    })
+  });
+}
+
+const db = getFirestore();
+
+export default async function handler(req, res) {
+  // CORS header'ları
+  res.setHeader('Access-Control-Allow-Origin', 'https://adminoray.yakalahadi.com');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
   // OPTIONS request için
   if (req.method === 'OPTIONS') {
-    res.status(200).send('');
+    res.status(200).end();
+    return;
+  }
+  
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
     return;
   }
   
@@ -24,7 +41,7 @@ exports.sendCompanyApprovalNotice = functions
     }
     
     // Firma bilgilerini al
-    const companyDoc = await admin.firestore().collection('companies').doc(companyId).get();
+    const companyDoc = await db.collection('companies').doc(companyId).get();
     
     if (!companyDoc.exists) {
       res.status(404).json({ error: 'Firma bulunamadı' });
@@ -35,7 +52,7 @@ exports.sendCompanyApprovalNotice = functions
     const companyName = company.company || company.companyTitle || "Firma";
     
     // Company ID'si ile user'ı bul (aynı ID kullanılıyor)
-    const userDoc = await admin.firestore().collection('users').doc(companyId).get();
+    const userDoc = await db.collection('users').doc(companyId).get();
     
     if (!userDoc.exists) {
       res.status(404).json({ error: 'Kullanıcı bulunamadı' });
@@ -78,7 +95,7 @@ exports.sendCompanyApprovalNotice = functions
     };
     
     // Bildirimi gönder
-    const result = await admin.messaging().send(message);
+    const result = await getMessaging().send(message);
     
     console.log(`📨 ${companyName} için ${approvalStatus === 'approved' ? 'onay' : 'red'} bildirimi gönderildi:`, result);
     
@@ -94,4 +111,4 @@ exports.sendCompanyApprovalNotice = functions
     console.error("❌ Firma onay bildirimi gönderilirken hata:", error);
     res.status(500).json({ error: 'Bildirim gönderilirken hata oluştu', details: error.message });
   }
-}); 
+} 

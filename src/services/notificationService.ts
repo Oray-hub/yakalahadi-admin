@@ -1,7 +1,7 @@
 // Notification Service for Firebase Cloud Functions
 export class NotificationService {
-  // Firebase Functions v2 URL'si (us-central1)
-  private static readonly CLOUD_FUNCTION_URL = 'https://sendcompanyapprovalnotice-6uoqecqeea-uc.a.run.app';
+  // Vercel API Route URL'si
+  private static readonly CLOUD_FUNCTION_URL = '/api/sendCompanyApprovalNotice';
 
   // Firma onay/red bildirimi gönder
   static async sendCompanyApprovalNotice(

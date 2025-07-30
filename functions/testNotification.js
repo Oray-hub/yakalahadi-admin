@@ -4,8 +4,8 @@ const admin = require('firebase-admin');
 // 🧪 Test bildirimi fonksiyonu
 exports.sendTestNotification = functions
   .https.onRequest(async (req, res) => {
-  // CORS header'ları - Firebase Functions v2 için
-  res.set('Access-Control-Allow-Origin', '*');
+  // CORS header'ları - v1 için
+  res.set('Access-Control-Allow-Origin', 'https://adminoray.yakalahadi.com');
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
