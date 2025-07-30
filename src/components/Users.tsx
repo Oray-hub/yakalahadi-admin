@@ -320,51 +320,67 @@ function Users() {
         display: "flex",
         gap: "12px",
         marginBottom: "16px",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "space-between"
       }}>
-        <select
-          value={searchField}
-          onChange={(e) => setSearchField(e.target.value)}
-          style={{
-            padding: "4px 6px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "11px",
-            minWidth: "120px"
-          }}
-        >
-          <option value="all">🔍 Tüm Alanlarda Ara</option>
-          <option value="name">👤 Kullanıcı Adı</option>
-          <option value="email">📧 E-posta</option>
-          <option value="emailVerified">✅ E-posta Durumu</option>
-          <option value="privacyAccepted">🔒 Gizlilik Kabul</option>
-          <option value="termsAccepted">📋 Şartlar Kabul</option>
-          <option value="claimedCount">🎯 Yakalanan Kampanya</option>
-          <option value="notificationsStatus">🔔 QR Kod Durumu</option>
-          <option value="selectedCategories">📂 Kategoriler</option>
-        </select>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value)}
+            style={{
+              padding: "4px 6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              fontSize: "11px",
+              minWidth: "120px"
+            }}
+          >
+            <option value="all">🔍 Tüm Alanlarda Ara</option>
+            <option value="name">👤 Kullanıcı Adı</option>
+            <option value="email">📧 E-posta</option>
+            <option value="emailVerified">✅ E-posta Durumu</option>
+            <option value="privacyAccepted">🔒 Gizlilik Kabul</option>
+            <option value="termsAccepted">📋 Şartlar Kabul</option>
+            <option value="claimedCount">🎯 Yakalanan Kampanya</option>
+            <option value="notificationsStatus">🔔 QR Kod Durumu</option>
+            <option value="selectedCategories">📂 Kategoriler</option>
+          </select>
+          
+          <input
+            type="text"
+            placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
+              searchField === 'name' ? 'Kullanıcı adı ara...' :
+              searchField === 'email' ? 'E-posta ara...' :
+              searchField === 'emailVerified' ? 'E-posta durumu ara...' :
+              searchField === 'privacyAccepted' ? 'Gizlilik kabul ara...' :
+              searchField === 'termsAccepted' ? 'Şartlar kabul ara...' :
+              searchField === 'claimedCount' ? 'Yakalanan kampanya ara...' :
+              searchField === 'notificationsStatus' ? 'QR kod durumu ara...' :
+              searchField === 'selectedCategories' ? 'Kategoriler ara...' : 'Ara...'}`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "4px 6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              fontSize: "11px",
+              minWidth: "120px"
+            }}
+          />
+        </div>
         
-        <input
-          type="text"
-          placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
-            searchField === 'name' ? 'Kullanıcı adı ara...' :
-            searchField === 'email' ? 'E-posta ara...' :
-            searchField === 'emailVerified' ? 'E-posta durumu ara...' :
-            searchField === 'privacyAccepted' ? 'Gizlilik kabul ara...' :
-            searchField === 'termsAccepted' ? 'Şartlar kabul ara...' :
-            searchField === 'claimedCount' ? 'Yakalanan kampanya ara...' :
-            searchField === 'notificationsStatus' ? 'QR kod durumu ara...' :
-            searchField === 'selectedCategories' ? 'Kategoriler ara...' : 'Ara...'}`}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: "4px 6px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "11px",
-            minWidth: "120px"
-          }}
-        />
+        {/* Numaratör */}
+        <div style={{
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: "#333",
+          padding: "4px 8px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "4px",
+          border: "1px solid #dee2e6"
+        }}>
+          {filteredUsers.length}
+        </div>
       </div>
 
       {/* Scroll Tablo Kısmı */}

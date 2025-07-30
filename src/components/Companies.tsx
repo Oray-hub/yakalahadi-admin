@@ -565,57 +565,73 @@ function Companies() {
         display: "flex",
         gap: "12px",
         marginBottom: "16px",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "space-between"
       }}>
-        <select
-          value={searchField}
-          onChange={(e) => setSearchField(e.target.value)}
-          style={{
-            padding: "4px 6px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "11px",
-            minWidth: "120px"
-          }}
-        >
-          <option value="all">🔍 Tüm Alanlarda Ara</option>
-          <option value="company">🏢 Firma Adı</option>
-          <option value="companyTitle">📋 Firma Başlığı</option>
-          <option value="companyOfficer">👤 Firma Yetkilisi</option>
-          <option value="vkn">🏛️ VKN</option>
-          <option value="firmType">🏭 Firma Türü</option>
-          <option value="category">📂 Kategori</option>
-          <option value="approved">✅ Onay Durumu</option>
-          <option value="phone">📞 Telefon</option>
-          <option value="email">📧 Kayıtlı Mail</option>
-          <option value="averageRating">⭐ Ortalama Puan</option>
-          <option value="credits">💰 Krediler</option>
-        </select>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value)}
+            style={{
+              padding: "4px 6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              fontSize: "11px",
+              minWidth: "120px"
+            }}
+          >
+            <option value="all">🔍 Tüm Alanlarda Ara</option>
+            <option value="company">🏢 Firma Adı</option>
+            <option value="companyTitle">📋 Firma Başlığı</option>
+            <option value="companyOfficer">👤 Firma Yetkilisi</option>
+            <option value="vkn">🏛️ VKN</option>
+            <option value="firmType">🏭 Firma Türü</option>
+            <option value="category">📂 Kategori</option>
+            <option value="approved">✅ Onay Durumu</option>
+            <option value="phone">📞 Telefon</option>
+            <option value="email">📧 Kayıtlı Mail</option>
+            <option value="averageRating">⭐ Ortalama Puan</option>
+            <option value="credits">💰 Krediler</option>
+          </select>
+          
+          <input
+            type="text"
+            placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
+              searchField === 'company' ? 'Firma adı ara...' :
+              searchField === 'companyTitle' ? 'Firma başlığı ara...' :
+              searchField === 'companyOfficer' ? 'Firma yetkilisi ara...' :
+              searchField === 'vkn' ? 'VKN ara...' :
+              searchField === 'approved' ? 'Onay durumu ara...' :
+              searchField === 'firmType' ? 'Firma türü ara...' :
+              searchField === 'category' ? 'Kategori ara...' :
+              searchField === 'phone' ? 'Telefon ara...' :
+              searchField === 'email' ? 'Kayıtlı mail ara...' :
+              searchField === 'averageRating' ? 'Ortalama puan ara...' :
+              searchField === 'credits' ? 'Krediler ara...' : 'Ara...'}`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "4px 6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              fontSize: "11px",
+              minWidth: "120px"
+            }}
+          />
+        </div>
         
-        <input
-          type="text"
-          placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
-            searchField === 'company' ? 'Firma adı ara...' :
-            searchField === 'companyTitle' ? 'Firma başlığı ara...' :
-            searchField === 'companyOfficer' ? 'Firma yetkilisi ara...' :
-            searchField === 'vkn' ? 'VKN ara...' :
-            searchField === 'approved' ? 'Onay durumu ara...' :
-            searchField === 'firmType' ? 'Firma türü ara...' :
-            searchField === 'category' ? 'Kategori ara...' :
-            searchField === 'phone' ? 'Telefon ara...' :
-            searchField === 'email' ? 'Kayıtlı mail ara...' :
-            searchField === 'averageRating' ? 'Ortalama puan ara...' :
-            searchField === 'credits' ? 'Krediler ara...' : 'Ara...'}`}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: "4px 6px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "11px",
-            minWidth: "120px"
-          }}
-        />
+        {/* Numaratör */}
+        <div style={{
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: "#333",
+          padding: "4px 8px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "4px",
+          border: "1px solid #dee2e6"
+        }}>
+          {filteredCompanies.length}
+        </div>
       </div>
 
       {/* Scroll Tablo Kısmı */}

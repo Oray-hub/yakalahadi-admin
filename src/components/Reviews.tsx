@@ -299,43 +299,59 @@ function Reviews() {
         display: "flex",
         gap: "12px",
         marginBottom: "16px",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "space-between"
       }}>
-        <select
-          value={searchField}
-          onChange={(e) => setSearchField(e.target.value)}
-          style={{
-            padding: "4px 6px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "11px",
-            minWidth: "120px"
-          }}
-        >
-          <option value="all">🔍 Tüm Alanlarda Ara</option>
-          <option value="companyName">🏢 Firma Adı</option>
-          <option value="userName">👤 Kullanıcı Adı</option>
-          <option value="comment">💬 Yorum</option>
-          <option value="rating">⭐ Puan</option>
-        </select>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value)}
+            style={{
+              padding: "4px 6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              fontSize: "11px",
+              minWidth: "120px"
+            }}
+          >
+            <option value="all">🔍 Tüm Alanlarda Ara</option>
+            <option value="companyName">🏢 Firma Adı</option>
+            <option value="userName">👤 Kullanıcı Adı</option>
+            <option value="comment">💬 Yorum</option>
+            <option value="rating">⭐ Puan</option>
+          </select>
+          
+          <input
+            type="text"
+            placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
+              searchField === 'companyName' ? 'Firma adı ara...' :
+              searchField === 'userName' ? 'Kullanıcı adı ara...' :
+              searchField === 'comment' ? 'Yorum ara...' :
+              searchField === 'rating' ? 'Puan ara...' : 'Ara...'}`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "4px 6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              fontSize: "11px",
+              minWidth: "120px"
+            }}
+          />
+        </div>
         
-        <input
-          type="text"
-          placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
-            searchField === 'companyName' ? 'Firma adı ara...' :
-            searchField === 'userName' ? 'Kullanıcı adı ara...' :
-            searchField === 'comment' ? 'Yorum ara...' :
-            searchField === 'rating' ? 'Puan ara...' : 'Ara...'}`}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: "4px 6px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "11px",
-            minWidth: "120px"
-          }}
-        />
+        {/* Numaratör */}
+        <div style={{
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: "#333",
+          padding: "4px 8px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "4px",
+          border: "1px solid #dee2e6"
+        }}>
+          {filteredReviews.length}
+        </div>
       </div>
 
       {/* Scroll Tablo Kısmı */}
