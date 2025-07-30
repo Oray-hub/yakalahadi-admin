@@ -6,6 +6,7 @@ import Users from "./components/Users";
 import Companies from "./components/Companies";
 import Reviews from "./components/Reviews";
 import Accounting from "./components/Accounting";
+import Export from "./components/Export";
 
 import "./firebase"; // Firebase'i başlat
 
@@ -207,7 +208,7 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/accounting" element={<Accounting />} />
-            <Route path="/export" element={<Placeholder title="Dışa Aktar" />} />
+            <Route path="/export" element={<Export />} />
 
             <Route path="*" element={<Navigate to="/users" />} />
           </Routes>
