@@ -112,7 +112,8 @@ function Reviews() {
         alert("Yorum başarıyla silindi.");
       } catch (error) {
         console.error("Yorum silinirken hata:", error);
-        alert(`Yorum silinirken bir hata oluştu: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+        alert(`Yorum silinirken bir hata oluştu: ${errorMessage}`);
       } finally {
         setDeletingReview(null);
       }
