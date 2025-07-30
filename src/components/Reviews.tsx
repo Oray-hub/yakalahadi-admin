@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 
@@ -100,23 +100,15 @@ function Reviews() {
       try {
         const db = getFirestore();
         
-        // Debug: Mevcut kullanıcı bilgilerini kontrol et
-        const auth = getAuth();
-        const currentUser = auth.currentUser;
-        console.log("Mevcut kullanıcı:", currentUser?.email);
-        console.log("Silinecek yorum detayları:", { 
-          reviewId, 
-          companyId, 
-          companyName,
-          fullPath: `companies/${companyId}/reviews/${reviewId}`
-        });
-        
-        // Doğru koleksiyon yolunu kullan: companies/{companyId}/reviews/{reviewId}
-        console.log("Firebase'den silme işlemi başlatılıyor...");
+        // Yorumu sil
         await deleteDoc(doc(db, "companies", companyId, "reviews", reviewId));
-        console.log("✅ Firebase'den silme işlemi başarılı!");
+        
+        // Firma yıldızlarını yeniden hesapla
+        await recalculateCompanyRating(companyId);
+        
+        // UI'dan yorumu kaldır
         setReviews(reviews.filter(review => review.id !== reviewId));
-        alert("Yorum başarıyla silindi.");
+        alert("Yorum başarıyla silindi ve firma puanı güncellendi.");
       } catch (error) {
         console.error("Yorum silinirken hata:", error);
         const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
@@ -124,6 +116,44 @@ function Reviews() {
       } finally {
         setDeletingReview(null);
       }
+    }
+  };
+
+  // Firma yıldızlarını yeniden hesaplama fonksiyonu
+  const recalculateCompanyRating = async (companyId: string) => {
+    try {
+      const db = getFirestore();
+      
+      // Firma için tüm yorumları getir
+      const reviewsRef = collection(db, "companies", companyId, "reviews");
+      const reviewsSnapshot = await getDocs(reviewsRef);
+      
+      let totalRating = 0;
+      let reviewCount = 0;
+      
+      // Tüm yorumların puanlarını topla
+      reviewsSnapshot.forEach((doc) => {
+        const reviewData = doc.data();
+        if (reviewData.rating && typeof reviewData.rating === 'number') {
+          totalRating += reviewData.rating;
+          reviewCount++;
+        }
+      });
+      
+      // Ortalama puanı hesapla
+      const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+      
+      // Firma dokümanını güncelle
+      const companyRef = doc(db, "companies", companyId);
+      await updateDoc(companyRef, {
+        averageRating: Math.round(averageRating * 10) / 10, // 1 ondalık basamak
+        ratingCount: reviewCount,
+        totalScore: totalRating
+      });
+      
+      console.log(`Firma ${companyId} puanı güncellendi: ${averageRating} (${reviewCount} yorum)`);
+    } catch (error) {
+      console.error("Firma puanı güncellenirken hata:", error);
     }
   };
 
