@@ -8,6 +8,12 @@ service cloud.firestore {
              request.auth.token.email == "admin@yakalahadi.com";
     }
 
+    // Company Approvals - Bildirim tetikleyicileri için
+    match /companyApprovals/{approvalId} {
+      allow create: if isAdmin(); // Sadece admin oluşturabilir
+      allow read, update, delete: if isAdmin(); // Sadece admin yönetebilir
+    }
+
     // Kullanıcılar
     match /users/{userId} {
       allow create, update: if request.auth != null
