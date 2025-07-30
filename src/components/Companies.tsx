@@ -388,18 +388,21 @@ function Companies() {
           
           // Gerçek bildirim gönderme işlemi
           try {
-            // Firebase Functions kullanarak bildirim gönder
-            const { httpsCallable } = await import('firebase/functions');
-            const { functions } = await import('../firebase');
-            const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
-            
-            const response = await sendCompanyApprovalNotice({
-              companyId: companyId,
-              approvalStatus: approved ? 'approved' : 'rejected',
-              reason: reason || ""
+            // Direkt HTTP request ile bildirim gönder
+            const response = await fetch('https://us-central1-yakalahadi-333ca.cloudfunctions.net/sendCompanyApprovalNotice', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                companyId: companyId,
+                approvalStatus: approved ? 'approved' : 'rejected',
+                reason: reason || ""
+              })
             });
             
-            console.log("📨 Bildirim gönderildi:", response);
+            const result = await response.json();
+            console.log("📨 Bildirim gönderildi:", result);
             
             // Başarılı bildirim
             if (approved) {

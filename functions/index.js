@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const cors = require('cors')({ origin: true });
 
 admin.initializeApp();
 
@@ -10,19 +11,32 @@ exports.sendCompanyApprovalNotice = functions
     maxInstances: 3000
   })
   .region('us-central1')
-  .https.onCall(async (data, context) => {
-  try {
-    const { companyId, approvalStatus, reason } = data;
+  .https.onRequest(async (req, res) => {
+    // CORS header'larını ekle
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    
+    // OPTIONS request için CORS preflight
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
+      return;
+    }
+    
+    try {
+      const { companyId, approvalStatus, reason } = req.body;
     
     if (!companyId || !approvalStatus) {
-      throw new functions.https.HttpsError('invalid-argument', 'Gerekli parametreler eksik');
+      res.status(400).json({ error: 'Gerekli parametreler eksik' });
+      return;
     }
     
     // Firma bilgilerini al
     const companyDoc = await admin.firestore().collection('companies').doc(companyId).get();
     
     if (!companyDoc.exists) {
-      throw new functions.https.HttpsError('not-found', 'Firma bulunamadı');
+      res.status(404).json({ error: 'Firma bulunamadı' });
+      return;
     }
     
     const company = companyDoc.data();
@@ -32,14 +46,16 @@ exports.sendCompanyApprovalNotice = functions
     const userDoc = await admin.firestore().collection('users').doc(companyId).get();
     
     if (!userDoc.exists) {
-      throw new functions.https.HttpsError('not-found', 'Kullanıcı bulunamadı');
+      res.status(404).json({ error: 'Kullanıcı bulunamadı' });
+      return;
     }
     
     const userData = userDoc.data();
     const fcmToken = userData.fcmToken;
     
     if (!fcmToken) {
-      throw new functions.https.HttpsError('invalid-argument', 'FCM token bulunamadı');
+      res.status(400).json({ error: 'FCM token bulunamadı' });
+      return;
     }
     
     // Bildirim mesajını hazırla
@@ -74,16 +90,16 @@ exports.sendCompanyApprovalNotice = functions
     
     console.log(`📨 ${companyName} için ${approvalStatus === 'approved' ? 'onay' : 'red'} bildirimi gönderildi:`, result);
     
-    return { 
+    res.status(200).json({ 
       success: true, 
       message: "Bildirim başarıyla gönderildi",
       companyName: companyName,
       approvalStatus: approvalStatus,
       messageId: result
-    };
+    });
     
   } catch (error) {
     console.error("❌ Firma onay bildirimi gönderilirken hata:", error);
-    throw new functions.https.HttpsError('internal', 'Bildirim gönderilirken hata oluştu', error);
+    res.status(500).json({ error: 'Bildirim gönderilirken hata oluştu', details: error.message });
   }
 });
