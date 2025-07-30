@@ -1,6 +1,7 @@
 {
   "functions": {
-    "source": "functions"
+    "source": "functions",
+    "region": "europe-west1"
   },
   "firestore": {
     "rules": "firestore.rules",

@@ -8,4 +8,4 @@ export const firebaseConfig = {
 };
 
 // Firebase Functions region
-export const functionsRegion = 'us-central1'; 
+export const functionsRegion = 'europe-west1'; 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { functionsRegion } from "../firebaseConfig";
+import { functions } from "../firebase";
 
 interface Company {
   id: string;
@@ -304,9 +304,8 @@ function Companies() {
       
       // Bildirim gönderme
       try {
-        const { getFunctions, httpsCallable } = await import('firebase/functions');
-        const functions = getFunctions();
-        const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice', { region: functionsRegion });
+        const { httpsCallable } = await import('firebase/functions');
+        const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
         
         const result = await sendCompanyApprovalNotice({
           companyId: companyId,
