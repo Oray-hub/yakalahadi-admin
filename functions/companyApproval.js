@@ -3,13 +3,7 @@ const admin = require('firebase-admin');
 
 // 🏢 Firma onay/red bildirimi fonksiyonu
 exports.sendCompanyApprovalNotice = onRequest({
-  cors: [
-    'https://adminoray.yakalahadi.com',
-    'https://yakalahadi.com',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://yakalahadi-admin.vercel.app'
-  ]
+  cors: true // Tüm origin'lere izin ver
 }, async (req, res) => {
   try {
     console.log("📥 Request received:", req.body);
