@@ -1,7 +1,7 @@
 // Notification Service for Firebase Cloud Functions
 export class NotificationService {
-  // Firebase Functions v1 URL'si
-  private static readonly CLOUD_FUNCTION_URL = 'https://europe-west1-yakalahadi-333ca.cloudfunctions.net/sendCompanyApprovalNotice';
+  // Firebase Functions v1 URL'si (us-central1)
+  private static readonly CLOUD_FUNCTION_URL = 'https://us-central1-yakalahadi-333ca.cloudfunctions.net/sendCompanyApprovalNotice';
 
   // Firma onay/red bildirimi gönder
   static async sendCompanyApprovalNotice(

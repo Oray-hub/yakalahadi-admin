@@ -4,9 +4,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 // 🏢 Firma onay/red bildirimi fonksiyonu
-exports.sendCompanyApprovalNotice = functions
-  .region('europe-west1')
-  .https.onRequest(async (req, res) => {
+exports.sendCompanyApprovalNotice = functions.https.onRequest(async (req, res) => {
     // CORS header'ları
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
