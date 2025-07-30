@@ -372,20 +372,6 @@ function Companies() {
       } catch (notificationError: any) {
         console.error("❌ Bildirim gönderilirken hata:", notificationError);
         
-        // Hata detaylarını al
-        let errorMessage = "Bilinmeyen hata";
-        if (notificationError.code === 'functions/unauthenticated') {
-          errorMessage = "Oturum süresi dolmuş. Lütfen tekrar giriş yapın.";
-        } else if (notificationError.code === 'functions/invalid-argument') {
-          errorMessage = "Geçersiz parametreler gönderildi.";
-        } else if (notificationError.code === 'functions/not-found') {
-          errorMessage = "Firma bulunamadı.";
-        } else if (notificationError.code === 'functions/internal') {
-          errorMessage = "Sunucu hatası oluştu.";
-        } else if (notificationError.message) {
-          errorMessage = notificationError.message;
-        }
-        
         // Bildirim hatası olsa bile onay durumu değişti
         if (approved) {
           alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Missing or insufficient permissions.`);
