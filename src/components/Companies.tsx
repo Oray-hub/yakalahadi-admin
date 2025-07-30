@@ -408,6 +408,55 @@ function Companies() {
     }
   };
 
+  // Firma yıldızlarını yeniden hesaplama fonksiyonu
+  const recalculateCompanyRating = async (companyId: string) => {
+    try {
+      const db = getFirestore();
+      
+      // Firma için tüm yorumları getir
+      const reviewsRef = collection(db, "companies", companyId, "reviews");
+      const reviewsSnapshot = await getDocs(reviewsRef);
+      
+      let totalRating = 0;
+      let reviewCount = 0;
+      
+      console.log(`Firma ${companyId} için yorum sayısı: ${reviewsSnapshot.size}`);
+      
+      // Tüm yorumların puanlarını topla
+      reviewsSnapshot.forEach((doc) => {
+        const reviewData = doc.data();
+        console.log(`Yorum ${doc.id}:`, reviewData);
+        if (reviewData.rating && typeof reviewData.rating === 'number') {
+          totalRating += reviewData.rating;
+          reviewCount++;
+        }
+      });
+      
+      // Ortalama puanı hesapla
+      const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+      
+      console.log(`Hesaplama: Toplam puan: ${totalRating}, Yorum sayısı: ${reviewCount}, Ortalama: ${averageRating}`);
+      
+      // Firma dokümanını güncelle
+      const companyRef = doc(db, "companies", companyId);
+      await updateDoc(companyRef, {
+        averageRating: Math.round(averageRating * 10) / 10, // 1 ondalık basamak
+        ratingCount: reviewCount,
+        totalScore: totalRating
+      });
+      
+      console.log(`✅ Firma ${companyId} puanı güncellendi: ${averageRating} (${reviewCount} yorum)`);
+      
+      // Firmaları yeniden yükle
+      fetchCompanies();
+      
+      alert(`Firma puanı güncellendi: ${Math.round(averageRating * 10) / 10} (${reviewCount} yorum)`);
+    } catch (error) {
+      console.error("Firma puanı güncellenirken hata:", error);
+      alert("Firma puanı güncellenirken bir hata oluştu.");
+    }
+  };
+
   const filteredCompanies = companies.filter(company => {
     // Normal arama filtresi
     if (searchTerm) {

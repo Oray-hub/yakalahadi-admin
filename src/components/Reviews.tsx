@@ -139,18 +139,16 @@ function Reviews() {
         }
       });
       
-      // Ortalama puanı hesapla
-      const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+      // Ortalama puanı hesapla (hiç yorum yoksa 0)
+      const averageRating = 0;
       
-      // Firma dokümanını güncelle
+      // Firma dokümanını güncelle - hiç yorum yoksa sıfırla
       const companyRef = doc(db, "companies", companyId);
       await updateDoc(companyRef, {
-        averageRating: Math.round(averageRating * 10) / 10, // 1 ondalık basamak
+        averageRating: averageRating,
         ratingCount: reviewCount,
         totalScore: totalRating
       });
-      
-      console.log(`Firma ${companyId} puanı güncellendi: ${averageRating} (${reviewCount} yorum)`);
     } catch (error) {
       console.error("Firma puanı güncellenirken hata:", error);
     }
