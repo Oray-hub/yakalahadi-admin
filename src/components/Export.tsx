@@ -61,6 +61,13 @@ interface Review {
 function Export() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>({});
+  const [dateRanges, setDateRanges] = useState({
+    users: { start: '', end: '' },
+    companies: { start: '', end: '' },
+    campaigns: { start: '', end: '' },
+    reviews: { start: '', end: '' },
+    accounting: { start: '', end: '' }
+  });
 
   // Verileri yükle
   const loadData = async () => {
@@ -108,6 +115,41 @@ function Export() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Tarih aralığı güncelleme fonksiyonu
+  const updateDateRange = (type: string, field: 'start' | 'end', value: string) => {
+    setDateRanges(prev => ({
+      ...prev,
+      [type]: {
+        ...prev[type as keyof typeof prev],
+        [field]: value
+      }
+    }));
+  };
+
+  // Tarih filtreleme fonksiyonu
+  const filterByDateRange = (data: any[], dateField: string, startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return data;
+    
+    const start = new Date(startDate + 'T00:00:00');
+    const end = new Date(endDate + 'T23:59:59');
+    
+    return data.filter(item => {
+      const itemDate = item[dateField];
+      if (!itemDate) return false;
+      
+      let date: Date;
+      if (itemDate.toDate) {
+        date = itemDate.toDate();
+      } else if (itemDate instanceof Date) {
+        date = itemDate;
+      } else {
+        date = new Date(itemDate);
+      }
+      
+      return date >= start && date <= end;
+    });
+  };
 
   // Excel/CSV Export fonksiyonları
   const exportToExcel = (data: any[], filename: string) => {
@@ -168,7 +210,8 @@ function Export() {
 
   // Kullanıcı Export
   const exportUsers = (format: 'excel' | 'csv' | 'pdf') => {
-    const userData = data.users?.map((user: User) => ({
+    const filteredUsers = filterByDateRange(data.users || [], 'createdAt', dateRanges.users.start, dateRanges.users.end);
+    const userData = filteredUsers.map((user: User) => ({
       'Kullanıcı ID': user.id,
       'Ad Soyad': user.name || 'Belirtilmemiş',
       'E-posta': user.email,
@@ -192,7 +235,8 @@ function Export() {
 
   // Firma Export
   const exportCompanies = (format: 'excel' | 'csv' | 'pdf') => {
-    const companyData = data.companies?.map((company: Company) => ({
+    const filteredCompanies = filterByDateRange(data.companies || [], 'createdAt', dateRanges.companies.start, dateRanges.companies.end);
+    const companyData = filteredCompanies.map((company: Company) => ({
       'Firma ID': company.id,
       'Firma Adı': company.company,
       'Kategori': company.category,
@@ -215,7 +259,8 @@ function Export() {
 
   // Kampanya Export
   const exportCampaigns = (format: 'excel' | 'csv' | 'pdf') => {
-    const campaignData = data.campaigns?.map((campaign: Campaign) => ({
+    const filteredCampaigns = filterByDateRange(data.campaigns || [], 'createdAt', dateRanges.campaigns.start, dateRanges.campaigns.end);
+    const campaignData = filteredCampaigns.map((campaign: Campaign) => ({
       'Kampanya ID': campaign.id,
       'Başlık': campaign.title,
       'Açıklama': campaign.description,
@@ -242,7 +287,8 @@ function Export() {
 
   // Yorum Export
   const exportReviews = (format: 'excel' | 'csv' | 'pdf') => {
-    const reviewData = data.reviews?.map((review: Review) => ({
+    const filteredReviews = filterByDateRange(data.reviews || [], 'createdAt', dateRanges.reviews.start, dateRanges.reviews.end);
+    const reviewData = filteredReviews.map((review: Review) => ({
       'Yorum ID': review.id,
       'Kullanıcı Adı': review.userName,
       'Firma Adı': review.companyName,
@@ -267,12 +313,19 @@ function Export() {
       const db = getFirestore();
       const companiesSnapshot = await getDocs(collection(db, "companies"));
       
+      // Firmaları tarih aralığına göre filtrele
+      const companies = companiesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      const filteredCompanies = filterByDateRange(companies, 'creditPurchaseDate', dateRanges.accounting.start, dateRanges.accounting.end);
+      
              let totalCredits = 0;
        let totalEarnings = 0;
        const monthlyData: { [key: string]: { purchasedCredits: number; credits: number; earnings: number } } = {};
 
-             for (const companyDoc of companiesSnapshot.docs) {
-         const companyData = companyDoc.data();
+             for (const companyData of filteredCompanies) {
          const totalPurchasedCredits = companyData.totalPurchasedCredits || 0;
         
         if (totalPurchasedCredits > 0) {
@@ -345,6 +398,51 @@ function Export() {
     }
   };
 
+  // Tarih aralığı bileşeni
+  const DateRangeFilter = ({ type }: { type: string }) => (
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '8px', 
+        flexWrap: 'wrap',
+        padding: '8px',
+        backgroundColor: '#fff',
+        borderRadius: '6px',
+        border: '1px solid #dee2e6',
+        fontSize: '12px'
+      }}>
+        <span style={{ fontWeight: '500', color: '#495057' }}>Tarih Aralığı:</span>
+        
+        <input
+          type="date"
+          value={dateRanges[type as keyof typeof dateRanges].start}
+          onChange={(e) => updateDateRange(type, 'start', e.target.value)}
+          style={{
+            padding: '4px 8px',
+            border: '1px solid #ced4da',
+            borderRadius: '4px',
+            fontSize: '12px'
+          }}
+        />
+        
+        <span style={{ color: '#6c757d' }}>-</span>
+        
+        <input
+          type="date"
+          value={dateRanges[type as keyof typeof dateRanges].end}
+          onChange={(e) => updateDateRange(type, 'end', e.target.value)}
+          style={{
+            padding: '4px 8px',
+            border: '1px solid #ced4da',
+            borderRadius: '4px',
+            fontSize: '12px'
+          }}
+        />
+      </div>
+    </div>
+  );
+
   // Export butonu bileşeni
   const ExportButton = ({ label, onClick, format }: { label: string; onClick: () => void; format: string }) => (
     <button
@@ -396,109 +494,114 @@ function Export() {
              {!loading && (
          <div style={{ 
            display: 'grid', 
-           gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+           gridTemplateColumns: 'repeat(2, 1fr)',
            gap: '24px',
            maxWidth: '100%'
          }}>
-          {/* Kullanıcı Export */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-              👥 Kullanıcı Listesi
-            </h3>
-            <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-              Tüm kullanıcı verilerini dışa aktarın.
-            </p>
-            <div>
-              <ExportButton label="📊 Excel" onClick={() => exportUsers('excel')} format="excel" />
-              <ExportButton label="📄 CSV" onClick={() => exportUsers('csv')} format="csv" />
-              <ExportButton label="📋 PDF" onClick={() => exportUsers('pdf')} format="pdf" />
-            </div>
-          </div>
+                     {/* Kullanıcı Export */}
+           <div style={{
+             backgroundColor: '#f8f9fa',
+             borderRadius: '12px',
+             padding: '20px',
+             border: '1px solid #dee2e6'
+           }}>
+             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+               👥 Kullanıcı Listesi
+             </h3>
+             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+               Tüm kullanıcı verilerini dışa aktarın.
+             </p>
+             <DateRangeFilter type="users" />
+             <div>
+               <ExportButton label="📊 Excel" onClick={() => exportUsers('excel')} format="excel" />
+               <ExportButton label="📄 CSV" onClick={() => exportUsers('csv')} format="csv" />
+               <ExportButton label="📋 PDF" onClick={() => exportUsers('pdf')} format="pdf" />
+             </div>
+           </div>
 
-          {/* Firma Export */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-              🏢 Firma Listesi
-            </h3>
-            <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-              Tüm firma verilerini dışa aktarın.
-            </p>
-            <div>
-              <ExportButton label="📊 Excel" onClick={() => exportCompanies('excel')} format="excel" />
-              <ExportButton label="📄 CSV" onClick={() => exportCompanies('csv')} format="csv" />
-              <ExportButton label="📋 PDF" onClick={() => exportCompanies('pdf')} format="pdf" />
-            </div>
-          </div>
+                     {/* Firma Export */}
+           <div style={{
+             backgroundColor: '#f8f9fa',
+             borderRadius: '12px',
+             padding: '20px',
+             border: '1px solid #dee2e6'
+           }}>
+             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+               🏢 Firma Listesi
+             </h3>
+             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+               Tüm firma verilerini dışa aktarın.
+             </p>
+             <DateRangeFilter type="companies" />
+             <div>
+               <ExportButton label="📊 Excel" onClick={() => exportCompanies('excel')} format="excel" />
+               <ExportButton label="📄 CSV" onClick={() => exportCompanies('csv')} format="csv" />
+               <ExportButton label="📋 PDF" onClick={() => exportCompanies('pdf')} format="pdf" />
+             </div>
+           </div>
 
-          {/* Kampanya Export */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-              🎯 Kampanya Listesi
-            </h3>
-            <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-              Tüm kampanya verilerini dışa aktarın.
-            </p>
-            <div>
-              <ExportButton label="📊 Excel" onClick={() => exportCampaigns('excel')} format="excel" />
-              <ExportButton label="📄 CSV" onClick={() => exportCampaigns('csv')} format="csv" />
-              <ExportButton label="📋 PDF" onClick={() => exportCampaigns('pdf')} format="pdf" />
-            </div>
-          </div>
+                     {/* Kampanya Export */}
+           <div style={{
+             backgroundColor: '#f8f9fa',
+             borderRadius: '12px',
+             padding: '20px',
+             border: '1px solid #dee2e6'
+           }}>
+             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+               🎯 Kampanya Listesi
+             </h3>
+             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+               Tüm kampanya verilerini dışa aktarın.
+             </p>
+             <DateRangeFilter type="campaigns" />
+             <div>
+               <ExportButton label="📊 Excel" onClick={() => exportCampaigns('excel')} format="excel" />
+               <ExportButton label="📄 CSV" onClick={() => exportCampaigns('csv')} format="csv" />
+               <ExportButton label="📋 PDF" onClick={() => exportCampaigns('pdf')} format="pdf" />
+             </div>
+           </div>
 
-          {/* Yorum Export */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-              ⭐ Yorum Listesi
-            </h3>
-            <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-              Tüm yorum ve puan verilerini dışa aktarın.
-            </p>
-            <div>
-              <ExportButton label="📊 Excel" onClick={() => exportReviews('excel')} format="excel" />
-              <ExportButton label="📄 CSV" onClick={() => exportReviews('csv')} format="csv" />
-              <ExportButton label="📋 PDF" onClick={() => exportReviews('pdf')} format="pdf" />
-            </div>
-          </div>
+                     {/* Yorum Export */}
+           <div style={{
+             backgroundColor: '#f8f9fa',
+             borderRadius: '12px',
+             padding: '20px',
+             border: '1px solid #dee2e6'
+           }}>
+             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+               ⭐ Yorum Listesi
+             </h3>
+             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+               Tüm yorum ve puan verilerini dışa aktarın.
+             </p>
+             <DateRangeFilter type="reviews" />
+             <div>
+               <ExportButton label="📊 Excel" onClick={() => exportReviews('excel')} format="excel" />
+               <ExportButton label="📄 CSV" onClick={() => exportReviews('csv')} format="csv" />
+               <ExportButton label="📋 PDF" onClick={() => exportReviews('pdf')} format="pdf" />
+             </div>
+           </div>
 
-          {/* Muhasebe Export */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-              💰 Muhasebe Raporu
-            </h3>
-            <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-              Kredi gelirleri ve finansal verileri dışa aktarın.
-            </p>
-            <div>
-              <ExportButton label="📊 Excel" onClick={() => exportAccounting('excel')} format="excel" />
-              <ExportButton label="📄 CSV" onClick={() => exportAccounting('csv')} format="csv" />
-              <ExportButton label="📋 PDF" onClick={() => exportAccounting('pdf')} format="pdf" />
-            </div>
-          </div>
+                     {/* Muhasebe Export */}
+           <div style={{
+             backgroundColor: '#f8f9fa',
+             borderRadius: '12px',
+             padding: '20px',
+             border: '1px solid #dee2e6'
+           }}>
+             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+               💰 Muhasebe Raporu
+             </h3>
+             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+               Kredi gelirleri ve finansal verileri dışa aktarın.
+             </p>
+             <DateRangeFilter type="accounting" />
+             <div>
+               <ExportButton label="📊 Excel" onClick={() => exportAccounting('excel')} format="excel" />
+               <ExportButton label="📄 CSV" onClick={() => exportAccounting('csv')} format="csv" />
+               <ExportButton label="📋 PDF" onClick={() => exportAccounting('pdf')} format="pdf" />
+             </div>
+           </div>
         </div>
       )}
 
