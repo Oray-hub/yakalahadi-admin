@@ -351,25 +351,11 @@ function Companies() {
             },
           };
           
-          // FCM mesajı hazırlandı (güvenlik nedeniyle sadece log)
+          // FCM mesajı hazırlandı
           console.log("📨 FCM Mesajı hazırlandı:", message);
-          
-          // Bildirim log'unu kaydet
-          const { addDoc, serverTimestamp } = await import('firebase/firestore');
-          await addDoc(collection(db, "notification_logs"), {
-            type: "company_approval",
-            companyId: companyId,
-            companyName: companyName,
-            companyEmail: company.email || "",
-            approvalStatus: approved ? 'approved' : 'rejected',
-            reason: reason || "",
-            fcmToken: fcmToken.substring(0, 20) + "...",
-            sentAt: serverTimestamp(),
-            success: true,
-            messageId: "direct_fcm_prepared",
-            notificationTitle: notificationTitle,
-            notificationBody: notificationBody
-          });
+          console.log("📱 FCM Token:", fcmToken.substring(0, 20) + "...");
+          console.log("👤 Kullanıcı:", company.companyOfficer);
+          console.log("🏢 Firma:", companyName);
           
           // Başarılı bildirim
           if (approved) {
@@ -379,21 +365,6 @@ function Companies() {
           }
         } catch (sendError: any) {
           console.error("❌ Bildirim hazırlanırken hata:", sendError);
-          
-          // Hata log'unu kaydet
-          const { addDoc, serverTimestamp } = await import('firebase/firestore');
-          await addDoc(collection(db, "notification_logs"), {
-            type: "company_approval",
-            companyId: companyId,
-            companyName: companyName,
-            companyEmail: company.email || "",
-            approvalStatus: approved ? 'approved' : 'rejected',
-            reason: reason || "",
-            fcmToken: fcmToken.substring(0, 20) + "...",
-            sentAt: serverTimestamp(),
-            success: false,
-            error: sendError.message || "Bilinmeyen hata"
-          });
           
           // Bildirim hatası olsa bile onay durumu değişti
           if (approved) {
