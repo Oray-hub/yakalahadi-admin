@@ -1,4 +1,4 @@
-import { doc, addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 
 // Notification Service for Firebase Firestore Triggers
