@@ -1,13 +1,12 @@
 import { useState } from "react";
 import Login from "./Login";
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
-import Campaigns from "./components/Campaigns";
-import Users from "./components/Users";
 import Companies from "./components/Companies";
+import Users from "./components/Users";
+import Campaigns from "./components/Campaigns";
 import Reviews from "./components/Reviews";
 import Accounting from "./components/Accounting";
 import Export from "./components/Export";
-import NotificationTest from "./components/NotificationTest";
 
 import "./firebase"; // Firebase'i başlat
 
@@ -18,7 +17,6 @@ const menu = [
   { path: "/reviews", label: "Yorumlar ve Puanlar", icon: "⭐" },
   { path: "/accounting", label: "Muhasebe Verileri", icon: "💰" },
   { path: "/export", label: "Dışa Aktar", icon: "📊" },
-  { path: "/notification-test", label: "Bildirim Test", icon: "🧪" },
 ];
 
 
@@ -203,7 +201,6 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/accounting" element={<Accounting />} />
             <Route path="/export" element={<Export />} />
-            <Route path="/notification-test" element={<NotificationTest />} />
 
             <Route path="*" element={<Navigate to="/users" />} />
           </Routes>
