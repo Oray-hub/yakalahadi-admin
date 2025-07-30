@@ -259,7 +259,7 @@ function Campaigns() {
       }}>
         <div className="campaigns-stats" style={{ 
           display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", 
           gap: "12px", 
           marginBottom: "6px",
           width: "100%"
@@ -353,12 +353,17 @@ function Campaigns() {
       <div className="campaigns-filters" style={{
         flexShrink: 0,
         display: "flex",
+        flexDirection: "column",
         gap: "12px",
-        marginBottom: "16px",
-        alignItems: "center",
-        justifyContent: "space-between"
+        marginBottom: "16px"
       }}>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        {/* Üst Kısım - Filtreler */}
+        <div style={{ 
+          display: "flex", 
+          gap: "12px", 
+          alignItems: "center",
+          flexWrap: "wrap"
+        }}>
           <select
             value={searchField}
             onChange={(e) => setSearchField(e.target.value)}
@@ -391,22 +396,28 @@ function Campaigns() {
               border: "1px solid #ddd",
               borderRadius: "4px",
               fontSize: "11px",
-              minWidth: "120px"
+              minWidth: "120px",
+              flex: 1
             }}
           />
         </div>
         
-        {/* Numaratör */}
+        {/* Alt Kısım - Numaratör */}
         <div style={{
-          fontSize: "18px",
-          fontWeight: "bold",
-          color: "#333",
-          padding: "4px 8px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "4px",
-          border: "1px solid #dee2e6"
+          display: "flex",
+          justifyContent: "flex-end"
         }}>
-          {filteredCampaigns.length}
+          <div style={{
+            fontSize: "18px",
+            fontWeight: "bold",
+            color: "#333",
+            padding: "4px 8px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "4px",
+            border: "1px solid #dee2e6"
+          }}>
+            {filteredCampaigns.length}
+          </div>
         </div>
       </div>
 
@@ -423,15 +434,16 @@ function Campaigns() {
         <table className="campaigns-table" style={{ 
           width: "100%", 
           borderCollapse: "collapse", 
-          backgroundColor: "white"
+          backgroundColor: "white",
+          minWidth: "600px" // Minimum tablo genişliği
         }}>
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kampanya Tipi</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Bildirim</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Durum</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px", minWidth: "120px" }}>Kampanya Tipi</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px", minWidth: "150px" }}>Firma Adı</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px", minWidth: "200px" }}>Bildirim</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px", minWidth: "100px" }}>Durum</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px", minWidth: "80px" }}>İşlemler</th>
             </tr>
           </thead>
           <tbody style={{ fontSize: "12px" }}>
