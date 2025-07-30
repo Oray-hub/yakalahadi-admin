@@ -4,20 +4,6 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  createdAt: any;
-  emailVerified: boolean;
-  selectedCategories: string[];
-  claimedCount?: number;
-  privacyAccepted?: boolean;
-  termsAccepted?: boolean;
-  claimedCampaigns?: number;
-  qrScanned?: boolean;
-}
-
 interface Company {
   id: string;
   company: string;
@@ -26,22 +12,6 @@ interface Company {
   credits: number;
   totalPurchasedCredits: number;
   creditPurchaseDate?: any;
-  createdAt: any;
-}
-
-interface Campaign {
-  id: string;
-  title: string;
-  description: string;
-  companyId: string;
-  companyName: string;
-  category: string;
-  credits: number;
-  maxClaims: number;
-  currentClaims: number;
-  startDate: any;
-  endDate: any;
-  active: boolean;
   createdAt: any;
 }
 
@@ -209,28 +179,140 @@ function Export() {
   };
 
   // Kullanıcı Export
-  const exportUsers = (format: 'excel' | 'csv' | 'pdf') => {
-    const filteredUsers = filterByDateRange(data.users || [], 'createdAt', dateRanges.users.start, dateRanges.users.end);
-    const userData = filteredUsers.map((user: User) => ({
-      'Kullanıcı ID': user.id,
-      'Ad Soyad': user.name || 'Belirtilmemiş',
-      'E-posta': user.email,
-      'Kayıt Tarihi': user.createdAt?.toDate ? user.createdAt.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş',
-      'E-posta Doğrulandı': user.emailVerified ? 'Evet' : 'Hayır',
-      'Kategoriler': user.selectedCategories?.join(', ') || 'Belirtilmemiş',
-      'Yakalanan Kampanya Sayısı': user.claimedCount || 0,
-      'Gizlilik Kabul': user.privacyAccepted ? 'Evet' : 'Hayır',
-      'Şartlar Kabul': user.termsAccepted ? 'Evet' : 'Hayır'
-    })) || [];
+  const exportUsers = async (format: 'excel' | 'csv' | 'pdf') => {
+    try {
+      const db = getFirestore();
+      
+      // Kullanıcıları çek
+      const usersRef = collection(db, "users");
+      const usersSnapshot = await getDocs(usersRef);
+      
+      // Yakalanan kampanyaları çek (yeni sistem)
+      const claimedCampaignsRef = collection(db, "claimedCampaigns");
+      const claimedCampaignsSnapshot = await getDocs(claimedCampaignsRef);
+      
+      // Eski sistem yakalanan kampanyaları da çek
+      const caughtCampaignsRef = collection(db, "caught_campaigns");
+      const caughtCampaignsSnapshot = await getDocs(caughtCampaignsRef);
+      
+      // Kullanıcı başına yakalanan kampanya sayısını hesapla
+      const userClaimedCounts = new Map<string, number>();
+      const userQrScanned = new Map<string, boolean>();
+      
+      // Yeni sistem claimedCampaigns
+      claimedCampaignsSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const userId = data.userId;
+        
+        if (userId) {
+          // Yakalanan kampanya sayısını artır
+          userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
+          
+          // QR kod okutulmuş mu kontrol et
+          const hasScanned = data.qrScanned === true || 
+              data.scanned === true || 
+              data.isScanned === true ||
+              data.qrCodeScanned === true ||
+              data.qrScannedAt ||
+              data.scannedAt ||
+              data.qrCodeScannedAt ||
+              data.status === 'scanned' ||
+              data.status === 'completed' ||
+              data.isCompleted === true ||
+              data.qrCodeStatus === 'scanned' ||
+              data.campaignStatus === 'completed' ||
+              data.isUsed === true ||
+              data.usedAt ||
+              data.feedbackGiven === true;
+              
+          if (hasScanned) {
+            userQrScanned.set(userId, true);
+          }
+        }
+      });
+      
+      // Eski sistem caught_campaigns
+      caughtCampaignsSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const userId = data.userId;
+        
+        if (userId) {
+          userClaimedCounts.set(userId, (userClaimedCounts.get(userId) || 0) + 1);
+          
+          const hasScanned = data.qrScanned === true || 
+              data.scanned === true || 
+              data.isScanned === true ||
+              data.qrCodeScanned === true ||
+              data.qrScannedAt ||
+              data.scannedAt ||
+              data.qrCodeScannedAt ||
+              data.status === 'scanned' ||
+              data.status === 'completed' ||
+              data.isCompleted === true ||
+              data.qrCodeStatus === 'scanned' ||
+              data.campaignStatus === 'completed' ||
+              data.isUsed === true ||
+              data.usedAt ||
+              data.feedbackGiven === true;
+              
+          if (hasScanned) {
+            userQrScanned.set(userId, true);
+          }
+        }
+      });
+      
+      const usersData: any[] = [];
+      
+      usersSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const userId = doc.id;
+        const claimedCount = userClaimedCounts.get(userId) || 0;
+        const hasQrScanned = userQrScanned.get(userId) || false;
+        
+        usersData.push({
+          id: userId,
+          email: data.email || '',
+          name: data.name || data.displayName || 'Belirtilmemiş',
+          createdAt: data.createdAt,
+          emailVerified: data.emailVerified || false,
+          notificationsStatus: data.notificationsStatus || {},
+          selectedCategories: data.selectedCategories || [],
+          claimedCount: claimedCount,
+          privacyAccepted: data.privacyAccepted || false,
+          termsAccepted: data.termsAccepted || false,
+          claimedCampaigns: claimedCount,
+          qrScanned: hasQrScanned
+        });
+      });
+      
+      // Tarih filtreleme uygula
+      const filteredUsers = filterByDateRange(usersData, 'createdAt', dateRanges.users.start, dateRanges.users.end);
+      
+      const userData = filteredUsers.map((user: any) => ({
+        'Kullanıcı ID': user.id,
+        'Ad Soyad': user.name,
+        'E-posta': user.email,
+        'Kayıt Tarihi': user.createdAt?.toDate ? user.createdAt.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş',
+        'E-posta Doğrulandı': user.emailVerified ? 'Evet' : 'Hayır',
+        'Kategoriler': user.selectedCategories?.join(', ') || 'Belirtilmemiş',
+        'Yakalanan Kampanya Sayısı': user.claimedCount || 0,
+        'QR Kod Okutuldu': user.qrScanned ? 'Evet' : 'Hayır',
+        'Gizlilik Kabul': user.privacyAccepted ? 'Evet' : 'Hayır',
+        'Şartlar Kabul': user.termsAccepted ? 'Evet' : 'Hayır'
+      }));
 
     if (format === 'excel') {
       exportToExcel(userData, 'Kullanıcı_Listesi');
     } else if (format === 'csv') {
       exportToCSV(userData, 'Kullanıcı_Listesi');
-    } else if (format === 'pdf') {
-      exportToPDF(userData, 'Kullanıcı_Listesi', 'Kullanıcı Listesi', 
-        ['Kullanıcı ID', 'Ad Soyad', 'E-posta', 'Kayıt Tarihi', 'E-posta Doğrulandı', 'Kategoriler', 'Yakalanan Kampanya Sayısı']);
-    }
+         } else if (format === 'pdf') {
+       exportToPDF(userData, 'Kullanıcı_Listesi', 'Kullanıcı Listesi', 
+         ['Kullanıcı ID', 'Ad Soyad', 'E-posta', 'Kayıt Tarihi', 'E-posta Doğrulandı', 'Kategoriler', 'Yakalanan Kampanya Sayısı', 'QR Kod Okutuldu', 'Gizlilik Kabul', 'Şartlar Kabul']);
+     }
+   } catch (error) {
+     console.error('Kullanıcı export hatası:', error);
+     alert('Kullanıcı verileri export edilirken hata oluştu!');
+   }
   };
 
   // Firma Export
@@ -258,31 +340,97 @@ function Export() {
   };
 
   // Kampanya Export
-  const exportCampaigns = (format: 'excel' | 'csv' | 'pdf') => {
-    const filteredCampaigns = filterByDateRange(data.campaigns || [], 'createdAt', dateRanges.campaigns.start, dateRanges.campaigns.end);
-    const campaignData = filteredCampaigns.map((campaign: Campaign) => ({
-      'Kampanya ID': campaign.id,
-      'Başlık': campaign.title,
-      'Açıklama': campaign.description,
-      'Firma Adı': campaign.companyName,
-      'Kategori': campaign.category,
-      'Kredi Miktarı': campaign.credits,
-      'Maksimum Yakalama': campaign.maxClaims,
-      'Mevcut Yakalama': campaign.currentClaims || 0,
-      'Başlangıç Tarihi': campaign.startDate?.toDate ? campaign.startDate.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş',
-      'Bitiş Tarihi': campaign.endDate?.toDate ? campaign.endDate.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş',
-      'Aktif': campaign.active ? 'Evet' : 'Hayır',
-      'Oluşturulma Tarihi': campaign.createdAt?.toDate ? campaign.createdAt.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş'
-    })) || [];
+  const exportCampaigns = async (format: 'excel' | 'csv' | 'pdf') => {
+    try {
+      const db = getFirestore();
+      
+      // Önce tüm firmaları çek
+      const companiesRef = collection(db, "companies");
+      const companiesSnapshot = await getDocs(companiesRef);
+      const companiesMap = new Map();
+      
+      companiesSnapshot.docs.forEach(companyDoc => {
+        const companyData = companyDoc.data();
+        companiesMap.set(companyDoc.id, companyData.company || companyData.companyTitle || "Firma Adı Yok");
+      });
+      
+      const campaignsData: any[] = [];
+      
+      // Kampanyaları çek
+      const campaignsRef = collection(db, "campaigns");
+      const campaignsSnapshot = await getDocs(campaignsRef);
+      
+      for (const doc of campaignsSnapshot.docs) {
+        const data = doc.data();
+        const companyName = companiesMap.get(data.companyId) || data.companyName || "Firma Adı Yok";
+        
+        campaignsData.push({
+          id: doc.id,
+          type: data.type || "Kampanya",
+          companyId: data.companyId || "",
+          companyName: companyName,
+          notificationBody: data.notificationBody || "Bildirim Yok",
+          createdAt: data.createdAt,
+          durationMinutes: data.durationMinutes || 0,
+          endsAt: data.endsAt,
+          isActive: data.isActive || false,
+        });
+      }
+      
+      // İndirim kampanyalarını çek
+      const discountsRef = collection(db, "discounts");
+      const discountsSnapshot = await getDocs(discountsRef);
+      
+      for (const doc of discountsSnapshot.docs) {
+        const data = doc.data();
+        const companyName = companiesMap.get(data.companyId) || "Firma Adı Yok";
+        
+        campaignsData.push({
+          id: doc.id,
+          type: data.type || "discount",
+          companyId: data.companyId || "",
+          companyName: companyName,
+          notificationBody: data.notificationBody || "Bildirim Yok",
+          createdAt: data.createdAt,
+          durationMinutes: data.durationMinutes || 0,
+          endsAt: data.endsAt,
+          isActive: data.isActive || false,
+        });
+      }
+      
+      // Tarih filtreleme uygula
+      const filteredCampaigns = filterByDateRange(campaignsData, 'createdAt', dateRanges.campaigns.start, dateRanges.campaigns.end);
+      
+      const campaignData = filteredCampaigns.map((campaign: any) => {
+        const now = new Date();
+        const createdAt = campaign.createdAt ? new Date(campaign.createdAt.toDate()) : new Date();
+        const endsAt = campaign.endsAt ? new Date(campaign.endsAt.toDate()) : new Date(createdAt.getTime() + campaign.durationMinutes * 60000);
+        const isActive = campaign.isActive && now < endsAt;
+        
+        return {
+          'Kampanya ID': campaign.id,
+          'Kampanya Tipi': campaign.type,
+          'Firma Adı': campaign.companyName,
+          'Bildirim İçeriği': campaign.notificationBody,
+          'Süre (Dakika)': campaign.durationMinutes,
+          'Oluşturulma Tarihi': createdAt.toLocaleDateString('tr-TR'),
+          'Bitiş Tarihi': endsAt.toLocaleDateString('tr-TR'),
+          'Aktif': isActive ? 'Evet' : 'Hayır'
+        };
+      });
 
     if (format === 'excel') {
       exportToExcel(campaignData, 'Kampanya_Listesi');
     } else if (format === 'csv') {
       exportToCSV(campaignData, 'Kampanya_Listesi');
-    } else if (format === 'pdf') {
-      exportToPDF(campaignData, 'Kampanya_Listesi', 'Kampanya Listesi', 
-        ['Kampanya ID', 'Başlık', 'Firma Adı', 'Kategori', 'Kredi Miktarı', 'Maksimum Yakalama', 'Mevcut Yakalama', 'Aktif']);
-    }
+         } else if (format === 'pdf') {
+       exportToPDF(campaignData, 'Kampanya_Listesi', 'Kampanya Listesi', 
+         ['Kampanya ID', 'Kampanya Tipi', 'Firma Adı', 'Bildirim İçeriği', 'Süre (Dakika)', 'Oluşturulma Tarihi', 'Bitiş Tarihi', 'Aktif']);
+     }
+   } catch (error) {
+     console.error('Kampanya export hatası:', error);
+     alert('Kampanya verileri export edilirken hata oluştu!');
+   }
   };
 
   // Yorum Export
