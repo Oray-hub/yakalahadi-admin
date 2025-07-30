@@ -207,11 +207,10 @@ function Reviews() {
 
     return (
     <div className="reviews-container" style={{
-      height: "100vh",
+      minHeight: "100vh",
       width: "100%",
       display: "flex",
       flexDirection: "column",
-      overflow: "hidden",
       padding: "16px",
       minWidth: 0,
       maxWidth: "none"
@@ -239,7 +238,7 @@ function Reviews() {
       }}>
         <div className="reviews-stats" style={{ 
           display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", 
           gap: "12px", 
           marginBottom: "6px",
           width: "100%"
@@ -297,12 +296,17 @@ function Reviews() {
       <div className="reviews-filters" style={{
         flexShrink: 0,
         display: "flex",
+        flexDirection: "column",
         gap: "12px",
-        marginBottom: "16px",
-        alignItems: "center",
-        justifyContent: "space-between"
+        marginBottom: "16px"
       }}>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        {/* Üst Kısım - Filtreler */}
+        <div style={{ 
+          display: "flex", 
+          gap: "12px", 
+          alignItems: "center",
+          flexWrap: "wrap"
+        }}>
           <select
             value={searchField}
             onChange={(e) => setSearchField(e.target.value)}
@@ -335,22 +339,28 @@ function Reviews() {
               border: "1px solid #ddd",
               borderRadius: "4px",
               fontSize: "11px",
-              minWidth: "120px"
+              minWidth: "120px",
+              flex: 1
             }}
           />
         </div>
         
-        {/* Numaratör */}
+        {/* Alt Kısım - Numaratör */}
         <div style={{
-          fontSize: "18px",
-          fontWeight: "bold",
-          color: "#333",
-          padding: "4px 8px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "4px",
-          border: "1px solid #dee2e6"
+          display: "flex",
+          justifyContent: "flex-end"
         }}>
-          {filteredReviews.length}
+          <div style={{
+            fontSize: "18px",
+            fontWeight: "bold",
+            color: "#333",
+            padding: "4px 8px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "4px",
+            border: "1px solid #dee2e6"
+          }}>
+            {filteredReviews.length}
+          </div>
         </div>
       </div>
 
@@ -359,10 +369,11 @@ function Reviews() {
         flex: 1, 
         overflowY: "auto", 
         overflowX: "auto",
-        minHeight: 0,
+        minHeight: "400px",
         minWidth: 0,
         border: "1px solid #e0e0e0",
-        borderRadius: "8px"
+        borderRadius: "8px",
+        backgroundColor: "#f8f9fa"
       }}>
         <table className="reviews-table" style={{ 
           width: "100%", 

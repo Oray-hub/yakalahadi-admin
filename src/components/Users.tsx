@@ -259,11 +259,10 @@ function Users() {
 
   return (
     <div className="users-container" style={{
-      height: "100vh",
+      minHeight: "100vh",
       width: "100%",
       display: "flex",
       flexDirection: "column",
-      overflow: "hidden",
       padding: "16px",
       minWidth: 0,
       maxWidth: "none"
@@ -318,12 +317,17 @@ function Users() {
       <div style={{
         flexShrink: 0,
         display: "flex",
+        flexDirection: "column",
         gap: "12px",
-        marginBottom: "16px",
-        alignItems: "center",
-        justifyContent: "space-between"
+        marginBottom: "16px"
       }}>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        {/* Üst Kısım - Filtreler */}
+        <div style={{ 
+          display: "flex", 
+          gap: "12px", 
+          alignItems: "center",
+          flexWrap: "wrap"
+        }}>
           <select
             value={searchField}
             onChange={(e) => setSearchField(e.target.value)}
@@ -364,22 +368,28 @@ function Users() {
               border: "1px solid #ddd",
               borderRadius: "4px",
               fontSize: "11px",
-              minWidth: "120px"
+              minWidth: "120px",
+              flex: 1
             }}
           />
         </div>
         
-        {/* Numaratör */}
+        {/* Alt Kısım - Numaratör */}
         <div style={{
-          fontSize: "18px",
-          fontWeight: "bold",
-          color: "#333",
-          padding: "4px 8px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "4px",
-          border: "1px solid #dee2e6"
+          display: "flex",
+          justifyContent: "flex-end"
         }}>
-          {filteredUsers.length}
+          <div style={{
+            fontSize: "18px",
+            fontWeight: "bold",
+            color: "#333",
+            padding: "4px 8px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "4px",
+            border: "1px solid #dee2e6"
+          }}>
+            {filteredUsers.length}
+          </div>
         </div>
       </div>
 
@@ -388,10 +398,11 @@ function Users() {
         flex: 1, 
         overflowY: "auto", 
         overflowX: "auto",
-        minHeight: 0,
+        minHeight: "400px",
         minWidth: 0,
         border: "1px solid #e0e0e0",
-        borderRadius: "8px"
+        borderRadius: "8px",
+        backgroundColor: "#f8f9fa"
       }}>
         <table style={{ 
           width: "100%", 

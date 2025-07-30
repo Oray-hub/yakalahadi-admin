@@ -381,14 +381,12 @@ function Accounting() {
 
   return (
     <div className="accounting-container" style={{
-      height: "100vh",
+      minHeight: "100vh",
       width: "100%",
       maxWidth: "100%",
       minWidth: 0,
       display: "flex",
       flexDirection: "column",
-      overflow: "hidden",
-      overflowX: "hidden",
       padding: "16px"
     }}>
       {/* Sabit Başlık Kısmı */}
@@ -404,7 +402,7 @@ function Accounting() {
       {/* Ana İstatistik Kartları */}
       <div className="accounting-stats" style={{ 
         display: "grid", 
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
+        gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", 
         gap: "8px", 
         marginBottom: "6px",
         width: "100%",
