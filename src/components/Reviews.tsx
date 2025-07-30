@@ -104,10 +104,17 @@ function Reviews() {
         const auth = getAuth();
         const currentUser = auth.currentUser;
         console.log("Mevcut kullanıcı:", currentUser?.email);
-        console.log("Silinecek yorum:", { reviewId, companyId, companyName });
+        console.log("Silinecek yorum detayları:", { 
+          reviewId, 
+          companyId, 
+          companyName,
+          fullPath: `companies/${companyId}/reviews/${reviewId}`
+        });
         
         // Doğru koleksiyon yolunu kullan: companies/{companyId}/reviews/{reviewId}
+        console.log("Firebase'den silme işlemi başlatılıyor...");
         await deleteDoc(doc(db, "companies", companyId, "reviews", reviewId));
+        console.log("✅ Firebase'den silme işlemi başarılı!");
         setReviews(reviews.filter(review => review.id !== reviewId));
         alert("Yorum başarıyla silindi.");
       } catch (error) {
