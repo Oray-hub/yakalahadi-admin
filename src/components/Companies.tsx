@@ -330,7 +330,11 @@ function Companies() {
         if (usersSnapshot.empty) {
           // Kullanıcı bulunamadı
           console.log(`📧 ${companyEmail} için kullanıcı bulunamadı`);
-          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Kullanıcı bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylandı ancak kullanıcı uygulamaya kayıt olmamış olabilir.`);
+          if (approved) {
+            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Kullanıcı bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylandı ancak kullanıcı uygulamaya kayıt olmamış olabilir.`);
+          } else {
+            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: Kullanıcı bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylanmadı ancak kullanıcı uygulamaya kayıt olmamış olabilir.`);
+          }
           return;
         }
         
@@ -340,7 +344,11 @@ function Companies() {
         
         if (!fcmToken) {
           console.log(`📱 ${companyEmail} için FCM token bulunamadı`);
-          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: FCM token bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylandı ancak kullanıcı uygulamayı açmamış olabilir.`);
+          if (approved) {
+            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: FCM token bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylandı ancak kullanıcı uygulamayı açmamış olabilir.`);
+          } else {
+            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: FCM token bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylanmadı ancak kullanıcı uygulamayı açmamış olabilir.`);
+          }
           return;
         }
         
