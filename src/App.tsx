@@ -7,6 +7,7 @@ import Companies from "./components/Companies";
 import Reviews from "./components/Reviews";
 import Accounting from "./components/Accounting";
 import Export from "./components/Export";
+import NotificationTest from "./components/NotificationTest";
 
 import "./firebase"; // Firebase'i başlat
 
@@ -17,7 +18,7 @@ const menu = [
   { path: "/reviews", label: "Yorumlar ve Puanlar", icon: "⭐" },
   { path: "/accounting", label: "Muhasebe Verileri", icon: "💰" },
   { path: "/export", label: "Dışa Aktar", icon: "📊" },
-
+  { path: "/notification-test", label: "Bildirim Test", icon: "🧪" },
 ];
 
 
@@ -202,6 +203,7 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/accounting" element={<Accounting />} />
             <Route path="/export" element={<Export />} />
+            <Route path="/notification-test" element={<NotificationTest />} />
 
             <Route path="*" element={<Navigate to="/users" />} />
           </Routes>

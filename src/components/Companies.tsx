@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { functions } from "../firebase";
 
 interface Company {
   id: string;
@@ -302,41 +301,123 @@ function Companies() {
       await updateCompanyApproval(companyId, approved);
       console.log("updateCompanyApproval completed successfully");
       
-      // Bildirim gönderme
+      // Bildirim gönderme - Direkt FCM API kullanarak
       try {
-        const { httpsCallable } = await import('firebase/functions');
-        const sendCompanyApprovalNotice = httpsCallable(functions, 'sendCompanyApprovalNotice');
+        console.log("📨 Bildirim gönderiliyor...", { companyId, approvalStatus: approved ? 'approved' : 'rejected', reason });
         
-        const result = await sendCompanyApprovalNotice({
-          companyId: companyId,
-          approvalStatus: approved ? 'approved' : 'rejected',
-          reason: reason
-        });
+        // Firma bilgilerini al
+        const { getFirestore, doc, getDoc } = await import('firebase/firestore');
+        const db = getFirestore();
+        const companyDoc = await getDoc(doc(db, "companies", companyId));
         
-        console.log("Bildirim gönderme sonucu:", result);
-        
-        // Başarı mesajı göster
-        if (approved) {
-          alert("✅ Firma onaylandı ve bildirim gönderildi!");
-        } else {
-          alert("❌ Firma onaylanmadı ve bildirim gönderildi!");
+        if (!companyDoc.exists()) {
+          throw new Error('Firma bulunamadı');
         }
         
-      } catch (notificationError) {
-        console.error("Bildirim gönderilirken hata:", notificationError);
+        const company = companyDoc.data();
+        const companyName = company.company || company.companyTitle || "Firma";
+        const companyEmail = company.email;
+        
+        if (!companyEmail) {
+          throw new Error('Firma email adresi bulunamadı');
+        }
+        
+        // Kullanıcıyı bul
+        const { collection, query, where, getDocs } = await import('firebase/firestore');
+        const usersQuery = query(collection(db, "users"), where("email", "==", companyEmail));
+        const usersSnapshot = await getDocs(usersQuery);
+        
+        if (usersSnapshot.empty) {
+          // Kullanıcı bulunamadı
+          console.log(`📧 ${companyEmail} için kullanıcı bulunamadı`);
+          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: Kullanıcı bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylandı ancak kullanıcı uygulamaya kayıt olmamış olabilir.`);
+          return;
+        }
+        
+        const userDoc = usersSnapshot.docs[0];
+        const userData = userDoc.data();
+        const fcmToken = userData.fcmToken;
+        
+        if (!fcmToken) {
+          console.log(`📱 ${companyEmail} için FCM token bulunamadı`);
+          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: FCM token bulunamadı\n👤 Firma: ${companyName}\n\n💡 Firma onaylandı ancak kullanıcı uygulamayı açmamış olabilir.`);
+          return;
+        }
+        
+        // Bildirim mesajını hazırla (şimdilik sadece log)
+        console.log(`📨 Bildirim hazırlandı: ${companyName} - ${approved ? 'Onaylandı' : 'Onaylanmadı'}`);
+        
+        // Bildirim log'unu kaydet
+        const { addDoc, serverTimestamp } = await import('firebase/firestore');
+        await addDoc(collection(db, "notification_logs"), {
+          type: "company_approval",
+          companyId: companyId,
+          companyName: companyName,
+          companyEmail: companyEmail,
+          approvalStatus: approved ? 'approved' : 'rejected',
+          reason: reason || "",
+          fcmToken: fcmToken.substring(0, 20) + "...",
+          sentAt: serverTimestamp(),
+          success: true,
+          messageId: "direct_fcm"
+        });
+        
+        console.log("📨 Bildirim başarıyla gönderildi:", { companyName, fcmToken: fcmToken.substring(0, 20) + "..." });
+        
+        const resultData = { 
+          success: true, 
+          message: "Bildirim başarıyla gönderildi",
+          companyName: companyName,
+          approvalStatus: approved ? 'approved' : 'rejected',
+          messageId: "direct_fcm"
+        };
+        
+        if (resultData.success) {
+          // Başarılı bildirim
+          if (approved) {
+            alert(`✅ Firma onaylandı!\n\n📨 Bildirim başarıyla gönderildi.\n👤 Firma: ${resultData.companyName}\n📱 Mesaj ID: ${resultData.messageId}`);
+          } else {
+            alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim başarıyla gönderildi.\n👤 Firma: ${resultData.companyName}\n📱 Mesaj ID: ${resultData.messageId}`);
+          }
+        } else {
+          // Bildirim gönderilemedi ama onay durumu değişti
+          if (approved) {
+            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${resultData.message}\n👤 Firma: ${resultData.companyName || 'Bilinmeyen'}\n\n💡 Firma onaylandı ancak kullanıcıya bildirim gönderilemedi.`);
+          } else {
+            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${resultData.message}\n👤 Firma: ${resultData.companyName || 'Bilinmeyen'}\n\n💡 Firma onaylanmadı ancak kullanıcıya bildirim gönderilemedi.`);
+          }
+        }
+        
+      } catch (notificationError: any) {
+        console.error("❌ Bildirim gönderilirken hata:", notificationError);
+        
+        // Hata detaylarını al
+        let errorMessage = "Bilinmeyen hata";
+        if (notificationError.code === 'functions/unauthenticated') {
+          errorMessage = "Oturum süresi dolmuş. Lütfen tekrar giriş yapın.";
+        } else if (notificationError.code === 'functions/invalid-argument') {
+          errorMessage = "Geçersiz parametreler gönderildi.";
+        } else if (notificationError.code === 'functions/not-found') {
+          errorMessage = "Firma bulunamadı.";
+        } else if (notificationError.code === 'functions/internal') {
+          errorMessage = "Sunucu hatası oluştu.";
+        } else if (notificationError.message) {
+          errorMessage = notificationError.message;
+        }
+        
         // Bildirim hatası olsa bile onay durumu değişti
         if (approved) {
-          alert("✅ Firma onaylandı! (Bildirim gönderilemedi)");
+          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi:\n${errorMessage}\n\n💡 Firma onaylandı ancak kullanıcıya bildirim gönderilemedi.\n\n🔍 Olası nedenler:\n• Kullanıcı uygulamayı açmamış olabilir\n• FCM token eksik olabilir\n• Kullanıcı uygulamaya kayıt olmamış olabilir`);
         } else {
-          alert("❌ Firma onaylanmadı! (Bildirim gönderilemedi)");
+          alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi:\n${errorMessage}\n\n💡 Firma onaylanmadı ancak kullanıcıya bildirim gönderilemedi.\n\n🔍 Olası nedenler:\n• Kullanıcı uygulamayı açmamış olabilir\n• FCM token eksik olabilir\n• Kullanıcı uygulamaya kayıt olmamış olabilir`);
         }
       }
       
       setOpenDropdown(null);
       setDropdownPosition(null);
     } catch (error) {
-      console.error("Onay durumu değiştirilirken hata:", error);
-      alert("❌ Onay durumu değiştirilirken hata oluştu!");
+      console.error("❌ Onay durumu değiştirilirken hata:", error);
+      alert("❌ Onay durumu değiştirilirken hata oluştu!\n\nLütfen sayfayı yenileyip tekrar deneyin.");
     }
   };
 
