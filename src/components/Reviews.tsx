@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 
 interface Review {
@@ -98,13 +99,20 @@ function Reviews() {
       setDeletingReview(reviewId);
       try {
         const db = getFirestore();
+        
+        // Debug: Mevcut kullanıcı bilgilerini kontrol et
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+        console.log("Mevcut kullanıcı:", currentUser?.email);
+        console.log("Silinecek yorum:", { reviewId, companyId, companyName });
+        
         // Doğru koleksiyon yolunu kullan: companies/{companyId}/reviews/{reviewId}
         await deleteDoc(doc(db, "companies", companyId, "reviews", reviewId));
         setReviews(reviews.filter(review => review.id !== reviewId));
         alert("Yorum başarıyla silindi.");
       } catch (error) {
         console.error("Yorum silinirken hata:", error);
-        alert("Yorum silinirken bir hata oluştu.");
+        alert(`Yorum silinirken bir hata oluştu: ${error.message}`);
       } finally {
         setDeletingReview(null);
       }
