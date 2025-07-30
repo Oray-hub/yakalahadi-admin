@@ -15,14 +15,15 @@ setGlobalOptions({
 exports.sendCompanyApprovalNotice = onRequest({
   invoker: 'public'
 }, async (req, res) => {
-    // CORS header'larını ekle
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'GET, POST');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    // CORS header'larını ekle - Tüm origin'lere izin ver
+    res.set('Access-Control-Allow-Origin', 'https://adminoray.yakalahadi.com');
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.set('Access-Control-Max-Age', '86400');
     
     // OPTIONS request için CORS preflight
     if (req.method === 'OPTIONS') {
-      res.status(204).send('');
+      res.status(200).send('');
       return;
     }
     
