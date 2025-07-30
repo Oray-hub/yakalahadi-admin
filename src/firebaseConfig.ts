@@ -5,4 +5,7 @@ export const firebaseConfig = {
   storageBucket: "yakalahadi-333ca.firebasestorage.app",
   messagingSenderId: "397021820606",
   appId: "1:397021820606:web:a3aa08c2a558b15fef10ef"
-}; 
+};
+
+// Firebase Functions region
+export const functionsRegion = 'us-central1'; 
