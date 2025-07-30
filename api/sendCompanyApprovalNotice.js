@@ -7,8 +7,8 @@ if (!getApps().length) {
   initializeApp({
     credential: cert({
       projectId: "yakalahadi-333ca",
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "firebase-adminsdk-xxxxx@yakalahadi-333ca.iam.gserviceaccount.com",
+      privateKey: (process.env.FIREBASE_PRIVATE_KEY || "-----BEGIN PRIVATE KEY-----\nXXXXX\n-----END PRIVATE KEY-----\n").replace(/\\n/g, '\n')
     })
   });
 }
@@ -17,7 +17,7 @@ const db = getFirestore();
 
 export default async function handler(req, res) {
   // CORS header'ları
-  res.setHeader('Access-Control-Allow-Origin', 'https://adminoray.yakalahadi.com');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
@@ -33,17 +33,22 @@ export default async function handler(req, res) {
   }
   
   try {
+    console.log("📥 Request body:", req.body);
     const { companyId, approvalStatus, reason } = req.body;
   
     if (!companyId || !approvalStatus) {
+      console.log("❌ Missing parameters:", { companyId, approvalStatus });
       res.status(400).json({ error: 'Gerekli parametreler eksik' });
       return;
     }
+    
+    console.log("🔍 Looking for company:", companyId);
     
     // Firma bilgilerini al
     const companyDoc = await db.collection('companies').doc(companyId).get();
     
     if (!companyDoc.exists) {
+      console.log("❌ Company not found:", companyId);
       res.status(404).json({ error: 'Firma bulunamadı' });
       return;
     }
@@ -51,10 +56,13 @@ export default async function handler(req, res) {
     const company = companyDoc.data();
     const companyName = company.company || company.companyTitle || "Firma";
     
+    console.log("🔍 Looking for user:", companyId);
+    
     // Company ID'si ile user'ı bul (aynı ID kullanılıyor)
     const userDoc = await db.collection('users').doc(companyId).get();
     
     if (!userDoc.exists) {
+      console.log("❌ User not found:", companyId);
       res.status(404).json({ error: 'Kullanıcı bulunamadı' });
       return;
     }
@@ -63,9 +71,12 @@ export default async function handler(req, res) {
     const fcmToken = userData.fcmToken;
     
     if (!fcmToken) {
+      console.log("❌ FCM token not found for user:", companyId);
       res.status(400).json({ error: 'FCM token bulunamadı' });
       return;
     }
+    
+    console.log("📱 FCM token found:", fcmToken.substring(0, 20) + "...");
     
     // Bildirim mesajını hazırla
     let notificationTitle, notificationBody;
@@ -94,6 +105,8 @@ export default async function handler(req, res) {
       },
     };
     
+    console.log("📨 Sending notification:", { companyName, approvalStatus });
+    
     // Bildirimi gönder
     const result = await getMessaging().send(message);
     
@@ -109,6 +122,10 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error("❌ Firma onay bildirimi gönderilirken hata:", error);
-    res.status(500).json({ error: 'Bildirim gönderilirken hata oluştu', details: error.message });
+    res.status(500).json({ 
+      error: 'Bildirim gönderilirken hata oluştu', 
+      details: error.message,
+      stack: error.stack 
+    });
   }
 } 
