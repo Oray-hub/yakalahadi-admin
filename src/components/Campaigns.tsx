@@ -227,11 +227,10 @@ function Campaigns() {
 
   return (
     <div className="campaigns-container" style={{
-      height: "100vh",
+      minHeight: "100vh",
       width: "100%",
       display: "flex",
       flexDirection: "column",
-      overflow: "hidden",
       padding: "16px",
       minWidth: 0,
       maxWidth: "none"
@@ -426,10 +425,11 @@ function Campaigns() {
         flex: 1, 
         overflowY: "auto", 
         overflowX: "auto",
-        minHeight: 0,
+        minHeight: "400px",
         minWidth: 0,
         border: "1px solid #e0e0e0",
-        borderRadius: "8px"
+        borderRadius: "8px",
+        backgroundColor: "#f8f9fa"
       }}>
         <table className="campaigns-table" style={{ 
           width: "100%", 
