@@ -680,8 +680,8 @@ function Accounting() {
 
       {/* Firma Bazında Veriler */}
       <div style={{ marginBottom: "18px", maxWidth: "100%", overflowX: "hidden" }}>
-        <div style={{ marginBottom: "12px", maxWidth: "100%", overflowX: "hidden", paddingLeft: "0" }}>
-          <h3 style={{ margin: 0, marginLeft: "-8px", color: "#333", fontSize: "14px" }}>Firma Bazında Kredi Gelirleri</h3>
+        <div style={{ marginBottom: "12px", maxWidth: "100%", overflowX: "hidden" }}>
+          <h3 style={{ margin: "0 0 8px 0", color: "#333", fontSize: "14px" }}>Firma Bazında Kredi Gelirleri</h3>
         </div>
         <div style={{ overflowX: "auto", minWidth: 0, maxWidth: "100%", paddingLeft: "0" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "white", borderRadius: 8, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", minWidth: 0, maxWidth: "100%" }}>
