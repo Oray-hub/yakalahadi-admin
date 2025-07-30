@@ -367,9 +367,9 @@ function Reviews() {
       {/* Scroll Tablo Kısmı */}
       <div style={{ 
         flex: 1, 
-        overflowY: "hidden", 
+        overflowY: "auto", 
         overflowX: "auto",
-        height: "400px",
+        minHeight: "400px",
         minWidth: 0,
         border: "1px solid #e0e0e0",
         borderRadius: "8px",
