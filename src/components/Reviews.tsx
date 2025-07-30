@@ -139,8 +139,8 @@ function Reviews() {
         }
       });
       
-      // Ortalama puanı hesapla (hiç yorum yoksa 0)
-      const averageRating = 0;
+      // Ortalama puanı hesapla (kalan yorumlara göre)
+      const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
       
       // Firma dokümanını güncelle - hiç yorum yoksa sıfırla
       const companyRef = doc(db, "companies", companyId);
