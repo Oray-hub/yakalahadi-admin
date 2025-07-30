@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { useSearchParams } from "react-router-dom";
 
 interface Review {
@@ -99,11 +99,31 @@ function Reviews() {
       try {
         const db = getFirestore();
         
-        // Yorumu sil
-        await deleteDoc(doc(db, "companies", companyId, "reviews", reviewId));
+        // Silinecek yorumun puanını al
+        const reviewRef = doc(db, "companies", companyId, "reviews", reviewId);
+        const reviewDoc = await getDoc(reviewRef);
+        const rating = reviewDoc.data()?.rating || 0;
         
-        // Firma yıldızlarını yeniden hesapla
-        await recalculateCompanyRating(companyId);
+        // Şirketin mevcut puanlarını al
+        const companyRef = doc(db, "companies", companyId);
+        const companyDoc = await getDoc(companyRef);
+        const currentTotal = companyDoc.data()?.totalScore || 0;
+        const currentCount = companyDoc.data()?.ratingCount || 0;
+        
+        // Yeni değerleri hesapla (Flutter mantığı)
+        const newTotal = Math.max(0, currentTotal - rating);
+        const newCount = Math.max(0, currentCount - 1);
+        const newAverage = newCount > 0 ? newTotal / newCount : 0;
+        
+        // Şirket puanlarını güncelle
+        await updateDoc(companyRef, {
+          totalScore: newTotal,
+          ratingCount: newCount,
+          averageRating: parseFloat(newAverage.toFixed(1)),
+        });
+        
+        // Yorumu sil
+        await deleteDoc(reviewRef);
         
         // UI'dan yorumu kaldır
         setReviews(reviews.filter(review => review.id !== reviewId));
@@ -118,41 +138,7 @@ function Reviews() {
     }
   };
 
-  // Firma yıldızlarını yeniden hesaplama fonksiyonu
-  const recalculateCompanyRating = async (companyId: string) => {
-    try {
-      const db = getFirestore();
-      
-      // Firma için tüm yorumları getir
-      const reviewsRef = collection(db, "companies", companyId, "reviews");
-      const reviewsSnapshot = await getDocs(reviewsRef);
-      
-      let totalRating = 0;
-      let reviewCount = 0;
-      
-      // Tüm yorumların puanlarını topla
-      reviewsSnapshot.forEach((doc) => {
-        const reviewData = doc.data();
-        if (reviewData.rating && typeof reviewData.rating === 'number') {
-          totalRating += reviewData.rating;
-          reviewCount++;
-        }
-      });
-      
-      // Ortalama puanı hesapla (kalan yorumlara göre)
-      const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
-      
-      // Firma dokümanını güncelle - hiç yorum yoksa sıfırla
-      const companyRef = doc(db, "companies", companyId);
-      await updateDoc(companyRef, {
-        averageRating: averageRating,
-        ratingCount: reviewCount,
-        totalScore: totalRating
-      });
-    } catch (error) {
-      console.error("Firma puanı güncellenirken hata:", error);
-    }
-  };
+
 
   // İstatistik hesaplama fonksiyonu
   const calculateReviewStats = () => {
