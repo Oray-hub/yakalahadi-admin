@@ -3,11 +3,11 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// Company approval fonksiyonunu import et
-const { sendCompanyApprovalNotice } = require('./companyApproval');
+// Company approval trigger fonksiyonunu import et
+const { sendCompanyApprovalNoticeTrigger } = require('./companyApproval');
 
 // Export the functions
-exports.sendCompanyApprovalNotice = sendCompanyApprovalNotice;
+exports.sendCompanyApprovalNoticeTrigger = sendCompanyApprovalNoticeTrigger;
 
 // 🎯 Yeni kampanya bildirimi fonksiyonu - Geçici olarak devre dışı
 /*

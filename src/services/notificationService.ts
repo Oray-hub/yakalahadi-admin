@@ -1,43 +1,35 @@
-// Notification Service for Firebase Cloud Functions
-export class NotificationService {
-  // Firebase Functions v2 URL'si
-  private static readonly CLOUD_FUNCTION_URL = 'https://sendcompanyapprovalnotice-6uoqecqeea-uc.a.run.app';
+import { doc, addDoc, collection } from 'firebase/firestore';
+import { db } from '../firebase';
 
-  // Firma onay/red bildirimi gönder
-  static async sendCompanyApprovalNotice(
-    companyId: string, 
-    approvalStatus: 'approved' | 'rejected', 
-    reason?: string
-  ): Promise<{ success: boolean; message: string; messageId?: string }> {
+// Notification Service for Firebase Firestore Triggers
+export class NotificationService {
+  // Firma onay/red bildirimi gönder - Firestore trigger ile
+  static async sendCompanyApprovalNotice(companyId: string, approvalStatus: 'approved' | 'rejected', reason?: string): Promise<any> {
     try {
-      console.log("🌐 NotificationService: Cloud Function URL:", this.CLOUD_FUNCTION_URL);
-      console.log("📤 NotificationService: Gönderilecek veri:", { companyId, approvalStatus, reason });
+      console.log("📝 Creating company approval document:", { companyId, approvalStatus, reason });
       
-      const requestBody = JSON.stringify({ companyId, approvalStatus, reason: reason || '' });
-      console.log("📦 NotificationService: Request body:", requestBody);
+      // Firestore'a doküman ekle - bu trigger'ı tetikleyecek
+      const approvalData = {
+        companyId: companyId,
+        approvalStatus: approvalStatus,
+        reason: reason || "",
+        timestamp: new Date().toISOString(),
+        processed: false
+      };
       
-      const response = await fetch(this.CLOUD_FUNCTION_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: requestBody
-      });
+      const docRef = await addDoc(collection(db, 'companyApprovals'), approvalData);
       
-      console.log("📥 NotificationService: Response status:", response.status);
-      console.log("📥 NotificationService: Response ok:", response.ok);
+      console.log("✅ Company approval document created:", docRef.id);
       
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ NotificationService: HTTP Error:", errorData);
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
+      return {
+        success: true,
+        message: "Firma onay durumu güncellendi ve bildirim gönderildi",
+        documentId: docRef.id
+      };
       
-      const result = await response.json();
-      console.log("✅ NotificationService: Success response:", result);
-      return { success: true, message: result.message || 'Bildirim başarıyla gönderildi', messageId: result.messageId };
-    } catch (error: any) {
-      console.error("❌ NotificationService: Error:", error);
-      console.error("❌ NotificationService: Error stack:", error.stack);
-      return { success: false, message: error.message || 'Bildirim gönderilirken hata oluştu' };
+    } catch (error) {
+      console.error("❌ Company approval notification error:", error);
+      throw new Error(`Bildirim gönderilemedi: ${error}`);
     }
   }
 
