@@ -3,96 +3,100 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// 🏢 Firma onay/red bildirimi fonksiyonu
-exports.sendCompanyApprovalNotice = functions.https.onRequest(async (req, res) => {
-    // CORS header'ları
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    
-    // OPTIONS request için
-    if (req.method === 'OPTIONS') {
-      res.status(200).send('');
-      return;
-    }
-    
+// Company approval fonksiyonunu import et
+const { sendCompanyApprovalNotice } = require('./companyApproval');
+
+// Export the function
+exports.sendCompanyApprovalNotice = sendCompanyApprovalNotice;
+
+// 🎯 Yeni kampanya bildirimi fonksiyonu - Geçici olarak devre dışı
+/*
+exports.sendNewCampaignNotice = functions.firestore
+  .document('campaigns/{campaignId}')
+  .onCreate(async (snap, context) => {
     try {
-      const { companyId, approvalStatus, reason } = req.body;
-    
-      if (!companyId || !approvalStatus) {
-        res.status(400).json({ error: 'Gerekli parametreler eksik' });
-        return;
+      const campaignData = snap.data();
+      const campaignId = context.params.campaignId;
+      
+      console.log(`🎯 Yeni kampanya oluşturuldu: ${campaignId}`);
+      
+      // Tüm kullanıcıları al
+      const usersSnapshot = await admin.firestore().collection('users').get();
+      
+      if (usersSnapshot.empty) {
+        console.log('❌ Kullanıcı bulunamadı');
+        return null;
       }
       
-      // Firma bilgilerini al
-      const companyDoc = await admin.firestore().collection('companies').doc(companyId).get();
-      
-      if (!companyDoc.exists) {
-        res.status(404).json({ error: 'Firma bulunamadı' });
-        return;
-      }
-      
-      const company = companyDoc.data();
-      const companyName = company.company || company.companyTitle || "Firma";
-      
-      // Company ID'si ile user'ı bul (aynı ID kullanılıyor)
-      const userDoc = await admin.firestore().collection('users').doc(companyId).get();
-      
-      if (!userDoc.exists) {
-        res.status(404).json({ error: 'Kullanıcı bulunamadı' });
-        return;
-      }
-      
-      const userData = userDoc.data();
-      const fcmToken = userData.fcmToken;
-      
-      if (!fcmToken) {
-        res.status(400).json({ error: 'FCM token bulunamadı' });
-        return;
-      }
-      
-      // Bildirim mesajını hazırla
-      let notificationTitle, notificationBody;
-      
-      if (approvalStatus === "approved") {
-        notificationTitle = "✅ Başvurunuz Onaylandı!";
-        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz başarıyla onaylandı. Detaylar için uygulamayı kontrol edin.`;
-      } else {
-        notificationTitle = "❌ Başvurunuz Onaylanmadı";
-        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz ${reason || "belirtilen sebeplerden dolayı"} onaylanmadı. Lütfen tekrar başvurun.`;
-      }
+      const campaignTitle = campaignData.title || campaignData.campaignTitle || "Yeni Kampanya";
+      const campaignDescription = campaignData.description || campaignData.campaignDescription || "Yeni bir kampanya başladı!";
       
       // FCM mesajını hazırla
       const message = {
-        token: fcmToken,
         notification: {
-          title: notificationTitle,
-          body: notificationBody,
+          title: `🎯 ${campaignTitle}`,
+          body: campaignDescription,
         },
         data: {
-          type: "company_approval",
-          companyId: companyId,
-          approvalStatus: approvalStatus,
-          reason: reason || "",
-          companyName: companyName,
+          type: "new_campaign",
+          campaignId: campaignId,
+          campaignTitle: campaignTitle,
         },
+        topic: 'all_users' // Tüm kullanıcılara gönder
       };
       
       // Bildirimi gönder
       const result = await admin.messaging().send(message);
       
-      console.log(`📨 ${companyName} için ${approvalStatus === 'approved' ? 'onay' : 'red'} bildirimi gönderildi:`, result);
+      console.log(`📨 Yeni kampanya bildirimi gönderildi:`, result);
       
-      res.status(200).json({ 
-        success: true, 
-        message: "Bildirim başarıyla gönderildi",
-        companyName: companyName,
-        approvalStatus: approvalStatus,
-        messageId: result
-      });
+      return result;
       
     } catch (error) {
-      console.error("❌ Firma onay bildirimi gönderilirken hata:", error);
-      res.status(500).json({ error: 'Bildirim gönderilirken hata oluştu', details: error.message });
+      console.error("❌ Yeni kampanya bildirimi gönderilirken hata:", error);
+      return null;
     }
   });
+*/
+
+// 🎁 Yeni indirim bildirimi fonksiyonu - Geçici olarak devre dışı
+/*
+exports.sendNewDiscountNotice = functions.firestore
+  .document('discounts/{discountId}')
+  .onCreate(async (snap, context) => {
+    try {
+      const discountData = snap.data();
+      const discountId = context.params.discountId;
+      
+      console.log(`🎁 Yeni indirim oluşturuldu: ${discountId}`);
+      
+      const discountTitle = discountData.title || discountData.discountTitle || "Yeni İndirim";
+      const discountDescription = discountData.description || discountData.discountDescription || "Yeni bir indirim başladı!";
+      
+      // FCM mesajını hazırla
+      const message = {
+        notification: {
+          title: `🎁 ${discountTitle}`,
+          body: discountDescription,
+        },
+        data: {
+          type: "new_discount",
+          discountId: discountId,
+          discountTitle: discountTitle,
+        },
+        topic: 'all_users' // Tüm kullanıcılara gönder
+      };
+      
+      // Bildirimi gönder
+      const result = await admin.messaging().send(message);
+      
+      console.log(`📨 Yeni indirim bildirimi gönderildi:`, result);
+      
+      return result;
+      
+    } catch (error) {
+      console.error("❌ Yeni indirim bildirimi gönderilirken hata:", error);
+      return null;
+    }
+  });
+*/
