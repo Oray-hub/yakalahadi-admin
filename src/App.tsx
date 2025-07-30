@@ -20,14 +20,7 @@ const menu = [
 
 ];
 
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div style={{ padding: 32, textAlign: "center" }}>
-      <h2>{title}</h2>
-      <p style={{ color: "#666", fontSize: "1.1em" }}>Bu özellik yakında eklenecek...</p>
-    </div>
-  );
-}
+
 
 function Panel({ onLogout }: { onLogout: () => void }) {
   const [activeMenu, setActiveMenu] = useState("/users");

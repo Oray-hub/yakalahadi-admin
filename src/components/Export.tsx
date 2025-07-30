@@ -56,18 +56,10 @@ interface Review {
   createdAt: any;
 }
 
-interface AccountingData {
-  month: string;
-  purchasedCredits: number;
-  credits: number;
-  earnings: number;
-  purchaseDate?: string;
-}
+
 
 function Export() {
   const [loading, setLoading] = useState(false);
-  const [exportType, setExportType] = useState<string>('');
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [data, setData] = useState<any>({});
 
   // Verileri yükle
@@ -275,15 +267,13 @@ function Export() {
       const db = getFirestore();
       const companiesSnapshot = await getDocs(collection(db, "companies"));
       
-      let totalCredits = 0;
-      let totalEarnings = 0;
-      const monthlyData: { [key: string]: { purchasedCredits: number; credits: number; earnings: number } } = {};
-      const companyData: any[] = [];
+             let totalCredits = 0;
+       let totalEarnings = 0;
+       const monthlyData: { [key: string]: { purchasedCredits: number; credits: number; earnings: number } } = {};
 
-      for (const companyDoc of companiesSnapshot.docs) {
-        const companyData = companyDoc.data();
-        const companyName = companyData.company || "Firma Adı Yok";
-        const totalPurchasedCredits = companyData.totalPurchasedCredits || 0;
+             for (const companyDoc of companiesSnapshot.docs) {
+         const companyData = companyDoc.data();
+         const totalPurchasedCredits = companyData.totalPurchasedCredits || 0;
         
         if (totalPurchasedCredits > 0) {
           // Kredi fiyatlandırma
@@ -328,14 +318,7 @@ function Export() {
             monthlyData[monthKey].earnings += creditPrice;
           }
 
-          // Firma verisi
-          companyData.push({
-            'Firma Adı': companyName,
-            'Alınan Kredi Miktarı': totalPurchasedCredits,
-            'Kredi Geliri (₺)': creditPrice,
-            'Toplam Kazanç (₺)': creditPrice,
-            'Net Kar (₺)': 0
-          });
+          
         }
       }
 
