@@ -3,17 +3,24 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
 
 // Firebase Admin SDK'yı başlat
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: "yakalahadi-333ca",
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "firebase-adminsdk-xxxxx@yakalahadi-333ca.iam.gserviceaccount.com",
-      privateKey: (process.env.FIREBASE_PRIVATE_KEY || "-----BEGIN PRIVATE KEY-----\nXXXXX\n-----END PRIVATE KEY-----\n").replace(/\\n/g, '\n')
-    })
-  });
+let app;
+try {
+  if (!getApps().length) {
+    app = initializeApp({
+      credential: cert({
+        projectId: "yakalahadi-333ca",
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      })
+    });
+  } else {
+    app = getApps()[0];
+  }
+} catch (error) {
+  console.error("❌ Firebase Admin SDK başlatma hatası:", error);
 }
 
-const db = getFirestore();
+const db = getFirestore(app);
 
 export default async function handler(req, res) {
   // CORS header'ları
