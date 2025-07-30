@@ -5,6 +5,9 @@ admin.initializeApp();
 
 // 🏢 Firma onay bildirimi fonksiyonu
 exports.sendCompanyApprovalNotice = functions
+  .runWith({
+    allowUnauthenticated: true
+  })
   .https.onCall(async (data, context) => {
     try {
       const { companyId, approvalStatus, reason } = data;
