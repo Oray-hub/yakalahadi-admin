@@ -1,32 +1,33 @@
-const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 
 // 🏢 Firma onay/red bildirimi fonksiyonu
-exports.sendCompanyApprovalNotice = functions
-  .https.onRequest(async (req, res) => {
-  // CORS header'ları - v1 için
-  res.set('Access-Control-Allow-Origin', 'https://adminoray.yakalahadi.com');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
-  // OPTIONS request için
-  if (req.method === 'OPTIONS') {
-    res.status(200).send('');
-    return;
-  }
-  
+exports.sendCompanyApprovalNotice = onRequest({
+  cors: [
+    'https://adminoray.yakalahadi.com',
+    'https://yakalahadi.com',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://yakalahadi-admin.vercel.app'
+  ]
+}, async (req, res) => {
   try {
+    console.log("📥 Request received:", req.body);
     const { companyId, approvalStatus, reason } = req.body;
-  
+    
     if (!companyId || !approvalStatus) {
+      console.log("❌ Missing parameters");
       res.status(400).json({ error: 'Gerekli parametreler eksik' });
       return;
     }
+    
+    console.log("🔍 Looking for company:", companyId);
     
     // Firma bilgilerini al
     const companyDoc = await admin.firestore().collection('companies').doc(companyId).get();
     
     if (!companyDoc.exists) {
+      console.log("❌ Company not found:", companyId);
       res.status(404).json({ error: 'Firma bulunamadı' });
       return;
     }
@@ -34,10 +35,13 @@ exports.sendCompanyApprovalNotice = functions
     const company = companyDoc.data();
     const companyName = company.company || company.companyTitle || "Firma";
     
+    console.log("🔍 Looking for user:", companyId);
+    
     // Company ID'si ile user'ı bul (aynı ID kullanılıyor)
     const userDoc = await admin.firestore().collection('users').doc(companyId).get();
     
     if (!userDoc.exists) {
+      console.log("❌ User not found:", companyId);
       res.status(404).json({ error: 'Kullanıcı bulunamadı' });
       return;
     }
@@ -46,9 +50,12 @@ exports.sendCompanyApprovalNotice = functions
     const fcmToken = userData.fcmToken;
     
     if (!fcmToken) {
+      console.log("❌ FCM token not found for user:", companyId);
       res.status(400).json({ error: 'FCM token bulunamadı' });
       return;
     }
+    
+    console.log("📱 FCM token found:", fcmToken.substring(0, 20) + "...");
     
     // Bildirim mesajını hazırla
     let notificationTitle, notificationBody;
@@ -77,6 +84,8 @@ exports.sendCompanyApprovalNotice = functions
       },
     };
     
+    console.log("📨 Sending notification:", { companyName, approvalStatus });
+    
     // Bildirimi gönder
     const result = await admin.messaging().send(message);
     
@@ -92,6 +101,9 @@ exports.sendCompanyApprovalNotice = functions
     
   } catch (error) {
     console.error("❌ Firma onay bildirimi gönderilirken hata:", error);
-    res.status(500).json({ error: 'Bildirim gönderilirken hata oluştu', details: error.message });
+    res.status(500).json({ 
+      error: 'Bildirim gönderilirken hata oluştu', 
+      details: error.message 
+    });
   }
 }); 

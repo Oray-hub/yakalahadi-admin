@@ -6,12 +6,8 @@ admin.initializeApp();
 // Company approval fonksiyonunu import et
 const { sendCompanyApprovalNotice } = require('./companyApproval');
 
-// Test notification fonksiyonunu import et
-const { sendTestNotification } = require('./testNotification');
-
 // Export the functions
 exports.sendCompanyApprovalNotice = sendCompanyApprovalNotice;
-exports.sendTestNotification = sendTestNotification;
 
 // 🎯 Yeni kampanya bildirimi fonksiyonu - Geçici olarak devre dışı
 /*
