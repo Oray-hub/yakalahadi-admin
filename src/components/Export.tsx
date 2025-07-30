@@ -1,36 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-interface Company {
-  id: string;
-  company: string;
-  category: string;
-  approved: boolean;
-  credits: number;
-  totalPurchasedCredits: number;
-  creditPurchaseDate?: any;
-  createdAt: any;
-}
-
-interface Review {
-  id: string;
-  userId: string;
-  userName: string;
-  companyId: string;
-  companyName: string;
-  rating: number;
-  comment: string;
-  createdAt: any;
-}
-
 
 
 function Export() {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any>({});
   const [dateRanges, setDateRanges] = useState({
     users: { start: '', end: '' },
     companies: { start: '', end: '' },
@@ -38,53 +14,6 @@ function Export() {
     reviews: { start: '', end: '' },
     accounting: { start: '', end: '' }
   });
-
-  // Verileri yükle
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const db = getFirestore();
-      
-      // Kullanıcıları yükle
-      const usersSnapshot = await getDocs(collection(db, "users"));
-      const users = usersSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      // Firmaları yükle
-      const companiesSnapshot = await getDocs(collection(db, "companies"));
-      const companies = companiesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      // Kampanyaları yükle
-      const campaignsSnapshot = await getDocs(collection(db, "campaigns"));
-      const campaigns = campaignsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      // Yorumları yükle
-      const reviewsSnapshot = await getDocs(collection(db, "reviews"));
-      const reviews = reviewsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      setData({ users, companies, campaigns, reviews });
-    } catch (error) {
-      console.error('Veri yükleme hatası:', error);
-      alert('Veri yüklenirken hata oluştu!');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   // Tarih aralığı güncelleme fonksiyonu
   const updateDateRange = (type: string, field: 'start' | 'end', value: string) => {
@@ -301,41 +230,82 @@ function Export() {
         'Şartlar Kabul': user.termsAccepted ? 'Evet' : 'Hayır'
       }));
 
-    if (format === 'excel') {
-      exportToExcel(userData, 'Kullanıcı_Listesi');
-    } else if (format === 'csv') {
-      exportToCSV(userData, 'Kullanıcı_Listesi');
-         } else if (format === 'pdf') {
-       exportToPDF(userData, 'Kullanıcı_Listesi', 'Kullanıcı Listesi', 
-         ['Kullanıcı ID', 'Ad Soyad', 'E-posta', 'Kayıt Tarihi', 'E-posta Doğrulandı', 'Kategoriler', 'Yakalanan Kampanya Sayısı', 'QR Kod Okutuldu', 'Gizlilik Kabul', 'Şartlar Kabul']);
-     }
-   } catch (error) {
-     console.error('Kullanıcı export hatası:', error);
-     alert('Kullanıcı verileri export edilirken hata oluştu!');
-   }
+      if (format === 'excel') {
+        exportToExcel(userData, 'Kullanıcı_Listesi');
+      } else if (format === 'csv') {
+        exportToCSV(userData, 'Kullanıcı_Listesi');
+      } else if (format === 'pdf') {
+        exportToPDF(userData, 'Kullanıcı_Listesi', 'Kullanıcı Listesi', 
+          ['Kullanıcı ID', 'Ad Soyad', 'E-posta', 'Kayıt Tarihi', 'E-posta Doğrulandı', 'Kategoriler', 'Yakalanan Kampanya Sayısı', 'QR Kod Okutuldu', 'Gizlilik Kabul', 'Şartlar Kabul']);
+      }
+    } catch (error) {
+      console.error('Kullanıcı export hatası:', error);
+      alert('Kullanıcı verileri export edilirken hata oluştu!');
+    }
   };
 
   // Firma Export
-  const exportCompanies = (format: 'excel' | 'csv' | 'pdf') => {
-    const filteredCompanies = filterByDateRange(data.companies || [], 'createdAt', dateRanges.companies.start, dateRanges.companies.end);
-    const companyData = filteredCompanies.map((company: Company) => ({
-      'Firma ID': company.id,
-      'Firma Adı': company.company,
-      'Kategori': company.category,
-      'Onay Durumu': company.approved ? 'Onaylı' : 'Onay Bekliyor',
-      'Mevcut Kredi': company.credits || 0,
-      'Toplam Alınan Kredi': company.totalPurchasedCredits || 0,
-      'Kredi Alım Tarihi': company.creditPurchaseDate?.toDate ? company.creditPurchaseDate.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş',
-      'Kayıt Tarihi': company.createdAt?.toDate ? company.createdAt.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş'
-    })) || [];
+  const exportCompanies = async (format: 'excel' | 'csv' | 'pdf') => {
+    try {
+      const db = getFirestore();
+      const companiesRef = collection(db, "companies");
+      const snapshot = await getDocs(companiesRef);
+      
+      const companiesData: any[] = [];
+      
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        companiesData.push({
+          id: doc.id,
+          company: data.company || '',
+          companyTitle: data.companyTitle || '',
+          companyOfficer: data.companyOfficer || '',
+          vkn: data.vkn || '',
+          createdAt: data.createdAt,
+          firmType: data.firmType || '',
+          category: data.category || '',
+          approved: data.approved || false,
+          email: data.email || '',
+          phone: data.phone || '',
+          averageRating: data.averageRating || 0,
+          credits: data.credits || 0,
+          totalPurchasedCredits: data.totalPurchasedCredits || 0,
+          creditPurchaseDate: data.creditPurchaseDate
+        });
+      });
+      
+      // Tarih filtreleme uygula
+      const filteredCompanies = filterByDateRange(companiesData, 'createdAt', dateRanges.companies.start, dateRanges.companies.end);
+      
+      const companyData = filteredCompanies.map((company: any) => ({
+        'Firma ID': company.id,
+        'Firma Adı': company.company,
+        'Firma Başlığı': company.companyTitle,
+        'Yetkili Kişi': company.companyOfficer,
+        'VKN': company.vkn,
+        'Firma Türü': company.firmType,
+        'Kategori': company.category,
+        'Onay Durumu': company.approved ? 'Onaylı' : 'Onay Bekliyor',
+        'E-posta': company.email,
+        'Telefon': company.phone,
+        'Ortalama Puan': company.averageRating,
+        'Mevcut Kredi': company.credits,
+        'Toplam Alınan Kredi': company.totalPurchasedCredits,
+        'Kredi Alım Tarihi': company.creditPurchaseDate?.toDate ? company.creditPurchaseDate.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş',
+        'Kayıt Tarihi': company.createdAt?.toDate ? company.createdAt.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş'
+      }));
 
-    if (format === 'excel') {
-      exportToExcel(companyData, 'Firma_Listesi');
-    } else if (format === 'csv') {
-      exportToCSV(companyData, 'Firma_Listesi');
-    } else if (format === 'pdf') {
-      exportToPDF(companyData, 'Firma_Listesi', 'Firma Listesi', 
-        ['Firma ID', 'Firma Adı', 'Kategori', 'Onay Durumu', 'Mevcut Kredi', 'Toplam Alınan Kredi', 'Kredi Alım Tarihi']);
+      if (format === 'excel') {
+        exportToExcel(companyData, 'Firma_Listesi');
+      } else if (format === 'csv') {
+        exportToCSV(companyData, 'Firma_Listesi');
+      } else if (format === 'pdf') {
+        exportToPDF(companyData, 'Firma_Listesi', 'Firma Listesi', 
+          ['Firma ID', 'Firma Adı', 'Firma Başlığı', 'Yetkili Kişi', 'VKN', 'Firma Türü', 'Kategori', 'Onay Durumu', 'E-posta', 'Telefon', 'Ortalama Puan', 'Mevcut Kredi', 'Toplam Alınan Kredi', 'Kredi Alım Tarihi', 'Kayıt Tarihi']);
+      }
+    } catch (error) {
+      console.error('Firma export hatası:', error);
+      alert('Firma verileri export edilirken hata oluştu!');
     }
   };
 
@@ -419,39 +389,80 @@ function Export() {
         };
       });
 
-    if (format === 'excel') {
-      exportToExcel(campaignData, 'Kampanya_Listesi');
-    } else if (format === 'csv') {
-      exportToCSV(campaignData, 'Kampanya_Listesi');
-         } else if (format === 'pdf') {
-       exportToPDF(campaignData, 'Kampanya_Listesi', 'Kampanya Listesi', 
-         ['Kampanya ID', 'Kampanya Tipi', 'Firma Adı', 'Bildirim İçeriği', 'Süre (Dakika)', 'Oluşturulma Tarihi', 'Bitiş Tarihi', 'Aktif']);
-     }
-   } catch (error) {
-     console.error('Kampanya export hatası:', error);
-     alert('Kampanya verileri export edilirken hata oluştu!');
-   }
+      if (format === 'excel') {
+        exportToExcel(campaignData, 'Kampanya_Listesi');
+      } else if (format === 'csv') {
+        exportToCSV(campaignData, 'Kampanya_Listesi');
+      } else if (format === 'pdf') {
+        exportToPDF(campaignData, 'Kampanya_Listesi', 'Kampanya Listesi', 
+          ['Kampanya ID', 'Kampanya Tipi', 'Firma Adı', 'Bildirim İçeriği', 'Süre (Dakika)', 'Oluşturulma Tarihi', 'Bitiş Tarihi', 'Aktif']);
+      }
+    } catch (error) {
+      console.error('Kampanya export hatası:', error);
+      alert('Kampanya verileri export edilirken hata oluştu!');
+    }
   };
 
   // Yorum Export
-  const exportReviews = (format: 'excel' | 'csv' | 'pdf') => {
-    const filteredReviews = filterByDateRange(data.reviews || [], 'createdAt', dateRanges.reviews.start, dateRanges.reviews.end);
-    const reviewData = filteredReviews.map((review: Review) => ({
-      'Yorum ID': review.id,
-      'Kullanıcı Adı': review.userName,
-      'Firma Adı': review.companyName,
-      'Puan': review.rating,
-      'Yorum': review.comment,
-      'Tarih': review.createdAt?.toDate ? review.createdAt.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş'
-    })) || [];
+  const exportReviews = async (format: 'excel' | 'csv' | 'pdf') => {
+    try {
+      const db = getFirestore();
+      const reviewsData: any[] = [];
+      
+      // Tüm firmalar için yorumları çek
+      const companiesRef = collection(db, "companies");
+      const companiesSnapshot = await getDocs(companiesRef);
+      
+      for (const companyDoc of companiesSnapshot.docs) {
+        const companyData = companyDoc.data();
+        const reviewsRef = collection(db, "companies", companyDoc.id, "reviews");
+        
+        try {
+          const reviewsSnapshot = await getDocs(reviewsRef);
+          
+          for (const reviewDoc of reviewsSnapshot.docs) {
+            const reviewData = reviewDoc.data();
+            reviewsData.push({
+              id: reviewDoc.id,
+              companyId: companyDoc.id,
+              companyName: companyData.company || "Firma Adı Yok",
+              userId: reviewData.userId || "",
+              userName: reviewData.userName || "Kullanıcı Adı Yok",
+              rating: reviewData.rating || 0,
+              comment: reviewData.comment || "Yorum Yok",
+              timestamp: reviewData.timestamp,
+            });
+          }
+        } catch (error) {
+          console.log(`Firma ${companyDoc.id} için yorumlar yüklenirken hata:`, error);
+        }
+      }
+      
+      // Tarih filtreleme uygula
+      const filteredReviews = filterByDateRange(reviewsData, 'timestamp', dateRanges.reviews.start, dateRanges.reviews.end);
+      
+      const reviewData = filteredReviews.map((review: any) => ({
+        'Yorum ID': review.id,
+        'Firma ID': review.companyId,
+        'Firma Adı': review.companyName,
+        'Kullanıcı ID': review.userId,
+        'Kullanıcı Adı': review.userName,
+        'Puan': review.rating,
+        'Yorum': review.comment,
+        'Tarih': review.timestamp?.toDate ? review.timestamp.toDate().toLocaleDateString('tr-TR') : 'Belirtilmemiş'
+      }));
 
-    if (format === 'excel') {
-      exportToExcel(reviewData, 'Yorum_Listesi');
-    } else if (format === 'csv') {
-      exportToCSV(reviewData, 'Yorum_Listesi');
-    } else if (format === 'pdf') {
-      exportToPDF(reviewData, 'Yorum_Listesi', 'Yorum Listesi', 
-        ['Yorum ID', 'Kullanıcı Adı', 'Firma Adı', 'Puan', 'Yorum', 'Tarih']);
+      if (format === 'excel') {
+        exportToExcel(reviewData, 'Yorum_Listesi');
+      } else if (format === 'csv') {
+        exportToCSV(reviewData, 'Yorum_Listesi');
+      } else if (format === 'pdf') {
+        exportToPDF(reviewData, 'Yorum_Listesi', 'Yorum Listesi', 
+          ['Yorum ID', 'Firma ID', 'Firma Adı', 'Kullanıcı ID', 'Kullanıcı Adı', 'Puan', 'Yorum', 'Tarih']);
+      }
+    } catch (error) {
+      console.error('Yorum export hatası:', error);
+      alert('Yorum verileri export edilirken hata oluştu!');
     }
   };
 
@@ -469,12 +480,12 @@ function Export() {
       
       const filteredCompanies = filterByDateRange(companies, 'creditPurchaseDate', dateRanges.accounting.start, dateRanges.accounting.end);
       
-             let totalCredits = 0;
-       let totalEarnings = 0;
-       const monthlyData: { [key: string]: { purchasedCredits: number; credits: number; earnings: number } } = {};
+      let totalCredits = 0;
+      let totalEarnings = 0;
+      const monthlyData: { [key: string]: { purchasedCredits: number; credits: number; earnings: number } } = {};
 
-             for (const companyData of filteredCompanies) {
-         const totalPurchasedCredits = companyData.totalPurchasedCredits || 0;
+      for (const companyData of filteredCompanies) {
+        const totalPurchasedCredits = companyData.totalPurchasedCredits || 0;
         
         if (totalPurchasedCredits > 0) {
           // Kredi fiyatlandırma
@@ -518,8 +529,6 @@ function Export() {
             monthlyData[monthKey].credits += creditPrice;
             monthlyData[monthKey].earnings += creditPrice;
           }
-
-          
         }
       }
 
@@ -628,154 +637,116 @@ function Export() {
         </p>
       </div>
 
-      {loading && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px', 
-          color: '#666',
-          fontSize: '16px'
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '24px',
+        maxWidth: '100%'
+      }}>
+        {/* Kullanıcı Export */}
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          padding: '20px',
+          border: '1px solid #dee2e6'
         }}>
-          Veriler yükleniyor...
+          <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+            👥 Kullanıcı Listesi
+          </h3>
+          <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+            Tüm kullanıcı verilerini dışa aktarın.
+          </p>
+          <DateRangeFilter type="users" />
+          <div>
+            <ExportButton label="📊 Excel" onClick={() => exportUsers('excel')} format="excel" />
+            <ExportButton label="📄 CSV" onClick={() => exportUsers('csv')} format="csv" />
+            <ExportButton label="📋 PDF" onClick={() => exportUsers('pdf')} format="pdf" />
+          </div>
         </div>
-      )}
 
-             {!loading && (
-         <div style={{ 
-           display: 'grid', 
-           gridTemplateColumns: 'repeat(2, 1fr)',
-           gap: '24px',
-           maxWidth: '100%'
-         }}>
-                     {/* Kullanıcı Export */}
-           <div style={{
-             backgroundColor: '#f8f9fa',
-             borderRadius: '12px',
-             padding: '20px',
-             border: '1px solid #dee2e6'
-           }}>
-             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-               👥 Kullanıcı Listesi
-             </h3>
-             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-               Tüm kullanıcı verilerini dışa aktarın.
-             </p>
-             <DateRangeFilter type="users" />
-             <div>
-               <ExportButton label="📊 Excel" onClick={() => exportUsers('excel')} format="excel" />
-               <ExportButton label="📄 CSV" onClick={() => exportUsers('csv')} format="csv" />
-               <ExportButton label="📋 PDF" onClick={() => exportUsers('pdf')} format="pdf" />
-             </div>
-           </div>
-
-                     {/* Firma Export */}
-           <div style={{
-             backgroundColor: '#f8f9fa',
-             borderRadius: '12px',
-             padding: '20px',
-             border: '1px solid #dee2e6'
-           }}>
-             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-               🏢 Firma Listesi
-             </h3>
-             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-               Tüm firma verilerini dışa aktarın.
-             </p>
-             <DateRangeFilter type="companies" />
-             <div>
-               <ExportButton label="📊 Excel" onClick={() => exportCompanies('excel')} format="excel" />
-               <ExportButton label="📄 CSV" onClick={() => exportCompanies('csv')} format="csv" />
-               <ExportButton label="📋 PDF" onClick={() => exportCompanies('pdf')} format="pdf" />
-             </div>
-           </div>
-
-                     {/* Kampanya Export */}
-           <div style={{
-             backgroundColor: '#f8f9fa',
-             borderRadius: '12px',
-             padding: '20px',
-             border: '1px solid #dee2e6'
-           }}>
-             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-               🎯 Kampanya Listesi
-             </h3>
-             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-               Tüm kampanya verilerini dışa aktarın.
-             </p>
-             <DateRangeFilter type="campaigns" />
-             <div>
-               <ExportButton label="📊 Excel" onClick={() => exportCampaigns('excel')} format="excel" />
-               <ExportButton label="📄 CSV" onClick={() => exportCampaigns('csv')} format="csv" />
-               <ExportButton label="📋 PDF" onClick={() => exportCampaigns('pdf')} format="pdf" />
-             </div>
-           </div>
-
-                     {/* Yorum Export */}
-           <div style={{
-             backgroundColor: '#f8f9fa',
-             borderRadius: '12px',
-             padding: '20px',
-             border: '1px solid #dee2e6'
-           }}>
-             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-               ⭐ Yorum Listesi
-             </h3>
-             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-               Tüm yorum ve puan verilerini dışa aktarın.
-             </p>
-             <DateRangeFilter type="reviews" />
-             <div>
-               <ExportButton label="📊 Excel" onClick={() => exportReviews('excel')} format="excel" />
-               <ExportButton label="📄 CSV" onClick={() => exportReviews('csv')} format="csv" />
-               <ExportButton label="📋 PDF" onClick={() => exportReviews('pdf')} format="pdf" />
-             </div>
-           </div>
-
-                     {/* Muhasebe Export */}
-           <div style={{
-             backgroundColor: '#f8f9fa',
-             borderRadius: '12px',
-             padding: '20px',
-             border: '1px solid #dee2e6'
-           }}>
-             <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
-               💰 Muhasebe Raporu
-             </h3>
-             <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
-               Kredi gelirleri ve finansal verileri dışa aktarın.
-             </p>
-             <DateRangeFilter type="accounting" />
-             <div>
-               <ExportButton label="📊 Excel" onClick={() => exportAccounting('excel')} format="excel" />
-               <ExportButton label="📄 CSV" onClick={() => exportAccounting('csv')} format="csv" />
-               <ExportButton label="📋 PDF" onClick={() => exportAccounting('pdf')} format="pdf" />
-             </div>
-           </div>
+        {/* Firma Export */}
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          padding: '20px',
+          border: '1px solid #dee2e6'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+            🏢 Firma Listesi
+          </h3>
+          <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+            Tüm firma verilerini dışa aktarın.
+          </p>
+          <DateRangeFilter type="companies" />
+          <div>
+            <ExportButton label="📊 Excel" onClick={() => exportCompanies('excel')} format="excel" />
+            <ExportButton label="📄 CSV" onClick={() => exportCompanies('csv')} format="csv" />
+            <ExportButton label="📋 PDF" onClick={() => exportCompanies('pdf')} format="pdf" />
+          </div>
         </div>
-      )}
 
-      {/* Yenile Butonu */}
-      <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <button
-          onClick={loadData}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            padding: '10px 20px',
-            fontSize: '14px',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#0056b3';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#007bff';
-          }}
-        >
-          🔄 Verileri Yenile
-        </button>
+        {/* Kampanya Export */}
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          padding: '20px',
+          border: '1px solid #dee2e6'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+            🎯 Kampanya Listesi
+          </h3>
+          <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+            Tüm kampanya verilerini dışa aktarın.
+          </p>
+          <DateRangeFilter type="campaigns" />
+          <div>
+            <ExportButton label="📊 Excel" onClick={() => exportCampaigns('excel')} format="excel" />
+            <ExportButton label="📄 CSV" onClick={() => exportCampaigns('csv')} format="csv" />
+            <ExportButton label="📋 PDF" onClick={() => exportCampaigns('pdf')} format="pdf" />
+          </div>
+        </div>
+
+        {/* Yorum Export */}
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          padding: '20px',
+          border: '1px solid #dee2e6'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+            ⭐ Yorum Listesi
+          </h3>
+          <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+            Tüm yorum ve puan verilerini dışa aktarın.
+          </p>
+          <DateRangeFilter type="reviews" />
+          <div>
+            <ExportButton label="📊 Excel" onClick={() => exportReviews('excel')} format="excel" />
+            <ExportButton label="📄 CSV" onClick={() => exportReviews('csv')} format="csv" />
+            <ExportButton label="📋 PDF" onClick={() => exportReviews('pdf')} format="pdf" />
+          </div>
+        </div>
+
+        {/* Muhasebe Export */}
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          padding: '20px',
+          border: '1px solid #dee2e6'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+            💰 Muhasebe Raporu
+          </h3>
+          <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px 0' }}>
+            Kredi gelirleri ve finansal verileri dışa aktarın.
+          </p>
+          <DateRangeFilter type="accounting" />
+          <div>
+            <ExportButton label="📊 Excel" onClick={() => exportAccounting('excel')} format="excel" />
+            <ExportButton label="📄 CSV" onClick={() => exportAccounting('csv')} format="csv" />
+            <ExportButton label="📋 PDF" onClick={() => exportAccounting('pdf')} format="pdf" />
+          </div>
+        </div>
       </div>
     </div>
   );
