@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 
 interface Review {
