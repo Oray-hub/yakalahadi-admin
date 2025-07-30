@@ -647,9 +647,9 @@ function Companies() {
       {/* Scroll Tablo Kısmı */}
       <div style={{ 
         flex: 1, 
-        overflowY: "auto", 
+        overflowY: "hidden", 
         overflowX: "auto",
-        minHeight: "400px",
+        height: "400px",
         minWidth: 0,
         border: "1px solid #e0e0e0",
         borderRadius: "8px",
