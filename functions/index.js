@@ -6,8 +6,16 @@ admin.initializeApp();
 // Company approval trigger fonksiyonunu import et
 const { sendCompanyApprovalNoticeTrigger } = require('./companyApproval');
 
+// SendGrid email fonksiyonunu import et
+const { sendCompanyApprovalEmail } = require('./sendGridEmail');
+
+// Toplu bildirim fonksiyonunu import et
+const { sendBulkNotificationTrigger } = require('./bulkNotification');
+
 // Export the functions
 exports.sendCompanyApprovalNoticeTrigger = sendCompanyApprovalNoticeTrigger;
+exports.sendCompanyApprovalEmail = sendCompanyApprovalEmail;
+exports.sendBulkNotificationTrigger = sendBulkNotificationTrigger;
 
 // 🎯 Yeni kampanya bildirimi fonksiyonu - Geçici olarak devre dışı
 /*

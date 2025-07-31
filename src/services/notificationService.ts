@@ -33,6 +33,36 @@ export class NotificationService {
     }
   }
 
+  // Toplu bildirim gönder - Firestore trigger ile
+  static async sendBulkNotification(title: string, message: string): Promise<any> {
+    try {
+      console.log("📝 Creating bulk notification document:", { title, message });
+      
+      // Firestore'a doküman ekle - bu trigger'ı tetikleyecek
+      const bulkNotificationData = {
+        title: title,
+        message: message,
+        timestamp: new Date().toISOString(),
+        processed: false,
+        type: 'bulk_notification'
+      };
+      
+      const docRef = await addDoc(collection(db, 'bulkNotifications'), bulkNotificationData);
+      
+      console.log("✅ Bulk notification document created:", docRef.id);
+      
+      return {
+        success: true,
+        message: "Toplu bildirim başarıyla gönderildi",
+        documentId: docRef.id
+      };
+      
+    } catch (error) {
+      console.error("❌ Bulk notification error:", error);
+      throw new Error(`Toplu bildirim gönderilemedi: ${error}`);
+    }
+  }
+
   // Test bildirimi gönder
   static async sendTestNotification(
     companyId: string,

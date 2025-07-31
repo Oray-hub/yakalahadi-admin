@@ -330,30 +330,30 @@ function Companies() {
         console.log("📋 NotificationService sonucu:", notificationResult);
         
         if (notificationResult.success) {
-          console.log("✅ Bildirim başarıyla gönderildi:", notificationResult.message);
+          console.log("✅ Mail başarıyla gönderildi:", notificationResult.message);
           if (approved) {
-            alert(`✅ Firma onaylandı!\n\n📨 Bildirim başarıyla gönderildi`);
+            alert(`✅ Firma onaylandı!\n\n📧 Mail başarıyla gönderildi`);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n📨 Bildirim başarıyla gönderildi`);
+            alert(`❌ Firma onaylanmadı!\n\n📧 Mail başarıyla gönderildi`);
           }
         } else {
-          console.error("❌ Bildirim gönderilemedi:", notificationResult.message);
+          console.error("❌ Mail gönderilemedi:", notificationResult.message);
           if (approved) {
-            alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${notificationResult.message}`);
+            alert(`✅ Firma onaylandı!\n\n⚠️ Mail gönderilemedi: ${notificationResult.message}`);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${notificationResult.message}`);
+            alert(`❌ Firma onaylanmadı!\n\n⚠️ Mail gönderilemedi: ${notificationResult.message}`);
           }
         }
         
       } catch (notificationError: any) {
-        console.error("❌ Bildirim gönderilirken hata:", notificationError);
+        console.error("❌ Mail gönderilirken hata:", notificationError);
         console.error("❌ Hata detayı:", notificationError.stack);
         
-        // Bildirim hatası olsa bile onay durumu değişti
+        // Mail hatası olsa bile onay durumu değişti
         if (approved) {
-          alert(`✅ Firma onaylandı!\n\n⚠️ Bildirim gönderilemedi: ${notificationError.message}`);
+          alert(`✅ Firma onaylandı!\n\n⚠️ Mail gönderilemedi: ${notificationError.message}`);
         } else {
-          alert(`❌ Firma onaylanmadı!\n\n⚠️ Bildirim gönderilemedi: ${notificationError.message}`);
+          alert(`❌ Firma onaylanmadı!\n\n⚠️ Mail gönderilemedi: ${notificationError.message}`);
         }
       }
       
