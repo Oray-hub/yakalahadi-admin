@@ -3,9 +3,6 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// Company approval trigger fonksiyonunu import et
-const { sendCompanyApprovalNoticeTrigger } = require('./companyApproval');
-
 // SendGrid email fonksiyonunu import et
 const { sendCompanyApprovalEmail } = require('./sendGridEmail');
 
@@ -13,13 +10,17 @@ const { sendCompanyApprovalEmail } = require('./sendGridEmail');
 const { sendBulkNotificationTrigger } = require('./bulkNotification');
 
 // Export the functions
-exports.sendCompanyApprovalNoticeTrigger = sendCompanyApprovalNoticeTrigger;
 exports.sendCompanyApprovalEmail = sendCompanyApprovalEmail;
 exports.sendBulkNotificationTrigger = sendBulkNotificationTrigger;
 
-// 🎯 Yeni kampanya bildirimi fonksiyonu - Geçici olarak devre dışı
-/*
-exports.sendNewCampaignNotice = functions.firestore
+// 🎯 Yeni kampanya bildirimi fonksiyonu - Flutter yönlendirme sistemine uygun
+exports.sendNewCampaignNotice = functions
+  .region('europe-west1')
+  .runWith({
+    minInstances: 0,
+    maxInstances: 3000
+  })
+  .firestore
   .document('campaigns/{campaignId}')
   .onCreate(async (snap, context) => {
     try {
@@ -39,16 +40,19 @@ exports.sendNewCampaignNotice = functions.firestore
       const campaignTitle = campaignData.title || campaignData.campaignTitle || "Yeni Kampanya";
       const campaignDescription = campaignData.description || campaignData.campaignDescription || "Yeni bir kampanya başladı!";
       
-      // FCM mesajını hazırla
+      // FCM mesajını hazırla - Flutter main dosyasındaki yönlendirme sistemine uygun
       const message = {
         notification: {
           title: `🎯 ${campaignTitle}`,
           body: campaignDescription,
         },
         data: {
-          type: "new_campaign",
+          type: "yakala", // ✅ Flutter main dosyasındaki yönlendirme sistemine uygun
           campaignId: campaignId,
           campaignTitle: campaignTitle,
+          timestamp: new Date().toISOString(),
+          click_action: "FLUTTER_NOTIFICATION_CLICK",
+          screen: "yakala_hadi_campaigns_screen"
         },
         topic: 'all_users' // Tüm kullanıcılara gönder
       };
@@ -65,11 +69,15 @@ exports.sendNewCampaignNotice = functions.firestore
       return null;
     }
   });
-*/
 
-// 🎁 Yeni indirim bildirimi fonksiyonu - Geçici olarak devre dışı
-/*
-exports.sendNewDiscountNotice = functions.firestore
+// 🎁 Yeni indirim bildirimi fonksiyonu - Flutter yönlendirme sistemine uygun
+exports.sendNewDiscountNotice = functions
+  .region('europe-west1')
+  .runWith({
+    minInstances: 0,
+    maxInstances: 3000
+  })
+  .firestore
   .document('discounts/{discountId}')
   .onCreate(async (snap, context) => {
     try {
@@ -81,16 +89,19 @@ exports.sendNewDiscountNotice = functions.firestore
       const discountTitle = discountData.title || discountData.discountTitle || "Yeni İndirim";
       const discountDescription = discountData.description || discountData.discountDescription || "Yeni bir indirim başladı!";
       
-      // FCM mesajını hazırla
+      // FCM mesajını hazırla - Flutter main dosyasındaki yönlendirme sistemine uygun
       const message = {
         notification: {
           title: `🎁 ${discountTitle}`,
           body: discountDescription,
         },
         data: {
-          type: "new_discount",
+          type: "indirim", // ✅ Flutter main dosyasındaki yönlendirme sistemine uygun
           discountId: discountId,
           discountTitle: discountTitle,
+          timestamp: new Date().toISOString(),
+          click_action: "FLUTTER_NOTIFICATION_CLICK",
+          screen: "discount_campaigns_screen"
         },
         topic: 'all_users' // Tüm kullanıcılara gönder
       };
@@ -107,4 +118,4 @@ exports.sendNewDiscountNotice = functions.firestore
       return null;
     }
   });
-*/
+

@@ -42,10 +42,13 @@ exports.sendBulkNotificationTrigger = functions
           body: message,
         },
         data: {
-          type: "bulk_notification",
+          type: "toplu", // ✅ Flutter main dosyasındaki yönlendirme sistemine uygun
           title: title,
           message: message,
           timestamp: new Date().toISOString(),
+          // Deep link'ler Flutter'daki YakalaHadiScreen'e yönlendirir
+          click_action: "FLUTTER_NOTIFICATION_CLICK",
+          screen: "yakala_hadi_screen"
         },
         topic: 'all_users' // Tüm kullanıcılara gönder
       };
