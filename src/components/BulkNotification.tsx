@@ -60,7 +60,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         alert(`✅ Toplu bildirim başarıyla gönderildi!\n\n📱 ${userCount} kullanıcıya bildirim gönderildi.`);
         setTitle("");
         setMessage("");
-        onClose();
+        onClose(); // Kullanıcılar sayfasına dön
       } else {
         alert(`❌ Toplu bildirim gönderilemedi:\n${result.message}`);
       }
@@ -73,24 +73,27 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">📢 Toplu Bildirim Sistemi</h1>
-              <p className="text-gray-600 mt-2">Tüm kullanıcılara bildirim gönderin</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">📢 Toplu Bildirim Sistemi</h1>
             </div>
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-500 hover:text-gray-700 text-lg font-bold"
+              className="px-4 py-2 text-gray-500 hover:text-gray-700 text-lg font-medium flex items-center"
             >
-              ← Geri Dön
+              <span className="mr-2">←</span>
+              Geri Dön
             </button>
           </div>
         </div>
+      </div>
 
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sol Taraf - Bildirim Formu */}
           <div className="lg:col-span-2">

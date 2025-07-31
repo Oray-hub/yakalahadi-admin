@@ -18,12 +18,12 @@ const menu = [
   { path: "/reviews", label: "Yorumlar ve Puanlar", icon: "⭐" },
   { path: "/accounting", label: "Muhasebe Verileri", icon: "💰" },
   { path: "/export", label: "Dışa Aktar", icon: "📊" },
+  { path: "/bulk-notification", label: "Toplu Bildirim", icon: "📢" },
 ];
 
 function Panel({ onLogout }: { onLogout: () => void }) {
   const [activeMenu, setActiveMenu] = useState("/users");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showBulkNotification, setShowBulkNotification] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -124,49 +124,12 @@ function Panel({ onLogout }: { onLogout: () => void }) {
                 {item.label}
               </Link>
             </div>
-          ))}
+                    ))}
         </nav>
 
-        {/* Toplu Bildirim Butonu */}
-        <div style={{ 
-          marginTop: "auto", 
-          padding: "16px 0",
-          borderTop: "1px solid rgba(255,255,255,0.1)"
-        }}>
-          <button
-            onClick={() => {
-              setShowBulkNotification(true);
-              closeSidebar(); // Mobile'da menüyü kapat
-            }}
-            style={{
-              width: "100%",
-              color: "#fff",
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              padding: "12px 16px",
-              margin: "4px 0",
-              borderRadius: 8,
-              backgroundColor: "transparent",
-              border: "none",
-              transition: "all 0.3s ease",
-              fontSize: 16,
-              cursor: "pointer"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-            }}
-          >
-            <span style={{ marginRight: 12, fontSize: 18 }}>📢</span>
-            Toplu Bildirim
-          </button>
-        </div>
-
         {/* Çıkış Yap Butonu */}
-        <div style={{ 
+        <div style={{
+          marginTop: "auto",
           padding: "16px 0",
           borderTop: "1px solid rgba(255,255,255,0.1)"
         }}>
@@ -238,15 +201,11 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/accounting" element={<Accounting />} />
             <Route path="/export" element={<Export />} />
+            <Route path="/bulk-notification" element={<BulkNotification onClose={() => setActiveMenu("/users")} />} />
             <Route path="/" element={<Navigate to="/users" replace />} />
           </Routes>
         </div>
       </main>
-
-      {/* Toplu Bildirim Modal */}
-      {showBulkNotification && (
-        <BulkNotification onClose={() => setShowBulkNotification(false)} />
-      )}
     </div>
   );
 }
