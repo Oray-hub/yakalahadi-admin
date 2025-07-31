@@ -73,19 +73,13 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">📢 Toplu Bildirim</h1>
-          <p className="text-gray-600">Tüm kullanıcılara bildirim gönderin</p>
-        </div>
-
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
         {/* Ana Kart */}
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex items-center mb-6">
-            <span className="text-2xl mr-3">📝</span>
-            <h2 className="text-xl font-bold text-gray-800">Yeni Bildirim Oluştur</h2>
+            <span className="text-2xl mr-3">📢</span>
+            <h2 className="text-xl font-bold text-gray-800">Toplu Bildirim</h2>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
