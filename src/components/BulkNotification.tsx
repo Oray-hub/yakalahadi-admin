@@ -73,7 +73,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="h-full bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Ana Kart */}
         <div className="bg-white rounded-lg shadow-md p-8">

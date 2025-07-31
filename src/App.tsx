@@ -202,9 +202,7 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <Route path="/accounting" element={<Accounting />} />
             <Route path="/export" element={<Export />} />
             <Route path="/bulk-notification" element={
-              <div style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0, zIndex: 1000 }}>
-                <BulkNotification onClose={() => setActiveMenu("/users")} />
-              </div>
+              <BulkNotification onClose={() => setActiveMenu("/users")} />
             } />
             <Route path="/" element={<Navigate to="/users" replace />} />
           </Routes>
