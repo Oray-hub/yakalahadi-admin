@@ -9,8 +9,74 @@ interface BulkNotificationProps {
 function BulkNotification({ onClose }: BulkNotificationProps) {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState("📢");
+  const [showIconSelector, setShowIconSelector] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userCount, setUserCount] = useState(0);
+
+  // İkon listesi
+  const iconList = [
+    // Temel İkonlar
+    "📢", "🔔", "📣", "📢", "🎯", "⭐", "💡", "🔥", "⚡", "💎",
+    
+    // Haber ve Duyuru
+    "📰", "📡", "📻", "📺", "📱", "💻", "🖥️", "📞", "📧", "📨",
+    
+    // Kampanya ve Promosyon
+    "🎁", "🎉", "🎊", "🎈", "🎪", "🎭", "🎨", "🎬", "🎤", "🎵",
+    
+    // İş ve Ticaret
+    "💼", "🏢", "🏪", "🏬", "🏭", "🏗️", "📊", "📈", "💰", "💳",
+    
+    // Teknoloji
+    "🚀", "⚙️", "🔧", "🔨", "🔩", "🔋", "💾", "🖱️", "⌨️", "🖨️",
+    
+    // Sağlık ve Güvenlik
+    "🏥", "💊", "🩺", "🚑", "🚨", "🛡️", "🔒", "🔐", "🔑", "🚪",
+    
+    // Eğitim
+    "📚", "📖", "✏️", "📝", "📋", "📎", "📌", "📍", "🎓", "👨‍🎓",
+    
+    // Spor ve Aktiviteler
+    "⚽", "🏀", "🏈", "🎾", "🏓", "🏸", "🏊", "🚴", "🏃", "🏋️",
+    
+    // Yiyecek ve İçecek
+    "🍕", "🍔", "🍟", "🌭", "🌮", "🍜", "🍣", "🍱", "🍰", "☕",
+    
+    // Doğa ve Çevre
+    "🌍", "🌱", "🌲", "🌳", "🌴", "🌵", "🌸", "🌺", "🌻", "🌼",
+    
+    // Hava Durumu
+    "☀️", "🌤️", "⛅", "🌥️", "☁️", "🌦️", "🌧️", "⛈️", "🌩️", "❄️",
+    
+    // Ulaşım
+    "🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐",
+    
+    // Eğlence
+    "🎮", "🎲", "🎰", "🎳", "🎯", "🎪", "🎭", "🎨", "🎬", "🎤",
+    
+    // Sosyal Medya
+    "📱", "💬", "📞", "📧", "📨", "📩", "📪", "📫", "📬", "📭",
+    
+    // Özel Durumlar
+    "🎊", "🎉", "🎈", "🎁", "🎂", "🎄", "🎃", "👻", "🎅", "🎆",
+    
+    // Emoji Yüzler
+    "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+    "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+    
+    // El İşaretleri
+    "👍", "👎", "👌", "✌️", "🤞", "🤟", "🤘", "🤙", "👈", "👉",
+    
+    // Kalp ve Sevgi
+    "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔",
+    
+    // Zaman ve Takvim
+    "⏰", "⏱️", "⏲️", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "📅",
+    
+    // Özel Semboller
+    "✨", "🌟", "💫", "⭐", "🌙", "☀️", "🌈", "☁️", "⚡", "🔥"
+  ];
 
   // Kullanıcı sayısını al
   const fetchUserCount = async () => {
@@ -43,6 +109,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
 
     const confirmSend = window.confirm(
       `📢 Toplu Bildirim Gönderimi\n\n` +
+      `İkon: ${selectedIcon}\n` +
       `Başlık: ${title}\n` +
       `Mesaj: ${message}\n\n` +
       `Bu bildirim ${userCount} kullanıcıya gönderilecek.\n` +
@@ -60,6 +127,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         alert(`✅ Toplu bildirim başarıyla gönderildi!\n\n📱 ${userCount} kullanıcıya bildirim gönderildi.`);
         setTitle("");
         setMessage("");
+        setSelectedIcon("📢");
         onClose();
       } else {
         alert(`❌ Toplu bildirim gönderilemedi:\n${result.message}`);
@@ -179,6 +247,141 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 </div>
               </div>
 
+              {/* İkon Seçici Kartı */}
+              <div style={{
+                backgroundColor: '#fff',
+                borderRadius: '8px',
+                padding: 'clamp(12px, 2.5vw, 16px)',
+                marginBottom: 'clamp(12px, 2.5vw, 16px)',
+                border: '1px solid #e0e0e0'
+              }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'clamp(13px, 2.5vw, 16px)',
+                  fontWeight: '500',
+                  color: '#333',
+                  marginBottom: '8px'
+                }}>
+                  🎨 Bildirim İkonu
+                </label>
+                
+                {/* Seçili İkon Gösterimi */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '12px'
+                }}>
+                  <div style={{
+                    fontSize: 'clamp(24px, 5vw, 32px)',
+                    padding: '8px',
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '8px',
+                    border: '2px solid #e0e0e0',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onClick={() => setShowIconSelector(!showIconSelector)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#9c27b0';
+                    e.currentTarget.style.backgroundColor = '#f3e5f5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e0e0e0';
+                    e.currentTarget.style.backgroundColor = '#f8f9fa';
+                  }}
+                  >
+                    {selectedIcon}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowIconSelector(!showIconSelector)}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: '#9c27b0',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: 'clamp(12px, 2.5vw, 14px)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#7b1fa2';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#9c27b0';
+                    }}
+                  >
+                    {showIconSelector ? 'İkon Seçimini Kapat' : 'İkon Seç'}
+                  </button>
+                </div>
+
+                {/* İkon Seçici Modal */}
+                {showIconSelector && (
+                  <div style={{
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    border: '1px solid #e0e0e0',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}>
+                    <div style={{
+                      fontSize: 'clamp(12px, 2.5vw, 14px)',
+                      fontWeight: '500',
+                      color: '#333',
+                      marginBottom: '12px',
+                      textAlign: 'center'
+                    }}>
+                      İkon Seçin ({iconList.length} ikon)
+                    </div>
+                    
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))',
+                      gap: '8px',
+                      maxHeight: '200px',
+                      overflowY: 'auto'
+                    }}>
+                      {iconList.map((icon, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            fontSize: 'clamp(18px, 4vw, 24px)',
+                            padding: '8px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            transition: 'all 0.2s ease',
+                            backgroundColor: selectedIcon === icon ? '#e3f2fd' : 'transparent',
+                            border: selectedIcon === icon ? '2px solid #1976d2' : '1px solid transparent'
+                          }}
+                          onClick={() => {
+                            setSelectedIcon(icon);
+                            setShowIconSelector(false);
+                          }}
+                          onMouseEnter={(e) => {
+                            if (selectedIcon !== icon) {
+                              e.currentTarget.style.backgroundColor = '#f0f0f0';
+                              e.currentTarget.style.borderColor = '#ddd';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (selectedIcon !== icon) {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.borderColor = 'transparent';
+                            }
+                          }}
+                        >
+                          {icon}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Başlık Kartı */}
               <div style={{
                 backgroundColor: '#fff',
@@ -196,33 +399,45 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 }}>
                   📝 Bildirim Başlığı *
                 </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: 'clamp(10px, 2vw, 14px)',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: 'clamp(14px, 2.5vw, 16px)',
-                    outline: 'none',
-                    transition: 'all 0.2s ease',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#9c27b0';
-                    e.target.style.boxShadow = '0 0 0 2px rgba(156, 39, 176, 0.2)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#ddd';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="Örnek: Yeni Kampanya Başladı!"
-                  maxLength={100}
-                  required
-                />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span style={{
+                    fontSize: 'clamp(16px, 3vw, 20px)',
+                    flexShrink: 0
+                  }}>
+                    {selectedIcon}
+                  </span>
+                  <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: 'clamp(10px, 2vw, 14px)',
+                      border: '1px solid #ddd',
+                      borderRadius: '6px',
+                      fontSize: 'clamp(14px, 2.5vw, 16px)',
+                      outline: 'none',
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#9c27b0';
+                      e.target.style.boxShadow = '0 0 0 2px rgba(156, 39, 176, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#ddd';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                    placeholder="Örnek: Yeni Kampanya Başladı!"
+                    maxLength={100}
+                    required
+                  />
+                </div>
                 <div style={{
                   fontSize: 'clamp(11px, 2vw, 13px)',
                   color: '#666',
@@ -336,9 +551,13 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                       e.currentTarget.style.color = '#666';
                       e.currentTarget.style.borderColor = 'transparent';
                     }}
-                    onClick={() => { setTitle("Yeni Kampanya Başladı!"); setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); }}
+                    onClick={() => { 
+                      setSelectedIcon("🎯");
+                      setTitle("Yeni Kampanya Başladı!"); 
+                      setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); 
+                    }}
                   >
-                    • "Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."
+                    • 🎯 "Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."
                   </div>
                   <div 
                     style={{
@@ -361,9 +580,13 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                       e.currentTarget.style.color = '#666';
                       e.currentTarget.style.borderColor = 'transparent';
                     }}
-                    onClick={() => { setTitle("Sistem Bakımı"); setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); }}
+                    onClick={() => { 
+                      setSelectedIcon("🔧");
+                      setTitle("Sistem Bakımı"); 
+                      setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); 
+                    }}
                   >
-                    • "Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."
+                    • 🔧 "Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."
                   </div>
                   <div 
                     style={{
@@ -386,9 +609,13 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                       e.currentTarget.style.color = '#666';
                       e.currentTarget.style.borderColor = 'transparent';
                     }}
-                    onClick={() => { setTitle("Yeni Özellikler"); setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); }}
+                    onClick={() => { 
+                      setSelectedIcon("✨");
+                      setTitle("Yeni Özellikler"); 
+                      setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); 
+                    }}
                   >
-                    • "Yeni özellikler eklendi! Uygulamayı güncelleyin."
+                    • ✨ "Yeni özellikler eklendi! Uygulamayı güncelleyin."
                   </div>
                 </div>
               </div>
@@ -410,9 +637,9 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                   📋 İpuçları:
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ fontSize: 'clamp(12px, 2.5vw, 15px)', color: '#1976d2', lineHeight: '1.4' }}>• İkon seçerek bildiriminizi daha dikkat çekici yapın</div>
                   <div style={{ fontSize: 'clamp(12px, 2.5vw, 15px)', color: '#1976d2', lineHeight: '1.4' }}>• Başlık kısa ve dikkat çekici olmalı</div>
                   <div style={{ fontSize: 'clamp(12px, 2.5vw, 15px)', color: '#1976d2', lineHeight: '1.4' }}>• Mesaj net ve anlaşılır olmalı</div>
-                  <div style={{ fontSize: 'clamp(12px, 2.5vw, 15px)', color: '#1976d2', lineHeight: '1.4' }}>• Emoji kullanarak dikkat çekebilirsiniz</div>
                   <div style={{ fontSize: 'clamp(12px, 2.5vw, 15px)', color: '#1976d2', lineHeight: '1.4' }}>• Gereksiz bildirimlerden kaçının</div>
                 </div>
               </div>
@@ -500,7 +727,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                   </>
                 ) : (
                   <>
-                    <span>📢</span>
+                    <span>{selectedIcon}</span>
                     <span>Toplu Bildirim Gönder</span>
                   </>
                 )}
