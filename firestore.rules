@@ -14,6 +14,12 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin(); // Sadece admin yönetebilir
     }
 
+    // Bulk Notifications - Toplu bildirim tetikleyicileri için
+    match /bulkNotifications/{notificationId} {
+      allow create: if isAdmin(); // Sadece admin oluşturabilir
+      allow read, update, delete: if isAdmin(); // Sadece admin yönetebilir
+    }
+
     // Kullanıcılar
     match /users/{userId} {
       allow create, update: if request.auth != null
