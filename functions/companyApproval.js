@@ -60,10 +60,10 @@ exports.sendCompanyApprovalNoticeTrigger = functions
       
       if (approvalStatus === "approved") {
         notificationTitle = "✅ Başvurunuz Onaylandı!";
-        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz başarıyla onaylandı. Hadi başlayalım.`;
+        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz başarıyla onaylandı. Detaylar için uygulamayı kontrol edin.`;
       } else {
         notificationTitle = "❌ Başvurunuz Onaylanmadı";
-        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz onaylanmadı.Detaylar için e-postanızı kontrol edin.`;
+        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz ${reason || "belirtilen sebeplerden dolayı"} onaylanmadı. Lütfen tekrar başvurun.`;
       }
       
       // FCM mesajını hazırla
