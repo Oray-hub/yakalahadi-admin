@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { NotificationService } from "../services/notificationService";
 
@@ -11,22 +11,25 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userCount, setUserCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
-  // Kullanıcı sayısını al
-  const fetchUserCount = async () => {
+  // Kullanıcı sayısını al - useCallback ile optimize edildi
+  const fetchUserCount = useCallback(async () => {
     try {
+      setError(null);
       const db = getFirestore();
       const usersSnapshot = await getDocs(collection(db, 'users'));
       setUserCount(usersSnapshot.size);
     } catch (error) {
       console.error("Kullanıcı sayısı alınırken hata:", error);
+      setError("Kullanıcı sayısı alınamadı. Lütfen sayfayı yenileyin.");
     }
-  };
+  }, []);
 
   // Component mount olduğunda kullanıcı sayısını al
   useEffect(() => {
     fetchUserCount();
-  }, []);
+  }, [fetchUserCount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +55,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
     if (!confirmSend) return;
 
     setIsLoading(true);
+    setError(null);
 
     try {
       const result = await NotificationService.sendBulkNotification(title, message);
@@ -62,14 +66,22 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         setMessage("");
         onClose();
       } else {
+        setError(result.message || "Bilinmeyen bir hata oluştu");
         alert(`❌ Toplu bildirim gönderilemedi:\n${result.message}`);
       }
     } catch (error: any) {
       console.error("Toplu bildirim gönderilirken hata:", error);
-      alert(`❌ Toplu bildirim gönderilirken hata oluştu:\n${error.message}`);
+      const errorMessage = error.message || "Bilinmeyen bir hata oluştu";
+      setError(errorMessage);
+      alert(`❌ Toplu bildirim gönderilirken hata oluştu:\n${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Hata durumunda yeniden deneme fonksiyonu
+  const handleRetry = () => {
+    fetchUserCount();
   };
 
   return (
@@ -143,7 +155,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 }}>
                   <span style={{ fontSize: '20px' }}>👥</span>
                 </div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div style={{
                     color: 'white',
                     fontWeight: 'bold',
@@ -159,8 +171,62 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     Bu bildirim tüm kayıtlı kullanıcılara ulaşacak
                   </div>
                 </div>
+                {error && (
+                  <button
+                    onClick={handleRetry}
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      color: 'white',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                    }}
+                  >
+                    🔄 Yenile
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* Hata Mesajı */}
+            {error && (
+              <div style={{
+                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                border: '1px solid #fecaca',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '20px' }}>⚠️</span>
+                  <div>
+                    <div style={{
+                      color: '#dc2626',
+                      fontWeight: 'bold',
+                      fontSize: '14px',
+                      marginBottom: '4px'
+                    }}>
+                      Hata Oluştu
+                    </div>
+                    <div style={{
+                      color: '#991b1b',
+                      fontSize: '13px'
+                    }}>
+                      {error}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Form Alanları - Responsive Grid */}
             <div style={{
