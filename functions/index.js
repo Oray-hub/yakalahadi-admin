@@ -12,8 +12,16 @@ const { sendBulkNotificationTrigger } = require('./bulkNotification');
 // Firma onay bildirimi fonksiyonunu import et
 const { sendCompanyApprovalNoticeTrigger } = require('./companyApproval');
 
+// Kullanıcı bildirimi fonksiyonunu import et
+const { userNotification } = require('./userNotification');
+
+// Firma bildirimi fonksiyonunu import et
+const { companyNotification } = require('./companyNotification');
+
 // Export the functions
 exports.sendCompanyApprovalEmail = sendCompanyApprovalEmail;
 exports.sendBulkNotificationTrigger = sendBulkNotificationTrigger;
 exports.sendCompanyApprovalNoticeTrigger = sendCompanyApprovalNoticeTrigger;
+exports.userNotification = userNotification;
+exports.companyNotification = companyNotification;
 
