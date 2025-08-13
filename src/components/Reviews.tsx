@@ -385,8 +385,8 @@ function Reviews() {
             <tr>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kullanıcı Adı</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yorum</th>
+              <th style={{ padding: 12, textAlign: "center", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
+              <th style={{ padding: 12, textAlign: "center", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yorum</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Tarih</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
@@ -418,7 +418,7 @@ function Reviews() {
                     </span>
                   </div>
                 </td>
-                <td style={{ padding: 12, maxWidth: "400px", textAlign: "center" }}>
+                <td style={{ padding: 12, textAlign: "center" }}>
                   <div style={{
                     padding: "12px 16px",
                     backgroundColor: "#f8f9fa",
@@ -429,7 +429,9 @@ function Reviews() {
                     overflow: "auto",
                     textAlign: "left",
                     border: "1px solid #e9ecef",
-                    minHeight: "60px"
+                    minHeight: "60px",
+                    maxWidth: "400px",
+                    margin: "0 auto"
                   }}>
                     {review.comment}
                   </div>
