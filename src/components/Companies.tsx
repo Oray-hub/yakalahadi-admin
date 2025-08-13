@@ -312,9 +312,9 @@ function Companies() {
       await updateCompanyApproval(companyId, approved);
       console.log("✅ Firma onay durumu güncellendi");
       
-      // Cloud Function ile bildirim gönder
+      // Cloud Function ile mail gönder
       try {
-        console.log("📨 Cloud Function ile bildirim gönderiliyor...", { 
+        console.log("📨 Cloud Function ile mail gönderiliyor...", { 
           companyId, 
           approvalStatus: approved ? 'approved' : 'rejected', 
           reason 

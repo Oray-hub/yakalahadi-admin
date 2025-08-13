@@ -49,98 +49,163 @@ exports.sendCompanyApprovalEmail = functions
       console.log("📧 Sending email to:", companyEmail);
       
       // Email içeriğini hazırla
-      const emailSubject = approvalStatus === "approved" 
-        ? "✅ Yakalahadi - Firma Başvurunuz Onaylandı!" 
-        : "❌ Yakalahadi - Firma Başvurunuz Onaylanmadı";
+      const emailSubject = "Firma Başvurunuz Hakkında";
       
-      const emailContent = approvalStatus === "approved" 
-        ? `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-              <h1 style="margin: 0; font-size: 28px;">🎉 Tebrikler!</h1>
-              <p style="margin: 10px 0 0 0; font-size: 18px;">Firma Başvurunuz Onaylandı</p>
-            </div>
-            
-            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
-              <h2 style="color: #333; margin-top: 0;">Merhaba ${companyOfficer},</h2>
-              
-              <p style="color: #555; line-height: 1.6; font-size: 16px;">
-                <strong>${companyName}</strong> firma başvurunuz başarıyla onaylanmıştır!
-              </p>
-              
-              <div style="background: #e8f5e8; border-left: 4px solid #28a745; padding: 20px; margin: 20px 0; border-radius: 5px;">
-                <h3 style="color: #28a745; margin-top: 0;">✅ Onaylanan Bilgiler:</h3>
-                <ul style="color: #555; margin: 10px 0;">
-                  <li><strong>Firma Adı:</strong> ${companyName}</li>
-                  <li><strong>VKN:</strong> ${company.vkn || 'Belirtilmemiş'}</li>
-                  <li><strong>Kategori:</strong> ${company.category || 'Belirtilmemiş'}</li>
-                  <li><strong>Firma Türü:</strong> ${company.firmType || 'Belirtilmemiş'}</li>
-                </ul>
-              </div>
-              
-              <p style="color: #555; line-height: 1.6; font-size: 16px;">
-                Artık Yakalahadi platformunda kampanyalarınızı oluşturabilir, müşterilerinizle etkileşime geçebilir ve işletmenizi büyütebilirsiniz.
-              </p>
-              
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="https://yakalahadi.com" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">
-                  🚀 Platforma Git
-                </a>
-              </div>
-              
-              <p style="color: #777; font-size: 14px; text-align: center; margin-top: 30px;">
-                Bu email Yakalahadi platformu tarafından otomatik olarak gönderilmiştir.<br>
-                Sorularınız için destek@yakalahadi.com adresine yazabilirsiniz.
-              </p>
-            </div>
-          </div>
-        `
-        : `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-              <h1 style="margin: 0; font-size: 28px;">📋 Bilgilendirme</h1>
-              <p style="margin: 10px 0 0 0; font-size: 18px;">Firma Başvurunuz Hakkında</p>
-            </div>
-            
-            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
-              <h2 style="color: #333; margin-top: 0;">Merhaba ${companyOfficer},</h2>
-              
-              <p style="color: #555; line-height: 1.6; font-size: 16px;">
-                <strong>${companyName}</strong> firma başvurunuz incelenmiş ve onaylanmamıştır.
-              </p>
-              
-              <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 20px 0; border-radius: 5px;">
-                <h3 style="color: #856404; margin-top: 0;">❌ Onaylanmama Sebebi:</h3>
-                <p style="color: #856404; margin: 10px 0; font-weight: bold;">
-                  ${reason || "Belirtilen sebeplerden dolayı"}
-                </p>
-              </div>
-              
-              <p style="color: #555; line-height: 1.6; font-size: 16px;">
-                Başvurunuzu tekrar gönderebilir veya eksik bilgileri tamamlayarak yeniden başvurabilirsiniz. 
-                Sorularınız için destek ekibimizle iletişime geçebilirsiniz.
-              </p>
-              
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="https://yakalahadi.com" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">
-                  🔄 Yeniden Başvur
-                </a>
-              </div>
-              
-              <p style="color: #777; font-size: 14px; text-align: center; margin-top: 30px;">
-                Bu email Yakalahadi platformu tarafından otomatik olarak gönderilmiştir.<br>
-                Sorularınız için destek@yakalahadi.com adresine yazabilirsiniz.
-              </p>
-            </div>
-          </div>
-        `;
+                                                      const emailContent = approvalStatus === "approved" 
+          ? `
+            <!DOCTYPE html>
+            <html lang="tr">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Yakalahadi - Firma Başvurunuz Onaylandı</title>
+              <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+              <style>
+                @media only screen and (max-width: 600px) {
+                  .container { width: 100% !important; }
+                  .mobile-padding { padding: 15px !important; }
+                }
+              </style>
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+                <tr>
+                  <td align="center" style="padding: 20px;">
+                    <table width="600" cellpadding="0" cellspacing="0" class="container" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 600px;">
+                      
+                      <!-- Header -->
+                      <tr>
+                        <td style="background-color: #8B5CF6; color: white; padding: 30px; text-align: center;">
+                          <h1 style="margin: 0; font-size: 36px; font-weight: bold; color: white; font-family: 'Chewy', cursive;">YakalaHadi</h1>
+                        </td>
+                      </tr>
+                      
+                      <!-- Content -->
+                      <tr>
+                        <td style="padding: 30px;" class="mobile-padding">
+                          <h2 style="color: #333; margin: 0 0 20px 0; font-size: 20px;">Merhaba ${companyOfficer},</h2>
+                          
+                          <div style="background-color: #f8f9fa; border-left: 4px solid #28a745; padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;">
+                            <p style="color: #333; line-height: 1.6; font-size: 16px; margin: 0;">
+                              <strong style="color: #000000;">${companyName}</strong> firma başvurunuz başarıyla <span style="color: #28a745; font-weight: bold;">onaylanmıştır</span>.
+                            </p>
+                          </div>
+                          
+                          <div style="background-color: #e8f5e8; border: 1px solid #28a745; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                            <h3 style="color: #28a745; margin: 0 0 15px 0; font-size: 18px;">Sonraki Adımlar:</h3>
+                            <ul style="color: #555; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                              <li>Hesabınıza giriş yapın</li>
+                              <li>Kampanya oluşturma sayfasına gidin</li>
+                              <li>İlk kampanyanızı yayınlayın</li>
+                              <li>Müşterilerinizle bağlantı kurun</li>
+                            </ul>
+                          </div>
+                          
+                          <!-- Footer -->
+                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
+                            <tr>
+                              <td style="border-top: 2px solid #eee; padding-top: 20px;">
+                                <p style="color: #999; font-size: 12px; text-align: center; margin: 0; line-height: 1.5;">
+                                  Bu email Yakalahadi platformu tarafından gönderilmiştir.<br>
+                                  Sorularınız için: <a href="mailto:destek@yakalahadi.com" style="color: #8B5CF6; text-decoration: none;">destek@yakalahadi.com</a>
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
+            `
+                  : `
+            <!DOCTYPE html>
+            <html lang="tr">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Yakalahadi - Firma Başvurunuz Onaylanmadı</title>
+              <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+              <style>
+                @media only screen and (max-width: 600px) {
+                  .container { width: 100% !important; }
+                  .mobile-padding { padding: 15px !important; }
+                }
+              </style>
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+                <tr>
+                  <td align="center" style="padding: 20px;">
+                    <table width="600" cellpadding="0" cellspacing="0" class="container" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 600px;">
+                      
+                      <!-- Header -->
+                      <tr>
+                        <td style="background-color: #8B5CF6; color: white; padding: 30px; text-align: center;">
+                          <h1 style="margin: 0; font-size: 36px; font-weight: bold; color: white; font-family: 'Chewy', cursive;">YakalaHadi</h1>
+                        </td>
+                      </tr>
+                      
+                      <!-- Content -->
+                      <tr>
+                        <td style="padding: 30px;" class="mobile-padding">
+                          <h2 style="color: #333; margin: 0 0 20px 0; font-size: 20px;">Merhaba ${companyOfficer},</h2>
+                          
+                          <div style="background-color: #f8f9fa; border-left: 4px solid #dc3545; padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;">
+                            <p style="color: #333; line-height: 1.6; font-size: 16px; margin: 0;">
+                              <strong style="color: #000000;">${companyName}</strong> firma başvurunuz <span style="color: #dc3545; font-weight: bold;">onaylanmamıştır</span>.
+                            </p>
+                          </div>
+                          
+                          <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                            <h3 style="color: #856404; margin: 0 0 15px 0; font-size: 18px;">Red Sebebi:</h3>
+                            <p style="color: #856404; line-height: 1.6; font-size: 14px; margin: 0; background-color: rgba(255,255,255,0.5); padding: 12px; border-radius: 5px;">
+                              <strong>${reason || "Belirtilen sebeplerden dolayı"}</strong>
+                            </p>
+                          </div>
+                          
+                          <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                            <h3 style="color: #495057; margin: 0 0 15px 0; font-size: 18px;">Yeniden Başvuru:</h3>
+                            <ul style="color: #555; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                              <li>Eksik bilgileri tamamlayın</li>
+                              <li>Başvurunuzu tekrar yapın</li>
+                              <li>Gerekirse Destek ekibimizle, uygulama içindeki "Bize Yazın" bölümünden iletişime geçin</li>
+                            </ul>
+                          </div>
+                          
+                          <!-- Footer -->
+                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
+                            <tr>
+                              <td style="border-top: 2px solid #eee; padding-top: 20px;">
+                                <p style="color: #999; font-size: 12px; text-align: center; margin: 0; line-height: 1.5;">
+                                  Bu email Yakalahadi platformu tarafından gönderilmiştir.<br>
+                                  Sorularınız için: <a href="mailto:destek@yakalahadi.com" style="color: #8B5CF6; text-decoration: none;">destek@yakalahadi.com</a>
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
+            `;
       
-      const msg = {
-        to: companyEmail,
-        from: 'noreply@yakalahadi.com', // SendGrid verified sender
-        subject: emailSubject,
-        html: emailContent,
-      };
+             const msg = {
+         to: companyEmail,
+         from: {
+           email: 'noreply@yakalahadi.com',
+           name: 'YakalaHadi'
+         },
+         subject: emailSubject,
+         html: emailContent,
+       };
       
       const result = await sgMail.send(msg);
       console.log("✅ Email sent successfully:", result);
