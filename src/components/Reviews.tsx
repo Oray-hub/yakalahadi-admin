@@ -416,15 +416,17 @@ function Reviews() {
                     </span>
                   </div>
                 </td>
-                <td style={{ padding: 12, maxWidth: "300px" }}>
+                <td style={{ padding: 12, maxWidth: "400px", minWidth: "300px" }}>
                   <div style={{
-                    padding: "8px 12px",
+                    padding: "12px 16px",
                     backgroundColor: "#f8f9fa",
                     borderRadius: "8px",
                     fontSize: "0.9em",
-                    lineHeight: "1.4",
-                    maxHeight: "80px",
-                    overflow: "auto"
+                    lineHeight: "1.5",
+                    maxHeight: "120px",
+                    overflow: "auto",
+                    border: "1px solid #e9ecef",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
                   }}>
                     {review.comment}
                   </div>
