@@ -77,11 +77,14 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
       padding: '16px',
       background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)',
       minHeight: '100vh',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      overflowY: 'auto',
+      height: '100vh'
     }}>
       <div style={{
         maxWidth: '1200px',
-        margin: '0 auto'
+        margin: '0 auto',
+        paddingBottom: '100px' // Buton için alt boşluk
       }}>
         {/* Ana Kart - Responsive */}
         <div style={{
@@ -89,7 +92,8 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
           borderRadius: '16px',
           boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
           padding: '20px',
-          border: '1px solid #e5e7eb'
+          border: '1px solid #e5e7eb',
+          marginBottom: '20px'
         }}>
           <div style={{
             display: 'flex',
@@ -403,99 +407,112 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 </div>
               </div>
             </div>
-
-            {/* Butonlar */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '12px',
-              paddingTop: '20px',
-              borderTop: '1px solid #e5e7eb',
-              flexWrap: 'wrap'
-            }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  padding: '12px 24px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  color: '#374151',
-                  backgroundColor: 'white',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                  minWidth: '100px'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'white';
-                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                }}
-                disabled={isLoading}
-              >
-                İptal
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading || !title.trim() || !message.trim()}
-                style={{
-                  padding: '12px 24px',
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
-                  color: 'white',
-                  borderRadius: '8px',
-                  border: 'none',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  cursor: isLoading || !title.trim() || !message.trim() ? 'not-allowed' : 'pointer',
-                  opacity: isLoading || !title.trim() || !message.trim() ? 0.5 : 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)',
-                  minWidth: '180px',
-                  justifyContent: 'center'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading && title.trim() && message.trim()) {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(139, 92, 246, 0.3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(139, 92, 246, 0.2)';
-                }}
-              >
-                {isLoading ? (
-                  <>
-                    <div style={{
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid transparent',
-                      borderTop: '2px solid white',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite',
-                      marginRight: '8px'
-                    }}></div>
-                    Gönderiliyor...
-                  </>
-                ) : (
-                  <>
-                    <span style={{ marginRight: '8px', fontSize: '18px' }}>
-                      📢
-                    </span>
-                    Toplu Bildirim Gönder
-                  </>
-                )}
-              </button>
-            </div>
           </form>
+        </div>
+      </div>
+
+      {/* Sabit Alt Butonlar - Mobil için */}
+      <div style={{
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        backgroundColor: 'white',
+        borderTop: '1px solid #e5e7eb',
+        padding: '16px',
+        boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
+        zIndex: 1000
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          flexWrap: 'wrap'
+        }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: '12px 24px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              color: '#374151',
+              backgroundColor: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              minWidth: '100px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f9fafb';
+              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            }}
+            disabled={isLoading}
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading || !title.trim() || !message.trim()}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+              color: 'white',
+              borderRadius: '8px',
+              border: 'none',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: isLoading || !title.trim() || !message.trim() ? 'not-allowed' : 'pointer',
+              opacity: isLoading || !title.trim() || !message.trim() ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)',
+              minWidth: '180px',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading && title.trim() && message.trim()) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 6px rgba(139, 92, 246, 0.3)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(139, 92, 246, 0.2)';
+            }}
+            onClick={handleSubmit}
+          >
+            {isLoading ? (
+              <>
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  border: '2px solid transparent',
+                  borderTop: '2px solid white',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  marginRight: '8px'
+                }}></div>
+                Gönderiliyor...
+              </>
+            ) : (
+              <>
+                <span style={{ marginRight: '8px', fontSize: '18px' }}>
+                  📢
+                </span>
+                Toplu Bildirim Gönder
+              </>
+            )}
+          </button>
         </div>
       </div>
       
