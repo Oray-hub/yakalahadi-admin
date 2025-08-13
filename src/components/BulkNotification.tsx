@@ -73,139 +73,477 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   };
 
   return (
-    <div className="h-full bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        {/* Ana Kart */}
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="flex items-center mb-6">
-            <span className="text-2xl mr-3">📢</span>
-            <h2 className="text-xl font-bold text-gray-800">Toplu Bildirim</h2>
+    <div style={{
+      padding: '16px',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)',
+      minHeight: '100vh',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      overflowY: 'auto',
+      height: '100vh'
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        paddingBottom: '100px' // Buton için alt boşluk
+      }}>
+        {/* Ana Kart - Responsive */}
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '16px',
+          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+          padding: '20px',
+          border: '1px solid #e5e7eb',
+          marginBottom: '20px'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '24px',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+              padding: '12px',
+              borderRadius: '12px',
+              flexShrink: 0
+            }}>
+              <span style={{ fontSize: '24px' }}>📢</span>
+            </div>
+            <div>
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                margin: '0 0 4px 0'
+              }}>Toplu Bildirim</h2>
+              <p style={{
+                color: '#6b7280',
+                fontSize: '16px',
+                margin: '0'
+              }}>Tüm kullanıcılara bildirim gönderin</p>
+            </div>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Kullanıcı Sayısı */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <span className="text-blue-600 text-lg mr-3">👥</span>
+            <div style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+              color: 'white',
+              borderRadius: '12px',
+              padding: '20px',
+              boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  flexShrink: 0
+                }}>
+                  <span style={{ fontSize: '20px' }}>👥</span>
+                </div>
                 <div>
-                  <div className="text-blue-800 font-semibold">
+                  <div style={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                    marginBottom: '4px'
+                  }}>
                     Toplam {userCount} kullanıcıya bildirim gönderilecek
                   </div>
-                  <div className="text-blue-600 text-sm mt-1">
+                  <div style={{
+                    color: '#bfdbfe',
+                    fontSize: '14px'
+                  }}>
                     Bu bildirim tüm kayıtlı kullanıcılara ulaşacak
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Başlık */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Bildirim Başlığı *
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Örnek: Yeni Kampanya Başladı!"
-                maxLength={100}
-                required
-              />
-              <div className="text-xs text-gray-500 mt-1 flex justify-between">
-                <span>Kısa ve dikkat çekici olmalı</span>
-                <span>{title.length}/100 karakter</span>
-              </div>
-            </div>
-
-            {/* Mesaj */}
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                Bildirim Mesajı *
-              </label>
-              <textarea
-                id="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                placeholder="Bildirim mesajınızı buraya yazın..."
-                maxLength={500}
-                required
-              />
-              <div className="text-xs text-gray-500 mt-1 flex justify-between">
-                <span>Net ve anlaşılır olmalı</span>
-                <span>{message.length}/500 karakter</span>
-              </div>
-            </div>
-
-            {/* Örnek Mesajlar */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">💡 Örnek Mesajlar:</h4>
-              <div className="space-y-2 text-sm text-gray-600">
-                <div 
-                  className="cursor-pointer hover:text-purple-600 transition-colors"
-                  onClick={() => { setTitle("Yeni Kampanya Başladı!"); setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); }}
-                >
-                  • "Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."
+            {/* Form Alanları - Responsive Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: '24px'
+            }}>
+              {/* Sol Kolon */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Başlık */}
+                <div>
+                  <label htmlFor="title" style={{
+                    display: 'block',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    Bildirim Başlığı *
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#8b5cf6';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                    placeholder="Örnek: Yeni Kampanya Başladı!"
+                    maxLength={100}
+                    required
+                  />
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginTop: '8px',
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                  }}>
+                    <span>Kısa ve dikkat çekici olmalı</span>
+                    <span style={{ color: title.length > 80 ? '#f59e0b' : '#6b7280', fontWeight: title.length > 80 ? 'bold' : 'normal' }}>
+                      {title.length}/100 karakter
+                    </span>
+                  </div>
                 </div>
-                <div 
-                  className="cursor-pointer hover:text-purple-600 transition-colors"
-                  onClick={() => { setTitle("Sistem Bakımı"); setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); }}
-                >
-                  • "Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."
-                </div>
-                <div 
-                  className="cursor-pointer hover:text-purple-600 transition-colors"
-                  onClick={() => { setTitle("Yeni Özellikler"); setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); }}
-                >
-                  • "Yeni özellikler eklendi! Uygulamayı güncelleyin."
+
+                {/* Mesaj */}
+                <div>
+                  <label htmlFor="message" style={{
+                    display: 'block',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    Bildirim Mesajı *
+                  </label>
+                  <textarea
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={6}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      resize: 'none',
+                      transition: 'all 0.3s ease',
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#8b5cf6';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                    placeholder="Bildirim mesajınızı buraya yazın..."
+                    maxLength={500}
+                    required
+                  />
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginTop: '8px',
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                  }}>
+                    <span>Net ve anlaşılır olmalı</span>
+                    <span style={{ color: message.length > 400 ? '#f59e0b' : '#6b7280', fontWeight: message.length > 400 ? 'bold' : 'normal' }}>
+                      {message.length}/500 karakter
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* İpuçları */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-blue-800 mb-2">📋 İpuçları:</h4>
-              <div className="space-y-1 text-sm text-blue-700">
-                <div>• Başlık kısa ve dikkat çekici olmalı</div>
-                <div>• Mesaj net ve anlaşılır olmalı</div>
-                <div>• Emoji kullanarak dikkat çekebilirsiniz</div>
-                <div>• Gereksiz bildirimlerden kaçının</div>
+              {/* Sağ Kolon */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Örnek Mesajlar */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '12px',
+                  padding: '20px'
+                }}>
+                  <h4 style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#374151',
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{ marginRight: '8px', fontSize: '20px' }}>💡</span>
+                    Örnek Mesajlar:
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div 
+                      style={{
+                        cursor: 'pointer',
+                        padding: '12px',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#8b5cf6';
+                        e.currentTarget.style.backgroundColor = '#faf5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = 'white';
+                      }}
+                      onClick={() => { setTitle("Yeni Kampanya Başladı!"); setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); }}
+                    >
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '14px', marginBottom: '4px' }}>Yeni Kampanya</div>
+                      <div style={{ color: '#6b7280', fontSize: '13px' }}>"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
+                    </div>
+                    <div 
+                      style={{
+                        cursor: 'pointer',
+                        padding: '12px',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#8b5cf6';
+                        e.currentTarget.style.backgroundColor = '#faf5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = 'white';
+                      }}
+                      onClick={() => { setTitle("Sistem Bakımı"); setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); }}
+                    >
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '14px', marginBottom: '4px' }}>Sistem Bakımı</div>
+                      <div style={{ color: '#6b7280', fontSize: '13px' }}>"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
+                    </div>
+                    <div 
+                      style={{
+                        cursor: 'pointer',
+                        padding: '12px',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#8b5cf6';
+                        e.currentTarget.style.backgroundColor = '#faf5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = 'white';
+                      }}
+                      onClick={() => { setTitle("Yeni Özellikler"); setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); }}
+                    >
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '14px', marginBottom: '4px' }}>Yeni Özellikler</div>
+                      <div style={{ color: '#6b7280', fontSize: '13px' }}>"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* İpuçları */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                  color: 'white',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2)'
+                }}>
+                  <h4 style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{ marginRight: '8px', fontSize: '20px' }}>📋</span>
+                    İpuçları:
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
+                      Başlık kısa ve dikkat çekici olmalı
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
+                      Mesaj net ve anlaşılır olmalı
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
+                      Emoji kullanarak dikkat çekebilirsiniz
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
+                      Gereksiz bildirimlerden kaçının
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Butonlar */}
-            <div className="flex justify-end space-x-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                disabled={isLoading}
-              >
-                İptal
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading || !title.trim() || !message.trim()}
-                className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Gönderiliyor...
-                  </>
-                ) : (
-                  <>
-                    📢 Toplu Bildirim Gönder
-                  </>
-                )}
-              </button>
             </div>
           </form>
         </div>
       </div>
+
+      {/* Sabit Alt Butonlar - Mobil için */}
+      <div style={{
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        backgroundColor: 'white',
+        borderTop: '1px solid #e5e7eb',
+        padding: '16px',
+        boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
+        zIndex: 1000
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          flexWrap: 'wrap'
+        }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: '12px 24px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              color: '#374151',
+              backgroundColor: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              minWidth: '100px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f9fafb';
+              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            }}
+            disabled={isLoading}
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading || !title.trim() || !message.trim()}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+              color: 'white',
+              borderRadius: '8px',
+              border: 'none',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: isLoading || !title.trim() || !message.trim() ? 'not-allowed' : 'pointer',
+              opacity: isLoading || !title.trim() || !message.trim() ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)',
+              minWidth: '180px',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading && title.trim() && message.trim()) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 6px rgba(139, 92, 246, 0.3)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(139, 92, 246, 0.2)';
+            }}
+            onClick={handleSubmit}
+          >
+            {isLoading ? (
+              <>
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  border: '2px solid transparent',
+                  borderTop: '2px solid white',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  marginRight: '8px'
+                }}></div>
+                Gönderiliyor...
+              </>
+            ) : (
+              <>
+                <span style={{ marginRight: '8px', fontSize: '18px' }}>
+                  📢
+                </span>
+                Toplu Bildirim Gönder
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        @media (min-width: 768px) {
+          .bulk-notification-container {
+            padding: 24px;
+          }
+          .bulk-notification-card {
+            padding: 32px;
+          }
+          .bulk-notification-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .bulk-notification-container {
+            padding: 32px;
+          }
+          .bulk-notification-card {
+            padding: 40px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
