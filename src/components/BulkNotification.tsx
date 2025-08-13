@@ -75,7 +75,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   return (
     <div className="p-6 bg-gray-50 min-h-full">
       <div className="max-w-4xl mx-auto">
-        {/* Ana Kart */}
+        {/* Ana Kart - Deploy için güncellendi */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="flex items-center mb-8">
             <div className="bg-purple-100 p-3 rounded-full mr-4">
