@@ -237,4 +237,110 @@ exports.sendCompanyApprovalEmail = functions
       
       return null;
     }
-  }); 
+  });
+
+// 📧 Bireysel veya firma bildirimi e-posta gönderme fonksiyonu
+exports.sendIndividualEmail = async (email, title, message, type) => {
+  try {
+    console.log("📧 Sending individual notification email:", { email, title, message, type });
+    
+    const emailSubject = title;
+    const recipientType = type === 'individual' ? 'Değerli Kullanıcı' : 'Değerli Firma';
+    const icon = type === 'individual' ? '👤' : '🏢';
+    
+    const emailContent = `
+      <!DOCTYPE html>
+      <html lang="tr">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Yakalahadi - ${title}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+        <style>
+          @media only screen and (max-width: 600px) {
+            .container { width: 100% !important; }
+            .mobile-padding { padding: 15px !important; }
+          }
+        </style>
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+          <tr>
+            <td align="center" style="padding: 20px;">
+              <table width="600" cellpadding="0" cellspacing="0" class="container" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 600px;">
+                
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%); color: white; padding: 30px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 36px; font-weight: bold; color: white; font-family: 'Chewy', cursive;">YakalaHadi</h1>
+                    <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">${icon} ${type === 'individual' ? 'Bireysel Bildirim' : 'Firma Bildirimi'}</p>
+                  </td>
+                </tr>
+                
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 30px;" class="mobile-padding">
+                    <h2 style="color: #333; margin: 0 0 20px 0; font-size: 20px;">Merhaba ${recipientType},</h2>
+                    
+                    <div style="background-color: #f8f9fa; border-left: 4px solid #8B5CF6; padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;">
+                      <h3 style="color: #8B5CF6; margin: 0 0 15px 0; font-size: 18px;">${title}</h3>
+                      <p style="color: #333; line-height: 1.6; font-size: 16px; margin: 0;">
+                        ${message}
+                      </p>
+                    </div>
+                    
+                    <div style="background-color: #e8f5e8; border: 1px solid #28a745; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                      <h3 style="color: #28a745; margin: 0 0 15px 0; font-size: 18px;">Önemli Bilgiler:</h3>
+                      <ul style="color: #555; line-height: 1.6; font-size: 14px; margin: 0; padding-left: 20px;">
+                        <li>Bu bildirim size özel olarak gönderilmiştir</li>
+                        <li>Yakalahadi uygulamasını kullanmaya devam edin</li>
+                        <li>Yeni kampanya ve indirimlerden haberdar olun</li>
+                        <li>Herhangi bir sorunuz varsa destek ekibimizle iletişime geçin</li>
+                      </ul>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
+                      <tr>
+                        <td style="border-top: 2px solid #eee; padding-top: 20px;">
+                          <p style="color: #999; font-size: 12px; text-align: center; margin: 0; line-height: 1.5;">
+                            Bu email Yakalahadi platformu tarafından gönderilmiştir.<br>
+                            Sorularınız için: <a href="mailto:destek@yakalahadi.com" style="color: #8B5CF6; text-decoration: none;">destek@yakalahadi.com</a>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+    
+    const msg = {
+      to: email,
+      from: {
+        email: 'noreply@yakalahadi.com',
+        name: 'YakalaHadi'
+      },
+      subject: emailSubject,
+      html: emailContent,
+    };
+    
+    const result = await sgMail.send(msg);
+    console.log("✅ Individual notification email sent successfully:", result);
+    
+    return {
+      success: true,
+      message: "E-posta başarıyla gönderildi",
+      messageId: result[0]?.headers['x-message-id'] || null
+    };
+    
+  } catch (error) {
+    console.error("❌ Individual notification email error:", error);
+    throw new Error(`E-posta gönderilemedi: ${error.message}`);
+  }
+}; 

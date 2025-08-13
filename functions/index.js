@@ -122,3 +122,54 @@ exports.sendNewDiscountNotice = functions
       return null;
     }
   });
+
+// 📧 Bireysel veya firma bildirimi fonksiyonu - E-posta ile gönderim
+exports.sendIndividualNotificationTrigger = functions
+  .region('europe-west1')
+  .runWith({
+    minInstances: 0,
+    maxInstances: 3000
+  })
+  .firestore
+  .document('individualNotifications/{notificationId}')
+  .onCreate(async (snap, context) => {
+    try {
+      const notificationData = snap.data();
+      const notificationId = context.params.notificationId;
+      
+      console.log(`📧 Bireysel bildirim oluşturuldu: ${notificationId}`, notificationData);
+      
+      // E-posta gönderimi için SendGrid kullan
+      const { sendIndividualEmail } = require('./sendGridEmail');
+      
+      const result = await sendIndividualEmail(
+        notificationData.email,
+        notificationData.title,
+        notificationData.message,
+        notificationData.type
+      );
+      
+      // Dokümanı işlenmiş olarak işaretle
+      await snap.ref.update({
+        processed: true,
+        processedAt: new Date().toISOString(),
+        emailResult: result
+      });
+      
+      console.log(`📨 Bireysel bildirim gönderildi:`, result);
+      
+      return result;
+      
+    } catch (error) {
+      console.error("❌ Bireysel bildirim gönderilirken hata:", error);
+      
+      // Hata durumunda dokümanı işaretle
+      await snap.ref.update({
+        processed: true,
+        processedAt: new Date().toISOString(),
+        error: error.message
+      });
+      
+      return null;
+    }
+  });
