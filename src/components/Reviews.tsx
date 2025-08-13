@@ -408,23 +408,28 @@ function Reviews() {
                      {review.userName}
                    </span>
                  </td>
-                <td style={{ padding: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    {renderStars(review.rating)}
-                    <span style={{ marginLeft: "8px", fontSize: "0.9em", color: "#666" }}>
+                <td style={{ padding: 12, textAlign: "center" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+                      {renderStars(review.rating)}
+                    </div>
+                    <span style={{ fontSize: "0.9em", color: "#666" }}>
                       ({review.rating}/5)
                     </span>
                   </div>
                 </td>
-                <td style={{ padding: 12, maxWidth: "300px" }}>
+                <td style={{ padding: 12, maxWidth: "400px", textAlign: "center" }}>
                   <div style={{
-                    padding: "8px 12px",
+                    padding: "12px 16px",
                     backgroundColor: "#f8f9fa",
                     borderRadius: "8px",
                     fontSize: "0.9em",
-                    lineHeight: "1.4",
-                    maxHeight: "80px",
-                    overflow: "auto"
+                    lineHeight: "1.5",
+                    maxHeight: "120px",
+                    overflow: "auto",
+                    textAlign: "left",
+                    border: "1px solid #e9ecef",
+                    minHeight: "60px"
                   }}>
                     {review.comment}
                   </div>
