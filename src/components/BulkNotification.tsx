@@ -493,38 +493,10 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
           maxWidth: '1200px',
           margin: '0 auto',
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
           gap: '12px',
           flexWrap: 'wrap'
         }}>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              padding: '12px 24px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              color: '#374151',
-              backgroundColor: 'white',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              minWidth: '100px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f9fafb';
-              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'white';
-              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-            }}
-            disabled={isLoading}
-          >
-            İptal
-          </button>
           <button
             type="submit"
             disabled={isLoading || !title.trim() || !message.trim() || userCount === 0}
