@@ -74,7 +74,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
 
   return (
     <div style={{
-      padding: '32px',
+      padding: '16px',
       background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)',
       minHeight: '100vh',
       fontFamily: 'system-ui, -apple-system, sans-serif'
@@ -83,72 +83,74 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         maxWidth: '1200px',
         margin: '0 auto'
       }}>
-        {/* Ana Kart - Deploy için güncellendi */}
+        {/* Ana Kart - Responsive */}
         <div style={{
           backgroundColor: 'white',
-          borderRadius: '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          padding: '40px',
+          borderRadius: '16px',
+          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+          padding: '20px',
           border: '1px solid #e5e7eb'
         }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '40px'
+            marginBottom: '24px',
+            flexWrap: 'wrap',
+            gap: '16px'
           }}>
             <div style={{
               background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
-              padding: '16px',
-              borderRadius: '16px',
-              marginRight: '24px'
+              padding: '12px',
+              borderRadius: '12px',
+              flexShrink: 0
             }}>
-              <span style={{ fontSize: '32px' }}>📢</span>
+              <span style={{ fontSize: '24px' }}>📢</span>
             </div>
             <div>
               <h2 style={{
-                fontSize: '32px',
+                fontSize: '24px',
                 fontWeight: 'bold',
                 color: '#1f2937',
-                margin: '0 0 8px 0'
+                margin: '0 0 4px 0'
               }}>Toplu Bildirim</h2>
               <p style={{
                 color: '#6b7280',
-                fontSize: '18px',
+                fontSize: '16px',
                 margin: '0'
               }}>Tüm kullanıcılara bildirim gönderin</p>
             </div>
           </div>
           
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Kullanıcı Sayısı */}
             <div style={{
               background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
               color: 'white',
-              borderRadius: '16px',
-              padding: '32px',
-              boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.3)'
+              borderRadius: '12px',
+              padding: '20px',
+              boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2)'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  padding: '16px',
-                  borderRadius: '16px',
-                  marginRight: '24px'
+                  padding: '12px',
+                  borderRadius: '12px',
+                  flexShrink: 0
                 }}>
-                  <span style={{ fontSize: '24px' }}>👥</span>
+                  <span style={{ fontSize: '20px' }}>👥</span>
                 </div>
                 <div>
                   <div style={{
                     color: 'white',
                     fontWeight: 'bold',
-                    fontSize: '24px',
-                    marginBottom: '8px'
+                    fontSize: '18px',
+                    marginBottom: '4px'
                   }}>
                     Toplam {userCount} kullanıcıya bildirim gönderilecek
                   </div>
                   <div style={{
                     color: '#bfdbfe',
-                    fontSize: '18px'
+                    fontSize: '14px'
                   }}>
                     Bu bildirim tüm kayıtlı kullanıcılara ulaşacak
                   </div>
@@ -156,22 +158,22 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               </div>
             </div>
 
-            {/* Form Alanları */}
+            {/* Form Alanları - Responsive Grid */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '40px'
+              gridTemplateColumns: '1fr',
+              gap: '24px'
             }}>
               {/* Sol Kolon */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Başlık */}
                 <div>
                   <label htmlFor="title" style={{
                     display: 'block',
-                    fontSize: '18px',
+                    fontSize: '16px',
                     fontWeight: 'bold',
                     color: '#374151',
-                    marginBottom: '16px'
+                    marginBottom: '8px'
                   }}>
                     Bildirim Başlığı *
                   </label>
@@ -182,16 +184,17 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     onChange={(e) => setTitle(e.target.value)}
                     style={{
                       width: '100%',
-                      padding: '16px 24px',
+                      padding: '12px 16px',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '18px',
+                      borderRadius: '8px',
+                      fontSize: '16px',
                       outline: 'none',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box'
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#8b5cf6';
-                      e.target.style.boxShadow = '0 0 0 4px rgba(139, 92, 246, 0.1)';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#e5e7eb';
@@ -202,9 +205,9 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     required
                   />
                   <div style={{
-                    fontSize: '14px',
+                    fontSize: '12px',
                     color: '#6b7280',
-                    marginTop: '12px',
+                    marginTop: '8px',
                     display: 'flex',
                     justifyContent: 'space-between'
                   }}>
@@ -219,10 +222,10 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 <div>
                   <label htmlFor="message" style={{
                     display: 'block',
-                    fontSize: '18px',
+                    fontSize: '16px',
                     fontWeight: 'bold',
                     color: '#374151',
-                    marginBottom: '16px'
+                    marginBottom: '8px'
                   }}>
                     Bildirim Mesajı *
                   </label>
@@ -230,21 +233,22 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     id="message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    rows={10}
+                    rows={6}
                     style={{
                       width: '100%',
-                      padding: '16px 24px',
+                      padding: '12px 16px',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '18px',
+                      borderRadius: '8px',
+                      fontSize: '16px',
                       outline: 'none',
                       resize: 'none',
                       transition: 'all 0.3s ease',
-                      fontFamily: 'inherit'
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box'
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#8b5cf6';
-                      e.target.style.boxShadow = '0 0 0 4px rgba(139, 92, 246, 0.1)';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#e5e7eb';
@@ -255,9 +259,9 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     required
                   />
                   <div style={{
-                    fontSize: '14px',
+                    fontSize: '12px',
                     color: '#6b7280',
-                    marginTop: '12px',
+                    marginTop: '8px',
                     display: 'flex',
                     justifyContent: 'space-between'
                   }}>
@@ -270,33 +274,33 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               </div>
 
               {/* Sağ Kolon */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Örnek Mesajlar */}
                 <div style={{
                   background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '16px',
-                  padding: '32px'
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '12px',
+                  padding: '20px'
                 }}>
                   <h4 style={{
-                    fontSize: '18px',
+                    fontSize: '16px',
                     fontWeight: 'bold',
                     color: '#374151',
-                    marginBottom: '24px',
+                    marginBottom: '16px',
                     display: 'flex',
                     alignItems: 'center'
                   }}>
-                    <span style={{ marginRight: '12px', fontSize: '24px' }}>💡</span>
+                    <span style={{ marginRight: '8px', fontSize: '20px' }}>💡</span>
                     Örnek Mesajlar:
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div 
                       style={{
                         cursor: 'pointer',
-                        padding: '16px',
+                        padding: '12px',
                         backgroundColor: 'white',
-                        borderRadius: '12px',
-                        border: '2px solid #e5e7eb',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseEnter={(e) => {
@@ -309,16 +313,16 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                       }}
                       onClick={() => { setTitle("Yeni Kampanya Başladı!"); setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); }}
                     >
-                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '18px', marginBottom: '8px' }}>Yeni Kampanya</div>
-                      <div style={{ color: '#6b7280' }}>"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '14px', marginBottom: '4px' }}>Yeni Kampanya</div>
+                      <div style={{ color: '#6b7280', fontSize: '13px' }}>"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
                     </div>
                     <div 
                       style={{
                         cursor: 'pointer',
-                        padding: '16px',
+                        padding: '12px',
                         backgroundColor: 'white',
-                        borderRadius: '12px',
-                        border: '2px solid #e5e7eb',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseEnter={(e) => {
@@ -331,16 +335,16 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                       }}
                       onClick={() => { setTitle("Sistem Bakımı"); setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); }}
                     >
-                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '18px', marginBottom: '8px' }}>Sistem Bakımı</div>
-                      <div style={{ color: '#6b7280' }}>"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '14px', marginBottom: '4px' }}>Sistem Bakımı</div>
+                      <div style={{ color: '#6b7280', fontSize: '13px' }}>"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
                     </div>
                     <div 
                       style={{
                         cursor: 'pointer',
-                        padding: '16px',
+                        padding: '12px',
                         backgroundColor: 'white',
-                        borderRadius: '12px',
-                        border: '2px solid #e5e7eb',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseEnter={(e) => {
@@ -353,8 +357,8 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                       }}
                       onClick={() => { setTitle("Yeni Özellikler"); setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); }}
                     >
-                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '18px', marginBottom: '8px' }}>Yeni Özellikler</div>
-                      <div style={{ color: '#6b7280' }}>"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '14px', marginBottom: '4px' }}>Yeni Özellikler</div>
+                      <div style={{ color: '#6b7280', fontSize: '13px' }}>"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
                     </div>
                   </div>
                 </div>
@@ -363,36 +367,36 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 <div style={{
                   background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
                   color: 'white',
-                  borderRadius: '16px',
-                  padding: '32px',
-                  boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.3)'
+                  borderRadius: '12px',
+                  padding: '20px',
+                  boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2)'
                 }}>
                   <h4 style={{
-                    fontSize: '18px',
+                    fontSize: '16px',
                     fontWeight: 'bold',
                     color: 'white',
-                    marginBottom: '24px',
+                    marginBottom: '16px',
                     display: 'flex',
                     alignItems: 'center'
                   }}>
-                    <span style={{ marginRight: '12px', fontSize: '24px' }}>📋</span>
+                    <span style={{ marginRight: '8px', fontSize: '20px' }}>📋</span>
                     İpuçları:
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '18px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
                       Başlık kısa ve dikkat çekici olmalı
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
                       Mesaj net ve anlaşılır olmalı
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
                       Emoji kullanarak dikkat çekebilirsiniz
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
+                      <span style={{ width: '8px', height: '8px', backgroundColor: 'white', borderRadius: '50%', marginRight: '12px', flexShrink: 0 }}></span>
                       Gereksiz bildirimlerden kaçının
                     </div>
                   </div>
@@ -404,32 +408,34 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
             <div style={{
               display: 'flex',
               justifyContent: 'flex-end',
-              gap: '24px',
-              paddingTop: '32px',
-              borderTop: '2px solid #e5e7eb'
+              gap: '12px',
+              paddingTop: '20px',
+              borderTop: '1px solid #e5e7eb',
+              flexWrap: 'wrap'
             }}>
               <button
                 type="button"
                 onClick={onClose}
                 style={{
-                  padding: '16px 40px',
-                  border: '2px solid #d1d5db',
-                  borderRadius: '12px',
+                  padding: '12px 24px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
                   color: '#374151',
                   backgroundColor: 'white',
-                  fontSize: '18px',
+                  fontSize: '16px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
-                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  minWidth: '100px'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#f9fafb';
-                  e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
-                  e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
                 }}
                 disabled={isLoading}
               >
@@ -439,47 +445,51 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                 type="submit"
                 disabled={isLoading || !title.trim() || !message.trim()}
                 style={{
-                  padding: '16px 40px',
+                  padding: '12px 24px',
                   background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
                   color: 'white',
-                  borderRadius: '12px',
+                  borderRadius: '8px',
                   border: 'none',
-                  fontSize: '18px',
+                  fontSize: '16px',
                   fontWeight: 'bold',
                   cursor: isLoading || !title.trim() || !message.trim() ? 'not-allowed' : 'pointer',
                   opacity: isLoading || !title.trim() || !message.trim() ? 0.5 : 1,
                   display: 'flex',
                   alignItems: 'center',
                   transition: 'all 0.3s ease',
-                  boxShadow: '0 10px 25px -5px rgba(139, 92, 246, 0.3)'
+                  boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)',
+                  minWidth: '180px',
+                  justifyContent: 'center'
                 }}
                 onMouseEnter={(e) => {
                   if (!isLoading && title.trim() && message.trim()) {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(139, 92, 246, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(139, 92, 246, 0.3)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(139, 92, 246, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(139, 92, 246, 0.2)';
                 }}
               >
                 {isLoading ? (
                   <>
                     <div style={{
-                      width: '24px',
-                      height: '24px',
+                      width: '16px',
+                      height: '16px',
                       border: '2px solid transparent',
                       borderTop: '2px solid white',
                       borderRadius: '50%',
                       animation: 'spin 1s linear infinite',
-                      marginRight: '16px'
+                      marginRight: '8px'
                     }}></div>
                     Gönderiliyor...
                   </>
                 ) : (
                   <>
-                    <span style={{ marginRight: '12px', fontSize: '24px' }}>📢</span>
+                    <span style={{ marginRight: '8px', fontSize: '18px' }}>
+                      📢
+                    </span>
                     Toplu Bildirim Gönder
                   </>
                 )}
@@ -493,6 +503,28 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        
+        @media (min-width: 768px) {
+          .bulk-notification-container {
+            padding: 24px;
+          }
+          .bulk-notification-card {
+            padding: 32px;
+          }
+          .bulk-notification-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .bulk-notification-container {
+            padding: 32px;
+          }
+          .bulk-notification-card {
+            padding: 40px;
+          }
         }
       `}</style>
     </div>
