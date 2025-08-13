@@ -63,38 +63,6 @@ export class NotificationService {
     }
   }
 
-  // Bireysel veya firma bildirimi gönder - Firestore trigger ile
-  static async sendIndividualNotification(title: string, message: string, email: string, type: 'individual' | 'company'): Promise<any> {
-    try {
-      console.log("📝 Creating individual notification document:", { title, message, email, type });
-      
-      // Firestore'a doküman ekle - bu trigger'ı tetikleyecek
-      const individualNotificationData = {
-        title: title,
-        message: message,
-        email: email,
-        type: type,
-        timestamp: new Date().toISOString(),
-        processed: false,
-        notificationType: type === 'individual' ? 'individual_notification' : 'company_notification'
-      };
-      
-      const docRef = await addDoc(collection(db, 'individualNotifications'), individualNotificationData);
-      
-      console.log("✅ Individual notification document created:", docRef.id);
-      
-      return {
-        success: true,
-        message: type === 'individual' ? "Bireysel bildirim başarıyla gönderildi" : "Firma bildirimi başarıyla gönderildi",
-        documentId: docRef.id
-      };
-      
-    } catch (error) {
-      console.error("❌ Individual notification error:", error);
-      throw new Error(`${type === 'individual' ? 'Bireysel' : 'Firma'} bildirimi gönderilemedi: ${error}`);
-    }
-  }
-
   // Test bildirimi gönder
   static async sendTestNotification(
     companyId: string,
