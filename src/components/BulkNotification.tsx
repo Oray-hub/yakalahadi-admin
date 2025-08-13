@@ -73,32 +73,83 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 min-h-full">
-      <div className="max-w-6xl mx-auto">
-        {/* Ana Kart - Deploy için güncellendi */}
-        <div className="bg-white rounded-2xl shadow-2xl p-10 border border-gray-100">
-          <div className="flex items-center mb-10">
-            <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4 rounded-2xl mr-6">
-              <span className="text-3xl">📢</span>
+    <div style={{
+      padding: '32px',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)',
+      minHeight: '100vh',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        {/* Ana Kart */}
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          padding: '40px',
+          border: '1px solid #e5e7eb'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '40px'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+              padding: '16px',
+              borderRadius: '16px',
+              marginRight: '24px'
+            }}>
+              <span style={{ fontSize: '32px' }}>📢</span>
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">Toplu Bildirim</h2>
-              <p className="text-gray-600 text-lg">Tüm kullanıcılara bildirim gönderin</p>
+              <h2 style={{
+                fontSize: '32px',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                margin: '0 0 8px 0'
+              }}>Toplu Bildirim</h2>
+              <p style={{
+                color: '#6b7280',
+                fontSize: '18px',
+                margin: '0'
+              }}>Tüm kullanıcılara bildirim gönderin</p>
             </div>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-10">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             {/* Kullanıcı Sayısı */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-8 shadow-lg">
-              <div className="flex items-center">
-                <div className="bg-white bg-opacity-20 p-4 rounded-2xl mr-6">
-                  <span className="text-2xl">👥</span>
+            <div style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+              color: 'white',
+              borderRadius: '16px',
+              padding: '32px',
+              boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.3)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  marginRight: '24px'
+                }}>
+                  <span style={{ fontSize: '24px' }}>👥</span>
                 </div>
                 <div>
-                  <div className="text-white font-bold text-2xl mb-2">
+                  <div style={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '24px',
+                    marginBottom: '8px'
+                  }}>
                     Toplam {userCount} kullanıcıya bildirim gönderilecek
                   </div>
-                  <div className="text-blue-100 text-lg">
+                  <div style={{
+                    color: '#bfdbfe',
+                    fontSize: '18px'
+                  }}>
                     Bu bildirim tüm kayıtlı kullanıcılara ulaşacak
                   </div>
                 </div>
@@ -106,12 +157,22 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
             </div>
 
             {/* Form Alanları */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '40px'
+            }}>
               {/* Sol Kolon */}
-              <div className="space-y-8">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Başlık */}
                 <div>
-                  <label htmlFor="title" className="block text-lg font-bold text-gray-700 mb-4">
+                  <label htmlFor="title" style={{
+                    display: 'block',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: '#374151',
+                    marginBottom: '16px'
+                  }}>
                     Bildirim Başlığı *
                   </label>
                   <input
@@ -119,20 +180,50 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all text-lg"
+                    style={{
+                      width: '100%',
+                      padding: '16px 24px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '12px',
+                      fontSize: '18px',
+                      outline: 'none',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#8b5cf6';
+                      e.target.style.boxShadow = '0 0 0 4px rgba(139, 92, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     placeholder="Örnek: Yeni Kampanya Başladı!"
                     maxLength={100}
                     required
                   />
-                  <div className="text-sm text-gray-500 mt-3 flex justify-between">
+                  <div style={{
+                    fontSize: '14px',
+                    color: '#6b7280',
+                    marginTop: '12px',
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                  }}>
                     <span>Kısa ve dikkat çekici olmalı</span>
-                    <span className={title.length > 80 ? "text-orange-500 font-bold" : ""}>{title.length}/100 karakter</span>
+                    <span style={{ color: title.length > 80 ? '#f59e0b' : '#6b7280', fontWeight: title.length > 80 ? 'bold' : 'normal' }}>
+                      {title.length}/100 karakter
+                    </span>
                   </div>
                 </div>
 
                 {/* Mesaj */}
                 <div>
-                  <label htmlFor="message" className="block text-lg font-bold text-gray-700 mb-4">
+                  <label htmlFor="message" style={{
+                    display: 'block',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: '#374151',
+                    marginBottom: '16px'
+                  }}>
                     Bildirim Mesajı *
                   </label>
                   <textarea
@@ -140,72 +231,168 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={10}
-                    className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-500 resize-none transition-all text-lg"
+                    style={{
+                      width: '100%',
+                      padding: '16px 24px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '12px',
+                      fontSize: '18px',
+                      outline: 'none',
+                      resize: 'none',
+                      transition: 'all 0.3s ease',
+                      fontFamily: 'inherit'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#8b5cf6';
+                      e.target.style.boxShadow = '0 0 0 4px rgba(139, 92, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     placeholder="Bildirim mesajınızı buraya yazın..."
                     maxLength={500}
                     required
                   />
-                  <div className="text-sm text-gray-500 mt-3 flex justify-between">
+                  <div style={{
+                    fontSize: '14px',
+                    color: '#6b7280',
+                    marginTop: '12px',
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                  }}>
                     <span>Net ve anlaşılır olmalı</span>
-                    <span className={message.length > 400 ? "text-orange-500 font-bold" : ""}>{message.length}/500 karakter</span>
+                    <span style={{ color: message.length > 400 ? '#f59e0b' : '#6b7280', fontWeight: message.length > 400 ? 'bold' : 'normal' }}>
+                      {message.length}/500 karakter
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Sağ Kolon */}
-              <div className="space-y-8">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Örnek Mesajlar */}
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl p-8">
-                  <h4 className="text-lg font-bold text-gray-800 mb-6 flex items-center">
-                    <span className="mr-3 text-2xl">💡</span>
+                <div style={{
+                  background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '16px',
+                  padding: '32px'
+                }}>
+                  <h4 style={{
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: '#374151',
+                    marginBottom: '24px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{ marginRight: '12px', fontSize: '24px' }}>💡</span>
                     Örnek Mesajlar:
                   </h4>
-                  <div className="space-y-4">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div 
-                      className="cursor-pointer p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all shadow-sm hover:shadow-md"
+                      style={{
+                        cursor: 'pointer',
+                        padding: '16px',
+                        backgroundColor: 'white',
+                        borderRadius: '12px',
+                        border: '2px solid #e5e7eb',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#8b5cf6';
+                        e.currentTarget.style.backgroundColor = '#faf5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = 'white';
+                      }}
                       onClick={() => { setTitle("Yeni Kampanya Başladı!"); setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); }}
                     >
-                      <div className="font-bold text-gray-800 text-lg mb-2">Yeni Kampanya</div>
-                      <div className="text-gray-600">"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '18px', marginBottom: '8px' }}>Yeni Kampanya</div>
+                      <div style={{ color: '#6b7280' }}>"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
                     </div>
                     <div 
-                      className="cursor-pointer p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all shadow-sm hover:shadow-md"
+                      style={{
+                        cursor: 'pointer',
+                        padding: '16px',
+                        backgroundColor: 'white',
+                        borderRadius: '12px',
+                        border: '2px solid #e5e7eb',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#8b5cf6';
+                        e.currentTarget.style.backgroundColor = '#faf5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = 'white';
+                      }}
                       onClick={() => { setTitle("Sistem Bakımı"); setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); }}
                     >
-                      <div className="font-bold text-gray-800 text-lg mb-2">Sistem Bakımı</div>
-                      <div className="text-gray-600">"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '18px', marginBottom: '8px' }}>Sistem Bakımı</div>
+                      <div style={{ color: '#6b7280' }}>"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
                     </div>
                     <div 
-                      className="cursor-pointer p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all shadow-sm hover:shadow-md"
+                      style={{
+                        cursor: 'pointer',
+                        padding: '16px',
+                        backgroundColor: 'white',
+                        borderRadius: '12px',
+                        border: '2px solid #e5e7eb',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#8b5cf6';
+                        e.currentTarget.style.backgroundColor = '#faf5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = 'white';
+                      }}
                       onClick={() => { setTitle("Yeni Özellikler"); setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); }}
                     >
-                      <div className="font-bold text-gray-800 text-lg mb-2">Yeni Özellikler</div>
-                      <div className="text-gray-600">"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
+                      <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '18px', marginBottom: '8px' }}>Yeni Özellikler</div>
+                      <div style={{ color: '#6b7280' }}>"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
                     </div>
                   </div>
                 </div>
 
                 {/* İpuçları */}
-                <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl p-8 shadow-lg">
-                  <h4 className="text-lg font-bold text-white mb-6 flex items-center">
-                    <span className="mr-3 text-2xl">📋</span>
+                <div style={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                  color: 'white',
+                  borderRadius: '16px',
+                  padding: '32px',
+                  boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.3)'
+                }}>
+                  <h4 style={{
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    marginBottom: '24px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{ marginRight: '12px', fontSize: '24px' }}>📋</span>
                     İpuçları:
                   </h4>
-                  <div className="space-y-4 text-lg">
-                    <div className="flex items-center">
-                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
                       Başlık kısa ve dikkat çekici olmalı
                     </div>
-                    <div className="flex items-center">
-                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
                       Mesaj net ve anlaşılır olmalı
                     </div>
-                    <div className="flex items-center">
-                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
                       Emoji kullanarak dikkat çekebilirsiniz
                     </div>
-                    <div className="flex items-center">
-                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%', marginRight: '16px' }}></span>
                       Gereksiz bildirimlerden kaçının
                     </div>
                   </div>
@@ -214,11 +401,36 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
             </div>
 
             {/* Butonlar */}
-            <div className="flex justify-end space-x-6 pt-8 border-t-2 border-gray-200">
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '24px',
+              paddingTop: '32px',
+              borderTop: '2px solid #e5e7eb'
+            }}>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-10 py-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all font-bold text-lg shadow-lg hover:shadow-xl"
+                style={{
+                  padding: '16px 40px',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '12px',
+                  color: '#374151',
+                  backgroundColor: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                  e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1)';
+                }}
                 disabled={isLoading}
               >
                 İptal
@@ -226,16 +438,48 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               <button
                 type="submit"
                 disabled={isLoading || !title.trim() || !message.trim()}
-                className="px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-4 focus:ring-purple-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-bold text-lg transition-all shadow-lg hover:shadow-xl"
+                style={{
+                  padding: '16px 40px',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                  color: 'white',
+                  borderRadius: '12px',
+                  border: 'none',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  cursor: isLoading || !title.trim() || !message.trim() ? 'not-allowed' : 'pointer',
+                  opacity: isLoading || !title.trim() || !message.trim() ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 10px 25px -5px rgba(139, 92, 246, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isLoading && title.trim() && message.trim()) {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(139, 92, 246, 0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(139, 92, 246, 0.3)';
+                }}
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-4"></div>
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      border: '2px solid transparent',
+                      borderTop: '2px solid white',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite',
+                      marginRight: '16px'
+                    }}></div>
                     Gönderiliyor...
                   </>
                 ) : (
                   <>
-                    <span className="mr-3 text-2xl">📢</span>
+                    <span style={{ marginRight: '12px', fontSize: '24px' }}>📢</span>
                     Toplu Bildirim Gönder
                   </>
                 )}
@@ -244,6 +488,13 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
           </form>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
