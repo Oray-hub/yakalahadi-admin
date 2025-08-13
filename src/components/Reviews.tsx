@@ -385,8 +385,8 @@ function Reviews() {
             <tr>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kullanıcı Adı</th>
-              <th style={{ padding: 12, textAlign: "center", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
-              <th style={{ padding: 12, textAlign: "center", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yorum</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yorum</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Tarih</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
@@ -408,9 +408,15 @@ function Reviews() {
                      {review.userName}
                    </span>
                  </td>
-                <td style={{ padding: 12, textAlign: "center" }}>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+                <td style={{ padding: 12 }}>
+                  <div style={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "center", 
+                    gap: "4px",
+                    textAlign: "center"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                       {renderStars(review.rating)}
                     </div>
                     <span style={{ fontSize: "0.9em", color: "#666" }}>
@@ -418,7 +424,7 @@ function Reviews() {
                     </span>
                   </div>
                 </td>
-                <td style={{ padding: 12, textAlign: "center" }}>
+                <td style={{ padding: 12, maxWidth: "400px", minWidth: "300px" }}>
                   <div style={{
                     padding: "12px 16px",
                     backgroundColor: "#f8f9fa",
@@ -427,11 +433,9 @@ function Reviews() {
                     lineHeight: "1.5",
                     maxHeight: "120px",
                     overflow: "auto",
-                    textAlign: "left",
+                    textAlign: "center",
                     border: "1px solid #e9ecef",
-                    minHeight: "60px",
-                    maxWidth: "400px",
-                    margin: "0 auto"
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
                   }}>
                     {review.comment}
                   </div>
