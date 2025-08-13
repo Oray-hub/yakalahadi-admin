@@ -228,7 +228,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               </div>
             )}
 
-            {/* Form Alanları - Responsive Grid */}
+            {/* Form Alanları */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr',
@@ -477,7 +477,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         </div>
       </div>
 
-      {/* Sabit Alt Butonlar - Mobil için */}
+      {/* Sabit Alt Butonlar */}
       <div style={{
         position: 'fixed',
         bottom: '0',
@@ -527,7 +527,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
           </button>
           <button
             type="submit"
-            disabled={isLoading || !title.trim() || !message.trim()}
+            disabled={isLoading || !title.trim() || !message.trim() || userCount === 0}
             style={{
               padding: '12px 24px',
               background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
@@ -536,8 +536,8 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               border: 'none',
               fontSize: '16px',
               fontWeight: 'bold',
-              cursor: isLoading || !title.trim() || !message.trim() ? 'not-allowed' : 'pointer',
-              opacity: isLoading || !title.trim() || !message.trim() ? 0.5 : 1,
+              cursor: isLoading || !title.trim() || !message.trim() || userCount === 0 ? 'not-allowed' : 'pointer',
+              opacity: isLoading || !title.trim() || !message.trim() || userCount === 0 ? 0.5 : 1,
               display: 'flex',
               alignItems: 'center',
               transition: 'all 0.3s ease',
@@ -546,7 +546,7 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               justifyContent: 'center'
             }}
             onMouseEnter={(e) => {
-              if (!isLoading && title.trim() && message.trim()) {
+              if (!isLoading && title.trim() && message.trim() && userCount > 0) {
                 e.currentTarget.style.transform = 'translateY(-1px)';
                 e.currentTarget.style.boxShadow = '0 4px 6px rgba(139, 92, 246, 0.3)';
               }
@@ -586,28 +586,6 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-        
-        @media (min-width: 768px) {
-          .bulk-notification-container {
-            padding: 24px;
-          }
-          .bulk-notification-card {
-            padding: 32px;
-          }
-          .bulk-notification-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-          }
-        }
-        
-        @media (min-width: 1024px) {
-          .bulk-notification-container {
-            padding: 32px;
-          }
-          .bulk-notification-card {
-            padding: 40px;
-          }
         }
       `}</style>
     </div>
