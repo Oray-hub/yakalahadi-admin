@@ -73,45 +73,45 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
-      <div className="max-w-4xl mx-auto">
-        {/* Ana Kart - Deploy için güncellendi */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="flex items-center mb-8">
-            <div className="bg-purple-100 p-3 rounded-full mr-4">
-              <span className="text-2xl">📢</span>
+    <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 min-h-full">
+      <div className="max-w-6xl mx-auto">
+        {/* Ana Kart - Yeni Tasarım */}
+        <div className="bg-white rounded-2xl shadow-2xl p-10 border border-gray-100">
+          <div className="flex items-center mb-10">
+            <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4 rounded-2xl mr-6">
+              <span className="text-3xl">📢</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">Toplu Bildirim</h2>
-              <p className="text-gray-600 mt-1">Tüm kullanıcılara bildirim gönderin</p>
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">Toplu Bildirim</h2>
+              <p className="text-gray-600 text-lg">Tüm kullanıcılara bildirim gönderin</p>
             </div>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Kullanıcı Sayısı */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
+          <form onSubmit={handleSubmit} className="space-y-10">
+            {/* Kullanıcı Sayısı - Yeni Tasarım */}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-8 shadow-lg">
               <div className="flex items-center">
-                <div className="bg-blue-100 p-3 rounded-full mr-4">
-                  <span className="text-blue-600 text-xl">👥</span>
+                <div className="bg-white bg-opacity-20 p-4 rounded-2xl mr-6">
+                  <span className="text-2xl">👥</span>
                 </div>
                 <div>
-                  <div className="text-blue-800 font-semibold text-lg">
+                  <div className="text-white font-bold text-2xl mb-2">
                     Toplam {userCount} kullanıcıya bildirim gönderilecek
                   </div>
-                  <div className="text-blue-600 text-sm mt-1">
+                  <div className="text-blue-100 text-lg">
                     Bu bildirim tüm kayıtlı kullanıcılara ulaşacak
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Form Alanları */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Form Alanları - Yeni Grid */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
               {/* Sol Kolon */}
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Başlık */}
                 <div>
-                  <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label htmlFor="title" className="block text-lg font-bold text-gray-700 mb-4">
                     Bildirim Başlığı *
                   </label>
                   <input
@@ -119,93 +119,93 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all text-lg"
                     placeholder="Örnek: Yeni Kampanya Başladı!"
                     maxLength={100}
                     required
                   />
-                  <div className="text-xs text-gray-500 mt-2 flex justify-between">
+                  <div className="text-sm text-gray-500 mt-3 flex justify-between">
                     <span>Kısa ve dikkat çekici olmalı</span>
-                    <span className={title.length > 80 ? "text-orange-500" : ""}>{title.length}/100 karakter</span>
+                    <span className={title.length > 80 ? "text-orange-500 font-bold" : ""}>{title.length}/100 karakter</span>
                   </div>
                 </div>
 
                 {/* Mesaj */}
                 <div>
-                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label htmlFor="message" className="block text-lg font-bold text-gray-700 mb-4">
                     Bildirim Mesajı *
                   </label>
                   <textarea
                     id="message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    rows={8}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all"
+                    rows={10}
+                    className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-500 resize-none transition-all text-lg"
                     placeholder="Bildirim mesajınızı buraya yazın..."
                     maxLength={500}
                     required
                   />
-                  <div className="text-xs text-gray-500 mt-2 flex justify-between">
+                  <div className="text-sm text-gray-500 mt-3 flex justify-between">
                     <span>Net ve anlaşılır olmalı</span>
-                    <span className={message.length > 400 ? "text-orange-500" : ""}>{message.length}/500 karakter</span>
+                    <span className={message.length > 400 ? "text-orange-500 font-bold" : ""}>{message.length}/500 karakter</span>
                   </div>
                 </div>
               </div>
 
               {/* Sağ Kolon */}
-              <div className="space-y-6">
-                {/* Örnek Mesajlar */}
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center">
-                    <span className="mr-2">💡</span>
+              <div className="space-y-8">
+                {/* Örnek Mesajlar - Yeni Tasarım */}
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl p-8">
+                  <h4 className="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                    <span className="mr-3 text-2xl">💡</span>
                     Örnek Mesajlar:
                   </h4>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div 
-                      className="cursor-pointer p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all"
+                      className="cursor-pointer p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all shadow-sm hover:shadow-md"
                       onClick={() => { setTitle("Yeni Kampanya Başladı!"); setMessage("Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."); }}
                     >
-                      <div className="font-medium text-gray-800">Yeni Kampanya</div>
-                      <div className="text-sm text-gray-600">"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
+                      <div className="font-bold text-gray-800 text-lg mb-2">Yeni Kampanya</div>
+                      <div className="text-gray-600">"Yeni kampanyalarımızı kaçırmayın! Hemen kontrol edin."</div>
                     </div>
                     <div 
-                      className="cursor-pointer p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all"
+                      className="cursor-pointer p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all shadow-sm hover:shadow-md"
                       onClick={() => { setTitle("Sistem Bakımı"); setMessage("Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."); }}
                     >
-                      <div className="font-medium text-gray-800">Sistem Bakımı</div>
-                      <div className="text-sm text-gray-600">"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
+                      <div className="font-bold text-gray-800 text-lg mb-2">Sistem Bakımı</div>
+                      <div className="text-gray-600">"Sistem bakımı nedeniyle 2 saat boyunca hizmet veremeyeceğiz."</div>
                     </div>
                     <div 
-                      className="cursor-pointer p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all"
+                      className="cursor-pointer p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all shadow-sm hover:shadow-md"
                       onClick={() => { setTitle("Yeni Özellikler"); setMessage("Yeni özellikler eklendi! Uygulamayı güncelleyin."); }}
                     >
-                      <div className="font-medium text-gray-800">Yeni Özellikler</div>
-                      <div className="text-sm text-gray-600">"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
+                      <div className="font-bold text-gray-800 text-lg mb-2">Yeni Özellikler</div>
+                      <div className="text-gray-600">"Yeni özellikler eklendi! Uygulamayı güncelleyin."</div>
                     </div>
                   </div>
                 </div>
 
-                {/* İpuçları */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
-                  <h4 className="text-sm font-semibold text-blue-800 mb-4 flex items-center">
-                    <span className="mr-2">📋</span>
+                {/* İpuçları - Yeni Tasarım */}
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl p-8 shadow-lg">
+                  <h4 className="text-lg font-bold text-white mb-6 flex items-center">
+                    <span className="mr-3 text-2xl">📋</span>
                     İpuçları:
                   </h4>
-                  <div className="space-y-2 text-sm text-blue-700">
+                  <div className="space-y-4 text-lg">
                     <div className="flex items-center">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
                       Başlık kısa ve dikkat çekici olmalı
                     </div>
                     <div className="flex items-center">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
                       Mesaj net ve anlaşılır olmalı
                     </div>
                     <div className="flex items-center">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
                       Emoji kullanarak dikkat çekebilirsiniz
                     </div>
                     <div className="flex items-center">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      <span className="w-3 h-3 bg-white rounded-full mr-4"></span>
                       Gereksiz bildirimlerden kaçının
                     </div>
                   </div>
@@ -213,12 +213,12 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               </div>
             </div>
 
-            {/* Butonlar */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            {/* Butonlar - Yeni Tasarım */}
+            <div className="flex justify-end space-x-6 pt-8 border-t-2 border-gray-200">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-8 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all font-medium"
+                className="px-10 py-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all font-bold text-lg shadow-lg hover:shadow-xl"
                 disabled={isLoading}
               >
                 İptal
@@ -226,16 +226,16 @@ function BulkNotification({ onClose }: BulkNotificationProps) {
               <button
                 type="submit"
                 disabled={isLoading || !title.trim() || !message.trim()}
-                className="px-8 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-medium transition-all shadow-lg hover:shadow-xl"
+                className="px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-4 focus:ring-purple-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-bold text-lg transition-all shadow-lg hover:shadow-xl"
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-4"></div>
                     Gönderiliyor...
                   </>
                 ) : (
                   <>
-                    <span className="mr-2">📢</span>
+                    <span className="mr-3 text-2xl">📢</span>
                     Toplu Bildirim Gönder
                   </>
                 )}
