@@ -10,6 +10,7 @@ function Login({ onLogin }: LoginProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,29 +125,46 @@ function Login({ onLogin }: LoginProps) {
             }}>
               Şifre
             </label>
-            <input
-              type="password"
-              placeholder="Şifrenizi girin"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              style={{ 
-                width: "100%", 
-                padding: "14px 16px", 
-                border: "2px solid #e1e5e9", 
-                borderRadius: 8, 
-                fontSize: "16px",
-                boxSizing: "border-box",
-                transition: "border-color 0.3s ease",
-                outline: "none"
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "#667eea";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "#e1e5e9";
-              }}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Şifrenizi girin"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                style={{ 
+                  width: "100%", 
+                  padding: "14px 40px 14px 16px", 
+                  border: "2px solid #e1e5e9", 
+                  borderRadius: 8, 
+                  fontSize: "16px",
+                  boxSizing: "border-box",
+                  transition: "border-color 0.3s ease",
+                  outline: "none"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#667eea";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#e1e5e9";
+                }}
+              />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                  fontSize: 20,
+                  color: showPassword ? "#667eea" : "#aaa"
+                }}
+                title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </div>
           
           <button 
