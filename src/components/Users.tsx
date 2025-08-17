@@ -27,7 +27,7 @@ function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("username"); // Default search field
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [dropdownPosition, setDropdownPosition] = useState<{x: number, y: number} | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{x: number, y: number, w?: number} | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -266,7 +266,30 @@ function Users() {
     } else {
       const button = event.currentTarget as HTMLElement;
       const rect = button.getBoundingClientRect();
-      setDropdownPosition({ x: rect.left, y: rect.bottom + 4 });
+      let left = rect.left;
+      let top = rect.bottom + 4;
+      let dropdownWidth = 200;
+      let dropdownHeight = 220;
+      // Responsive genişlik
+      if (window.innerWidth <= 600) {
+        dropdownWidth = window.innerWidth * 0.9;
+        left = (window.innerWidth - dropdownWidth) / 2;
+        top = rect.bottom + 8;
+      } else if (window.innerWidth <= 900) {
+        dropdownWidth = window.innerWidth * 0.6;
+        if (left + dropdownWidth > window.innerWidth) {
+          left = window.innerWidth - dropdownWidth - 8;
+        }
+      } else {
+        if (left + dropdownWidth > window.innerWidth) {
+          left = window.innerWidth - dropdownWidth - 16;
+        }
+      }
+      if (top + dropdownHeight > window.innerHeight) {
+        top = rect.top - dropdownHeight - 4;
+        if (top < 0) top = 8;
+      }
+      setDropdownPosition({ x: left, y: top, w: dropdownWidth });
       setOpenDropdown(userId);
     }
   };
@@ -477,11 +500,10 @@ function Users() {
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kullanıcı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>E-posta</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
-              <th style={{ padding: "12px", textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>E-posta Durumu</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Gizlilik Kabul</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Şartlar Kabul</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yakalanan Kampanya</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>QR Kod Okutuldu mu</th>
+              <th style={{ padding: "12px", textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>E-posta</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Sözleşme</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yakalanan</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>QR Kod</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategoriler</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
@@ -527,43 +549,19 @@ function Users() {
                 <td style={{ padding: 12 }}>
                   {user.createdAt ? new Date(user.createdAt.toDate()).toLocaleDateString('tr-TR') : "Bilinmiyor"}
                 </td>
+                {/* Sözleşme sütunu */}
                 <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
                     borderRadius: 12,
                     fontSize: "0.8em",
-                    backgroundColor: user.emailVerified ? "#d4edda" : "#f8d7da",
-                    color: user.emailVerified ? "#155724" : "#721c24"
-                  }}>
-                    {user.emailVerified ? "Doğrulandı" : "Doğrulanmadı"}
-                  </span>
-                </td>
-                <td style={{ padding: 12 }}>
-                  <span style={{
-                    padding: "4px 8px",
-                    borderRadius: 12,
-                    fontSize: "0.8em",
-                    backgroundColor: user.privacyAccepted ? "#d4edda" : "#f8d7da",
-                    color: user.privacyAccepted ? "#155724" : "#721c24",
+                    backgroundColor: user.privacyAccepted && user.termsAccepted ? "#d4edda" : "#f8d7da",
+                    color: user.privacyAccepted && user.termsAccepted ? "#155724" : "#721c24",
                     whiteSpace: "nowrap",
                     display: "inline-block",
                     minWidth: "80px"
                   }}>
-                    {user.privacyAccepted ? "Kabul Edildi" : "Kabul Edilmedi"}
-                  </span>
-                </td>
-                <td style={{ padding: 12 }}>
-                  <span style={{
-                    padding: "4px 8px",
-                    borderRadius: 12,
-                    fontSize: "0.8em",
-                    backgroundColor: user.termsAccepted ? "#d4edda" : "#f8d7da",
-                    color: user.termsAccepted ? "#155724" : "#721c24",
-                    whiteSpace: "nowrap",
-                    display: "inline-block",
-                    minWidth: "80px"
-                  }}>
-                    {user.termsAccepted ? "Kabul Edildi" : "Kabul Edilmedi"}
+                    {user.privacyAccepted && user.termsAccepted ? "Kabul Edildi" : "Kabul Edilmedi"}
                   </span>
                 </td>
                 <td style={{ padding: 12 }}>
@@ -577,15 +575,16 @@ function Users() {
                     {user.claimedCampaigns || 0}
                   </span>
                 </td>
+                {/* QR Kod sütunu */}
                 <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
                     borderRadius: 12,
                     fontSize: "0.8em",
-                    backgroundColor: user.qrScanned ? "#d4edda" : "#f8d7da",
-                    color: user.qrScanned ? "#155724" : "#721c24"
+                    backgroundColor: "#e3f2fd",
+                    color: "#1976d2"
                   }}>
-                    {user.qrScanned ? "Evet" : "Hayır"}
+                    {user.qrScannedCount || 0}
                   </span>
                 </td>
                 <td style={{ padding: 12 }}>
@@ -632,21 +631,26 @@ function Users() {
                           position: 'fixed',
                           top: dropdownPosition.y,
                           left: dropdownPosition.x,
+                          width: dropdownPosition.w || 200,
                           backgroundColor: 'white',
                           border: '1px solid #ddd',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                           zIndex: 999999,
-                          minWidth: '180px',
                           padding: '6px 0',
+                          maxWidth: '98vw',
+                          minWidth: 160,
+                          // Mobilde tam genişlikte gibi görünmesi için
+                          ...(window.innerWidth <= 600 ? { left: '5vw', width: '90vw', minWidth: 0 } : {})
                         }}
                       >
                         <div
                           style={{
-                            padding: '10px 18px',
+                            padding: window.innerWidth <= 600 ? '18px 24px' : '10px 18px',
                             cursor: 'pointer',
                             color: '#1976d2',
                             fontWeight: 600,
+                            fontSize: window.innerWidth <= 600 ? '1.1em' : '1em',
                             opacity: 1
                           }}
                           onClick={() => { setOpenDropdown(null); handleResetPassword(user); }}
@@ -655,11 +659,12 @@ function Users() {
                         </div>
                         <div
                           style={{
-                            padding: '10px 18px',
+                            padding: window.innerWidth <= 600 ? '18px 24px' : '10px 18px',
                             cursor: user.disabled || user.deleted ? 'not-allowed' : 'pointer',
                             color: user.disabled || user.deleted ? '#888' : '#856404',
                             backgroundColor: user.disabled || user.deleted ? '#f5f5f5' : 'transparent',
                             fontWeight: 600,
+                            fontSize: window.innerWidth <= 600 ? '1.1em' : '1em',
                             opacity: user.disabled || user.deleted ? 0.6 : 1
                           }}
                           onClick={() => {
@@ -670,11 +675,12 @@ function Users() {
                         </div>
                         <div
                           style={{
-                            padding: '10px 18px',
+                            padding: window.innerWidth <= 600 ? '18px 24px' : '10px 18px',
                             cursor: !user.disabled || user.deleted ? 'not-allowed' : 'pointer',
                             color: !user.disabled || user.deleted ? '#888' : '#28a745',
                             backgroundColor: !user.disabled || user.deleted ? '#f5f5f5' : 'transparent',
                             fontWeight: 600,
+                            fontSize: window.innerWidth <= 600 ? '1.1em' : '1em',
                             opacity: !user.disabled || user.deleted ? 0.6 : 1
                           }}
                           onClick={() => {
@@ -685,11 +691,12 @@ function Users() {
                         </div>
                         <div
                           style={{
-                            padding: '10px 18px',
+                            padding: window.innerWidth <= 600 ? '18px 24px' : '10px 18px',
                             cursor: user.deleted ? 'not-allowed' : 'pointer',
                             color: user.deleted ? '#888' : '#dc3545',
                             backgroundColor: user.deleted ? '#f5f5f5' : 'transparent',
                             fontWeight: 600,
+                            fontSize: window.innerWidth <= 600 ? '1.1em' : '1em',
                             opacity: user.deleted ? 0.6 : 1
                           }}
                           onClick={() => {
