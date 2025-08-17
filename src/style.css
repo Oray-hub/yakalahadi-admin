@@ -204,6 +204,9 @@ button:focus-visible {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     max-width: 80px !important;
+    display: table-cell !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
   .companies-table th {
