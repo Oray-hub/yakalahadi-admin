@@ -608,68 +608,98 @@ function Users() {
                   </div>
                 </td>
                 {/* İşlemler sütunu */}
-                <td style={{ padding: 12 }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                <td style={{ padding: 12, position: 'relative' }}>
+                  <div style={{ position: 'relative' }}>
                     <button
-                      onClick={() => handleResetPassword(user)}
+                      onClick={(e) => toggleDropdown(user.id, e)}
                       style={{
-                        padding: '6px 12px',
+                        padding: '6px 16px',
                         backgroundColor: '#1976d2',
                         color: 'white',
                         border: 'none',
-                        borderRadius: 4,
+                        borderRadius: 6,
                         cursor: 'pointer',
-                        fontSize: '0.8em'
-                      }}
-                    >
-                      🔑 Şifre Sıfırla
-                    </button>
-                    <button
-                      onClick={() => handleDisableUser(user)}
-                      disabled={user.disabled || user.deleted}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: user.disabled || user.deleted ? '#ccc' : '#ffc107',
-                        color: user.disabled || user.deleted ? '#888' : '#856404',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: user.disabled || user.deleted ? 'not-allowed' : 'pointer',
-                        fontSize: '0.8em'
-                      }}
-                    >
-                      🚫 Hesabı Kapat
-                    </button>
-                    <button
-                      onClick={() => handleEnableUser(user)}
-                      disabled={!user.disabled || user.deleted}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: !user.disabled || user.deleted ? '#ccc' : '#28a745',
-                        color: !user.disabled || user.deleted ? '#888' : 'white',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: !user.disabled || user.deleted ? 'not-allowed' : 'pointer',
-                        fontSize: '0.8em'
-                      }}
-                    >
-                      🔓 Hesabı Aç
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user)}
-                      disabled={user.deleted}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: user.deleted ? '#ccc' : '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: user.deleted ? 'not-allowed' : 'pointer',
-                        fontSize: '0.8em',
+                        fontSize: '1.2em',
                         fontWeight: 600
                       }}
                     >
-                      🗑️ Hesabı Sil
+                      ⋮
                     </button>
+                    {openDropdown === user.id && dropdownPosition && (
+                      <div
+                        data-user-dropdown-container
+                        style={{
+                          position: 'fixed',
+                          top: dropdownPosition.y,
+                          left: dropdownPosition.x,
+                          backgroundColor: 'white',
+                          border: '1px solid #ddd',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                          zIndex: 999999,
+                          minWidth: '180px',
+                          padding: '6px 0',
+                        }}
+                      >
+                        <div
+                          style={{
+                            padding: '10px 18px',
+                            cursor: 'pointer',
+                            color: '#1976d2',
+                            fontWeight: 600,
+                            opacity: 1
+                          }}
+                          onClick={() => { setOpenDropdown(null); handleResetPassword(user); }}
+                        >
+                          🔑 Şifre Sıfırla
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 18px',
+                            cursor: user.disabled || user.deleted ? 'not-allowed' : 'pointer',
+                            color: user.disabled || user.deleted ? '#888' : '#856404',
+                            backgroundColor: user.disabled || user.deleted ? '#f5f5f5' : 'transparent',
+                            fontWeight: 600,
+                            opacity: user.disabled || user.deleted ? 0.6 : 1
+                          }}
+                          onClick={() => {
+                            if (!(user.disabled || user.deleted)) { setOpenDropdown(null); handleDisableUser(user); }
+                          }}
+                        >
+                          🚫 Hesabı Kapat
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 18px',
+                            cursor: !user.disabled || user.deleted ? 'not-allowed' : 'pointer',
+                            color: !user.disabled || user.deleted ? '#888' : '#28a745',
+                            backgroundColor: !user.disabled || user.deleted ? '#f5f5f5' : 'transparent',
+                            fontWeight: 600,
+                            opacity: !user.disabled || user.deleted ? 0.6 : 1
+                          }}
+                          onClick={() => {
+                            if (user.disabled && !user.deleted) { setOpenDropdown(null); handleEnableUser(user); }
+                          }}
+                        >
+                          🔓 Hesabı Aç
+                        </div>
+                        <div
+                          style={{
+                            padding: '10px 18px',
+                            cursor: user.deleted ? 'not-allowed' : 'pointer',
+                            color: user.deleted ? '#888' : '#dc3545',
+                            backgroundColor: user.deleted ? '#f5f5f5' : 'transparent',
+                            fontWeight: 600,
+                            opacity: user.deleted ? 0.6 : 1
+                          }}
+                          onClick={() => {
+                            if (!user.deleted) { setOpenDropdown(null); handleDeleteUser(user); }
+                          }}
+                        >
+                          🗑️ Hesabı Sil
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </td>
               </tr>
