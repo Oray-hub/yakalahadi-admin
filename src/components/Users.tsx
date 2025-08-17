@@ -487,6 +487,19 @@ function Users() {
                 <td style={{ padding: 12 }}>
                   <div>
                     <strong>{user.name}</strong>
+                    {user.disabled && (
+                      <span style={{
+                        marginLeft: 8,
+                        padding: '2px 8px',
+                        backgroundColor: '#f8d7da',
+                        color: '#721c24',
+                        borderRadius: 8,
+                        fontSize: '0.8em',
+                        fontWeight: 600
+                      }}>
+                        Kapalı Hesap
+                      </span>
+                    )}
                   </div>
                 </td>
                 <td style={{ padding: 12 }}>{user.email}</td>
