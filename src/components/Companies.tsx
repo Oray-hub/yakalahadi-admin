@@ -18,13 +18,16 @@ function koordinattanIlBul(location: { lat: number; lng: number } | null) {
 
 function parseLocationString(locationStr: string): { lat: number, lng: number } | null {
   if (!locationStr) return null;
-  // Örnek: "37.04057071582833° N, 35.30349891632795° E"
-  const match = locationStr.match(/([\d.]+)[^\d]+([NS]),\s*([\d.]+)[^\d]+([EW])/i);
-  if (!match) return null;
-  let lat = parseFloat(match[1]);
-  let lng = parseFloat(match[3]);
-  if (match[2].toUpperCase() === 'S') lat = -lat;
-  if (match[4].toUpperCase() === 'W') lng = -lng;
+  // "37.04057071582833° N, 35.30349891632795° E"
+  const parts = locationStr.split(",");
+  if (parts.length !== 2) return null;
+  const latMatch = parts[0].trim().match(/([\d.]+)[^\d]+([NS])/i);
+  const lngMatch = parts[1].trim().match(/([\d.]+)[^\d]+([EW])/i);
+  if (!latMatch || !lngMatch) return null;
+  let lat = parseFloat(latMatch[1]);
+  let lng = parseFloat(lngMatch[1]);
+  if (latMatch[2].toUpperCase() === 'S') lat = -lat;
+  if (lngMatch[2].toUpperCase() === 'W') lng = -lng;
   return { lat, lng };
 }
 
