@@ -280,6 +280,40 @@ function Users() {
     }
   };
 
+  const handleDisableUser = async (user: User) => {
+    if (!window.confirm(`${user.name} adlı kullanıcının hesabını kapatmak istediğinize emin misiniz?`)) return;
+    try {
+      const db = getFirestore();
+      await db.collection('users').doc(user.id).update({ disabled: true });
+      fetchUsers();
+      alert('Hesap kapatıldı.');
+    } catch (error) {
+      alert('Hesap kapatılamadı.');
+    }
+  };
+  const handleEnableUser = async (user: User) => {
+    if (!window.confirm(`${user.name} adlı kullanıcının hesabını açmak istediğinize emin misiniz?`)) return;
+    try {
+      const db = getFirestore();
+      await db.collection('users').doc(user.id).update({ disabled: false });
+      fetchUsers();
+      alert('Hesap açıldı.');
+    } catch (error) {
+      alert('Hesap açılamadı.');
+    }
+  };
+  const handleDeleteUser = async (user: User) => {
+    if (!window.confirm(`${user.name} adlı kullanıcıyı silmek istediğinize emin misiniz?`)) return;
+    try {
+      const db = getFirestore();
+      await db.collection('users').doc(user.id).update({ deleted: true });
+      fetchUsers();
+      alert('Kullanıcı silindi.');
+    } catch (error) {
+      alert('Kullanıcı silinemedi.');
+    }
+  };
+
   if (loading) {
     return <div style={{ padding: 20 }}>Kullanıcılar yükleniyor...</div>;
   }
@@ -575,20 +609,68 @@ function Users() {
                 </td>
                 {/* İşlemler sütunu */}
                 <td style={{ padding: 12 }}>
-                  <button
-                    onClick={() => handleResetPassword(user)}
-                    style={{
-                      padding: "6px 12px",
-                      backgroundColor: "#1976d2",
-                      color: "white",
-                      border: "none",
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      fontSize: "0.8em"
-                    }}
-                  >
-                    🔑 Şifre Sıfırla
-                  </button>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => handleResetPassword(user)}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#1976d2',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontSize: '0.8em'
+                      }}
+                    >
+                      🔑 Şifre Sıfırla
+                    </button>
+                    <button
+                      onClick={() => handleDisableUser(user)}
+                      disabled={user.disabled || user.deleted}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: user.disabled || user.deleted ? '#ccc' : '#ffc107',
+                        color: user.disabled || user.deleted ? '#888' : '#856404',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: user.disabled || user.deleted ? 'not-allowed' : 'pointer',
+                        fontSize: '0.8em'
+                      }}
+                    >
+                      🚫 Hesabı Kapat
+                    </button>
+                    <button
+                      onClick={() => handleEnableUser(user)}
+                      disabled={!user.disabled || user.deleted}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: !user.disabled || user.deleted ? '#ccc' : '#28a745',
+                        color: !user.disabled || user.deleted ? '#888' : 'white',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: !user.disabled || user.deleted ? 'not-allowed' : 'pointer',
+                        fontSize: '0.8em'
+                      }}
+                    >
+                      🔓 Hesabı Aç
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user)}
+                      disabled={user.deleted}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: user.deleted ? '#ccc' : '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: user.deleted ? 'not-allowed' : 'pointer',
+                        fontSize: '0.8em',
+                        fontWeight: 600
+                      }}
+                    >
+                      🗑️ Hesabı Sil
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
