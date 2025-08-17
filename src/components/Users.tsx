@@ -19,6 +19,7 @@ interface User {
   qrScanned?: boolean;
   disabled?: boolean; // Added for disable user
   deleted?: boolean; // Added for soft delete
+  qrScannedCount?: number; // Added for QR scanned count
 }
 
 function Users() {
@@ -67,7 +68,8 @@ function Users() {
       
       // Kullanıcı başına yakalanan kampanya sayısını hesapla
       const userClaimedCounts = new Map<string, number>();
-      const userQrScanned = new Map<string, boolean>();
+      // Kullanıcı başına QR okutulan kampanya sayısını hesapla
+      const userQrScannedCount = new Map<string, number>();
       
       // Yeni sistem claimedCampaigns
       console.log("=== CLAIMED CAMPAIGNS DATA ===");
@@ -102,7 +104,7 @@ function Users() {
           console.log(`Has scanned: ${hasScanned}`);
           
           if (hasScanned) {
-            userQrScanned.set(userId, true);
+            userQrScannedCount.set(userId, (userQrScannedCount.get(userId) || 0) + 1);
             console.log(`✅ User ${userId} has scanned QR code`);
           }
         }
@@ -142,7 +144,7 @@ function Users() {
           console.log(`Has scanned: ${hasScanned}`);
           
           if (hasScanned) {
-            userQrScanned.set(userId, true);
+            userQrScannedCount.set(userId, (userQrScannedCount.get(userId) || 0) + 1);
             console.log(`✅ User ${userId} has scanned QR code (caught_campaigns)`);
           }
         }
@@ -167,7 +169,7 @@ function Users() {
           termsAccepted: data.termsAccepted || false,
           // Yakalanan kampanya ve QR verileri
           claimedCampaigns: userClaimedCounts.get(userId) || 0,
-          qrScanned: userQrScanned.get(userId) || false,
+          qrScannedCount: userQrScannedCount.get(userId) || 0,
           disabled: data.disabled || false, // Add disabled status
           deleted: data.deleted || false, // Add deleted status
         });
@@ -175,7 +177,7 @@ function Users() {
       
       console.log("=== FINAL RESULTS ===");
       console.log("User Claimed Counts:", Object.fromEntries(userClaimedCounts));
-      console.log("User QR Scanned:", Object.fromEntries(userQrScanned));
+      console.log("User QR Scanned:", Object.fromEntries(userQrScannedCount));
       
       setUsers(usersData);
     } catch (error) {
