@@ -809,26 +809,26 @@ function Companies() {
         }}>
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
-              <th className="il-col" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
-              <th className="firma-col" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma</th>
-              <th className="baslik-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Başlık</th>
-              <th className="yetkili-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yetkili</th>
-              <th className="vkn-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>VKN</th>
-              <th className="kayit-tarihi-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
-              <th className="turu-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Türü</th>
-              <th className="kategori-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategori</th>
-              <th className="durum-col show-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Durum</th>
-              <th className="mail-col show-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Mail</th>
-              <th className="telefon-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
-              <th className="puan-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
-              <th className="krediler-col hide-mobile" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
-              <th className="islemler-col" style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Başlık</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yetkili</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>VKN</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Türü</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategori</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Durum</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Mail</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
           </thead>
           <tbody style={{ fontSize: "12px" }}>
             {filteredCompanies.map((company) => (
               <tr key={company.id} style={{ borderBottom: "1px solid #f1f3f4", overflow: "visible" }}>
-                <td className="il-col" style={{ padding: 12 }}>{
+                <td style={{ padding: 12 }}>{
                   (() => {
                     let locObj = null;
                     if (typeof company.location === "string") {
@@ -839,12 +839,12 @@ function Companies() {
                     return koordinattanIlBul(locObj);
                   })()
                 }</td>
-                <td className="firma-col" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>
                   <strong>{company.company}</strong>
                 </td>
-                <td className="baslik-col hide-mobile" style={{ padding: 12 }}>{company.companyTitle}</td>
-                <td className="yetkili-col hide-mobile" style={{ padding: 12 }}>{company.companyOfficer}</td>
-                <td className="vkn-col hide-mobile" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>{company.companyTitle}</td>
+                <td style={{ padding: 12 }}>{company.companyOfficer}</td>
+                <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
                     backgroundColor: "#e3f2fd",
@@ -855,10 +855,10 @@ function Companies() {
                     {company.vkn}
                   </span>
                 </td>
-                <td className="kayit-tarihi-col hide-mobile" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>
                   {company.createdAt ? new Date(company.createdAt.toDate()).toLocaleDateString('tr-TR') : "Bilinmiyor"}
                 </td>
-                <td className="turu-col hide-mobile" style={{ padding: 12, position: "relative", overflow: "visible" }}>
+                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
                   <div style={{ position: "relative" }}>
                     <button
                       onClick={(e) => toggleFirmTypeDropdown(company.id, e)}
@@ -925,7 +925,7 @@ function Companies() {
                     )}
                   </div>
                 </td>
-                <td className="kategori-col hide-mobile" style={{ padding: 12, position: "relative", overflow: "visible" }}>
+                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
                   <div style={{ position: "relative" }}>
                     <button
                       onClick={(e) => toggleCategoryDropdown(company.id, e)}
@@ -994,7 +994,7 @@ function Companies() {
                     )}
                   </div>
                 </td>
-                <td className="durum-col show-mobile" style={{ padding: 12, position: "relative", overflow: "visible" }}>
+                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
                   <div style={{ position: "relative" }}>
                     <button
                       onClick={(e) => toggleDropdown(company.id, e)}
@@ -1097,7 +1097,7 @@ function Companies() {
                     )}
                   </div>
                 </td>
-                <td className="mail-col show-mobile" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
                     backgroundColor: "#e8f4fd",
@@ -1108,9 +1108,9 @@ function Companies() {
                     {company.email}
                   </span>
                 </td>
-                <td className="telefon-col hide-mobile" style={{ padding: 12 }}>{company.phone}</td>
+                <td style={{ padding: 12 }}>{company.phone}</td>
 
-                <td className="puan-col hide-mobile" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>
                   <span 
                     style={{
                       padding: "4px 8px",
@@ -1136,7 +1136,7 @@ function Companies() {
                     ⭐ {company.averageRating.toFixed(1)}
                   </span>
                 </td>
-                <td className="krediler-col hide-mobile" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>
                   {editingField?.companyId === company.id && editingField?.field === 'credits' ? (
                     <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                       <input
@@ -1201,7 +1201,7 @@ function Companies() {
                     </span>
                   )}
                 </td>
-                <td className="islemler-col" style={{ padding: 12 }}>
+                <td style={{ padding: 12 }}>
                   <button
                     onClick={() => handleDeleteCompany(company.id, company.company)}
                     disabled={deletingCompany === company.id}
