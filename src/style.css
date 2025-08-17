@@ -579,3 +579,13 @@ button:focus-visible {
     font-size: 11px !important;
   }
 }
+
+/* Mobilde sadece önemli kolonlar görünsün */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: table-cell !important;
+  }
+}
