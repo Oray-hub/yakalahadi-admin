@@ -2,6 +2,44 @@ import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { NotificationService } from "../services/notificationService";
+import * as turf from '@turf/turf';
+// Türkiye il sınırları GeoJSON (örnek: sadece Adana, Ankara, İstanbul, İzmir, Bursa, Antalya)
+const ilGeoJson = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Adana" },
+      "geometry": { "type": "Polygon", "coordinates": [[[35.0,36.8],[35.7,36.8],[35.7,37.5],[35.0,37.5],[35.0,36.8]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ankara" },
+      "geometry": { "type": "Polygon", "coordinates": [[[32.5,39.5],[33.5,39.5],[33.5,40.2],[32.5,40.2],[32.5,39.5]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "İstanbul" },
+      "geometry": { "type": "Polygon", "coordinates": [[[28.6,40.8],[29.4,40.8],[29.4,41.3],[28.6,41.3],[28.6,40.8]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "İzmir" },
+      "geometry": { "type": "Polygon", "coordinates": [[[26.8,38.1],[27.5,38.1],[27.5,38.7],[26.8,38.7],[26.8,38.1]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bursa" },
+      "geometry": { "type": "Polygon", "coordinates": [[[28.7,39.9],[29.5,39.9],[29.5,40.5],[28.7,40.5],[28.7,39.9]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Antalya" },
+      "geometry": { "type": "Polygon", "coordinates": [[[30.2,36.7],[31.0,36.7],[31.0,37.2],[30.2,37.2],[30.2,36.7]]] }
+    }
+    // ... diğer iller eklenebilir ...
+  ]
+};
 
 interface Company {
   id: string;
@@ -109,20 +147,13 @@ const ilListesi = [
 
 function koordinattanIlBul(location: { lat: number; lng: number } | null) {
   if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') return "Bilinmiyor";
-  // Debug: gelen location'ı yazdır
-  console.log('Şirket location:', location);
-  let minDist = Infinity;
-  let il = "Bilinmiyor";
-  for (const item of ilListesi) {
-    const dist = Math.sqrt(Math.pow(location.lat - item.lat, 2) + Math.pow(location.lng - item.lng, 2));
-    if (dist < minDist) {
-      minDist = dist;
-      il = item.ad;
+  const point = turf.point([location.lng, location.lat]);
+  for (const feature of ilGeoJson.features) {
+    if (turf.booleanPointInPolygon(point, feature)) {
+      return feature.properties.name;
     }
   }
-  // Debug: en yakın il ve mesafesi
-  console.log('En yakın il:', il, 'Mesafe:', minDist);
-  return il;
+  return "Bilinmiyor";
 }
 
 function Companies() {
