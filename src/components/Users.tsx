@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { auth } from "../firebase"; // Added for password reset
+import UserService from "../services/UserService"; // Added for disable user
 
 interface User {
   id: string;
@@ -15,6 +17,7 @@ interface User {
   // Yakalanan kampanya ve QR verileri
   claimedCampaigns?: number;
   qrScanned?: boolean;
+  disabled?: boolean; // Added for disable user
 }
 
 function Users() {
@@ -23,10 +26,28 @@ function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("username"); // Default search field
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{x: number, y: number} | null>(null);
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (openDropdown && !target.closest('[data-user-dropdown-container]')) {
+        setOpenDropdown(null);
+        setDropdownPosition(null);
+      }
+    };
+    if (openDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [openDropdown]);
 
   const fetchUsers = async () => {
     try {
@@ -147,6 +168,7 @@ function Users() {
           // Yakalanan kampanya ve QR verileri
           claimedCampaigns: userClaimedCounts.get(userId) || 0,
           qrScanned: userQrScanned.get(userId) || false,
+          disabled: data.disabled || false, // Add disabled status
         });
       }
       
@@ -235,6 +257,51 @@ function Users() {
         );
     }
   });
+
+  const toggleDropdown = (userId: string, event: React.MouseEvent) => {
+    if (openDropdown === userId) {
+      setOpenDropdown(null);
+      setDropdownPosition(null);
+    } else {
+      const button = event.currentTarget as HTMLElement;
+      const rect = button.getBoundingClientRect();
+      setDropdownPosition({ x: rect.left, y: rect.bottom + 4 });
+      setOpenDropdown(userId);
+    }
+  };
+
+  const handleResetPassword = async (user: User) => {
+    // Şifre sıfırlama işlemi (Firebase Auth ile)
+    try {
+      await auth.sendPasswordResetEmail(user.email);
+      alert('Şifre sıfırlama e-postası gönderildi.');
+    } catch (error) {
+      alert('Şifre sıfırlama sırasında hata oluştu.');
+    }
+  };
+  const handleDisableUser = async (user: User) => {
+    // Askıya alma işlemi için Firestore'da bir alan güncellenebilir veya Cloud Function kullanılabilir
+    try {
+      await UserService.updateUser(user.id, { disabled: true });
+      alert('Kullanıcı askıya alındı.');
+      fetchUsers();
+    } catch (error) {
+      alert('Kullanıcı askıya alınırken hata oluştu.');
+    }
+  };
+  const handleToggleAccount = async (user: User) => {
+    try {
+      await UserService.updateUser(user.id, { disabled: !user.disabled });
+      alert(user.disabled ? 'Hesap açıldı.' : 'Hesap kapatıldı.');
+      fetchUsers();
+    } catch (error) {
+      alert('Hesap durumu değiştirilirken hata oluştu.');
+    }
+  };
+  const handleDeleteUserMenu = async (user: User) => {
+    await handleDeleteUser(user.id, user.name);
+    setOpenDropdown(null);
+  };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
     if (window.confirm(`${userName} adlı kullanıcıyı silmek istediğinizden emin misiniz?`)) {
@@ -516,23 +583,64 @@ function Users() {
                     )}
                   </div>
                 </td>
-                <td style={{ padding: 12 }}>
-                  <button
-                    onClick={() => handleDeleteUser(user.id, user.name)}
-                    disabled={deletingUser === user.id}
-                    style={{
-                      padding: "6px 12px",
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      border: "none",
-                      borderRadius: 4,
-                      cursor: deletingUser === user.id ? "not-allowed" : "pointer",
-                      fontSize: "0.8em",
-                      opacity: deletingUser === user.id ? 0.6 : 1
-                    }}
-                  >
-                    {deletingUser === user.id ? "Siliniyor..." : "Sil"}
-                  </button>
+                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
+                  <div style={{ position: "relative" }}>
+                    <button
+                      onClick={(e) => toggleDropdown(user.id, e)}
+                      style={{
+                        padding: "6px 12px",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        cursor: deletingUser === user.id ? "not-allowed" : "pointer",
+                        fontSize: "0.8em",
+                        opacity: deletingUser === user.id ? 0.6 : 1
+                      }}
+                      disabled={deletingUser === user.id}
+                    >
+                      {deletingUser === user.id ? "Siliniyor..." : "⋮"}
+                    </button>
+                    {openDropdown === user.id && dropdownPosition && (
+                      <div
+                        data-user-dropdown-container
+                        style={{
+                          position: "fixed",
+                          top: dropdownPosition.y,
+                          left: dropdownPosition.x,
+                          backgroundColor: "white",
+                          border: "1px solid #ddd",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          zIndex: 999999,
+                          minWidth: "180px",
+                          padding: "6px 0"
+                        }}
+                      >
+                        <div
+                          data-user-dropdown-container
+                          style={{ padding: "8px 12px", borderBottom: "1px solid #eee", cursor: "pointer", fontSize: "0.9em" }}
+                          onClick={() => { handleResetPassword(user); setOpenDropdown(null); }}
+                        >
+                          🔑 Şifre Sıfırla
+                        </div>
+                        <div
+                          data-user-dropdown-container
+                          style={{ padding: "8px 12px", borderBottom: "1px solid #eee", cursor: "pointer", fontSize: "0.9em" }}
+                          onClick={() => { handleToggleAccount(user); setOpenDropdown(null); }}
+                        >
+                          {user.disabled ? '🔓 Hesabı Aç' : '🚫 Hesabı Kapat'}
+                        </div>
+                        <div
+                          data-user-dropdown-container
+                          style={{ padding: "8px 12px", color: "#dc3545", cursor: "pointer", fontSize: "0.9em" }}
+                          onClick={() => handleDeleteUserMenu(user)}
+                        >
+                          🗑️ Hesabı Sil
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -545,6 +653,45 @@ function Users() {
           {searchTerm ? "Arama kriterlerine uygun kullanıcı bulunamadı." : "Henüz kullanıcı bulunmuyor."}
         </div>
       )}
+
+      {/* Search kısmına da aynı menüyü ekle (örnek olarak sağ üst köşeye) */}
+      <div style={{ position: "absolute", right: 0, top: 0 }}>
+        <button
+          onClick={(e) => toggleDropdown("search-menu", e)}
+          style={{
+            padding: "6px 12px",
+            backgroundColor: "#1976d2",
+            color: "white",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer",
+            fontSize: "0.8em"
+          }}
+        >
+          ⋮
+        </button>
+        {openDropdown === "search-menu" && dropdownPosition && (
+          <div
+            data-user-dropdown-container
+            style={{
+              position: "fixed",
+              top: dropdownPosition.y,
+              left: dropdownPosition.x,
+              backgroundColor: "white",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              zIndex: 999999,
+              minWidth: "180px",
+              padding: "6px 0"
+            }}
+          >
+            <div style={{ padding: "8px 12px", borderBottom: "1px solid #eee", cursor: "pointer", fontSize: "0.9em" }}>🔑 Şifre Sıfırla</div>
+            <div style={{ padding: "8px 12px", borderBottom: "1px solid #eee", cursor: "pointer", fontSize: "0.9em" }}>🚫 Askıya Al</div>
+            <div style={{ padding: "8px 12px", color: "#dc3545", cursor: "pointer", fontSize: "0.9em" }}>🗑️ Hesabı Sil</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
