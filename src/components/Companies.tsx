@@ -16,6 +16,18 @@ function koordinattanIlBul(location: { lat: number; lng: number } | null) {
   return "Bilinmiyor";
 }
 
+function parseLocationString(locationStr: string): { lat: number, lng: number } | null {
+  if (!locationStr) return null;
+  // Örnek: "37.04057071582833° N, 35.30349891632795° E"
+  const match = locationStr.match(/([\d.]+)[^\d]+([NS]),\s*([\d.]+)[^\d]+([EW])/i);
+  if (!match) return null;
+  let lat = parseFloat(match[1]);
+  let lng = parseFloat(match[3]);
+  if (match[2].toUpperCase() === 'S') lat = -lat;
+  if (match[4].toUpperCase() === 'W') lng = -lng;
+  return { lat, lng };
+}
+
 interface Company {
   id: string;
   company: string;
@@ -813,7 +825,17 @@ function Companies() {
           <tbody style={{ fontSize: "12px" }}>
             {filteredCompanies.map((company) => (
               <tr key={company.id} style={{ borderBottom: "1px solid #f1f3f4", overflow: "visible" }}>
-                <td style={{ padding: 12 }}>{koordinattanIlBul(company.location || null)}</td>
+                <td style={{ padding: 12 }}>{
+                  (() => {
+                    let locObj = null;
+                    if (typeof company.location === "string") {
+                      locObj = parseLocationString(company.location);
+                    } else if (company.location && typeof company.location.lat === "number" && typeof company.location.lng === "number") {
+                      locObj = company.location;
+                    }
+                    return koordinattanIlBul(locObj);
+                  })()
+                }</td>
                 <td style={{ padding: 12 }}>
                   <strong>{company.company}</strong>
                 </td>
