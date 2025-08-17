@@ -27,7 +27,6 @@ function Users() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("username"); // Default search field
-  const [deletingUser, setDeletingUser] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{x: number, y: number} | null>(null);
 
@@ -290,14 +289,8 @@ function Users() {
       alert('Hesap durumu değiştirilirken hata oluştu.');
     }
   };
-  const handleDeleteUserMenu = async (user: User) => {
-    await handleDeleteUser(user.id, user.name);
-    setOpenDropdown(null);
-  };
-
   const handleDeleteUser = async (userId: string, userName: string) => {
     if (window.confirm(`${userName} adlı kullanıcıyı silmek istediğinizden emin misiniz?`)) {
-      setDeletingUser(userId);
       try {
         const db = getFirestore();
         await deleteDoc(doc(db, "users", userId));
@@ -306,8 +299,6 @@ function Users() {
       } catch (error) {
         console.error("Kullanıcı silinirken hata:", error);
         alert("Kullanıcı silinirken bir hata oluştu.");
-      } finally {
-        setDeletingUser(null);
       }
     }
   };
