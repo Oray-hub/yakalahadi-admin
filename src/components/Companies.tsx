@@ -109,7 +109,8 @@ const ilListesi = [
 
 function koordinattanIlBul(location: { lat: number; lng: number } | null) {
   if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') return "Bilinmiyor";
-  // En yakın ili bul (en basit haliyle, gerçek projede polygon ile bakılır)
+  // Debug: gelen location'ı yazdır
+  console.log('Şirket location:', location);
   let minDist = Infinity;
   let il = "Bilinmiyor";
   for (const item of ilListesi) {
@@ -119,6 +120,10 @@ function koordinattanIlBul(location: { lat: number; lng: number } | null) {
       il = item.ad;
     }
   }
+  // Debug: en yakın il ve mesafesi
+  console.log('En yakın il:', il, 'Mesafe:', minDist);
+  // Eğer mesafe 1.5 dereceden fazlaysa bilinmiyor yaz
+  if (minDist > 1.5) return "Bilinmiyor";
   return il;
 }
 
