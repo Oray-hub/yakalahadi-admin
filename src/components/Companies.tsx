@@ -729,35 +729,39 @@ function Companies() {
             }}
           >
             <option value="all">🔍 Tüm Alanlarda Ara</option>
+            <option value="il">🏙️ İl</option>
             <option value="company">🏢 Firma Adı</option>
             <option value="companyTitle">📋 Firma Başlığı</option>
             <option value="companyOfficer">👤 Firma Yetkilisi</option>
             <option value="vkn">🏛️ VKN</option>
+            <option value="createdAt">📅 Kayıt Tarihi</option>
             <option value="firmType">🏭 Firma Türü</option>
             <option value="category">📂 Kategori</option>
             <option value="approved">✅ Onay Durumu</option>
-            <option value="phone">📞 Telefon</option>
             <option value="email">📧 Kayıtlı Mail</option>
+            <option value="phone">📞 Telefon</option>
             <option value="averageRating">⭐ Ortalama Puan</option>
             <option value="credits">💰 Krediler</option>
-            <option value="il">🏙️ İl</option>
           </select>
           
           <input
             type="text"
-            placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
+            placeholder={`🔍 ${
+              searchField === 'all' ? 'Tüm alanlarda ara...' :
+              searchField === 'il' ? 'İl ara...' :
               searchField === 'company' ? 'Firma adı ara...' :
               searchField === 'companyTitle' ? 'Firma başlığı ara...' :
               searchField === 'companyOfficer' ? 'Firma yetkilisi ara...' :
               searchField === 'vkn' ? 'VKN ara...' :
-              searchField === 'approved' ? 'Onay durumu ara...' :
+              searchField === 'createdAt' ? 'Kayıt tarihi ara...' :
               searchField === 'firmType' ? 'Firma türü ara...' :
               searchField === 'category' ? 'Kategori ara...' :
-              searchField === 'phone' ? 'Telefon ara...' :
+              searchField === 'approved' ? 'Onay durumu ara...' :
               searchField === 'email' ? 'Kayıtlı mail ara...' :
+              searchField === 'phone' ? 'Telefon ara...' :
               searchField === 'averageRating' ? 'Ortalama puan ara...' :
-              searchField === 'credits' ? 'Krediler ara...' :
-              searchField === 'il' ? 'İl ara...' : 'Ara...'}`}
+              searchField === 'credits' ? 'Krediler ara...' : 'Ara...'
+            }`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -810,17 +814,17 @@ function Companies() {
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Başlık</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yetkili</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Başlığı</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Yetkilisi</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>VKN</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Türü</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Türü</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategori</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Durum</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Mail</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Onay Durumu</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıtlı Mail</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Ortalama Puan</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
@@ -1228,18 +1232,19 @@ function Companies() {
       {filteredCompanies.length === 0 && (
         <div style={{ textAlign: "center", padding: 40, color: "#666" }}>
           {searchTerm ? `"${searchTerm}" ${searchField === 'all' ? 'tüm alanlarda' : 
+            searchField === 'il' ? 'ilinde' :
             searchField === 'company' ? 'firma adında' :
             searchField === 'companyTitle' ? 'firma başlığında' :
             searchField === 'companyOfficer' ? 'firma yetkilisinde' :
             searchField === 'vkn' ? 'VKN\'de' :
-            searchField === 'approved' ? 'onay durumunda' :
+            searchField === 'createdAt' ? 'kayıt tarihinde' :
             searchField === 'firmType' ? 'firma türünde' :
             searchField === 'category' ? 'kategoride' :
-            searchField === 'phone' ? 'telefonda' :
+            searchField === 'approved' ? 'onay durumunda' :
             searchField === 'email' ? 'kayıtlı mailde' :
+            searchField === 'phone' ? 'telefonda' :
             searchField === 'averageRating' ? 'ortalama puanda' :
-            searchField === 'credits' ? 'kredilerde' :
-            searchField === 'il' ? 'ilinde' : 'aranan alanda'} için sonuç bulunamadı.` :
+            searchField === 'credits' ? 'kredilerde' : 'aranan alanda'} için sonuç bulunamadı.` :
            "Henüz firma bulunmuyor."}
         </div>
       )}
