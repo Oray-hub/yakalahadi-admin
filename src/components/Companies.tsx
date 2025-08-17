@@ -122,8 +122,6 @@ function koordinattanIlBul(location: { lat: number; lng: number } | null) {
   }
   // Debug: en yakın il ve mesafesi
   console.log('En yakın il:', il, 'Mesafe:', minDist);
-  // Eğer mesafe 1.5 dereceden fazlaysa bilinmiyor yaz
-  if (minDist > 1.5) return "Bilinmiyor";
   return il;
 }
 
