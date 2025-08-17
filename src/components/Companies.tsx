@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { NotificationService } from "../services/notificationService";
-import ilGeoJson from '../data/turkiye-iller-geo.json';
+import ilGeoJson from '../data/tr.json';
 import * as turf from '@turf/turf';
 
 function koordinattanIlBul(location: { lat: number; lng: number } | null) {
@@ -10,7 +10,8 @@ function koordinattanIlBul(location: { lat: number; lng: number } | null) {
   const point = turf.point([location.lng, location.lat]);
   for (const feature of ilGeoJson.features) {
     if (turf.booleanPointInPolygon(point, feature as any)) {
-      return feature.properties.name;
+      // Bazı GeoJSON'larda il adı 'name', bazılarında 'NAME_1' olarak gelir
+      return feature.properties.name || feature.properties.NAME_1 || "Bilinmiyor";
     }
   }
   return "Bilinmiyor";
