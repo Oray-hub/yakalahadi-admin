@@ -19,6 +19,34 @@ interface Company {
   credits: number;
   totalPurchasedCredits?: number;
   creditPurchaseDate?: any;
+  location?: { lat: number; lng: number };
+}
+
+// 1. Türkiye il sınırları için basit bir koordinattan il bulma fonksiyonu ekle
+// Not: Gerçek projede daha kapsamlı bir GeoJSON veya npm paketi kullanılmalı.
+const ilListesi = [
+  { ad: "Adana", lat: 37.0, lng: 35.3213 },
+  { ad: "Ankara", lat: 39.9208, lng: 32.8541 },
+  { ad: "İstanbul", lat: 41.0082, lng: 28.9784 },
+  { ad: "İzmir", lat: 38.4192, lng: 27.1287 },
+  { ad: "Bursa", lat: 40.1828, lng: 29.0665 },
+  { ad: "Antalya", lat: 36.8841, lng: 30.7056 },
+  // ... diğer iller eklenebilir ...
+];
+
+function koordinattanIlBul(location: { lat: number; lng: number } | null) {
+  if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') return "Bilinmiyor";
+  // En yakın ili bul (en basit haliyle, gerçek projede polygon ile bakılır)
+  let minDist = Infinity;
+  let il = "Bilinmiyor";
+  for (const item of ilListesi) {
+    const dist = Math.sqrt(Math.pow(location.lat - item.lat, 2) + Math.pow(location.lng - item.lng, 2));
+    if (dist < minDist) {
+      minDist = dist;
+      il = item.ad;
+    }
+  }
+  return il;
 }
 
 function Companies() {
@@ -134,6 +162,7 @@ function Companies() {
           credits: data.credits || 0,
           totalPurchasedCredits: data.totalPurchasedCredits || 0,
           creditPurchaseDate: data.creditPurchaseDate,
+          location: data.location || null,
         };
         
         companiesData.push(company);
@@ -551,6 +580,8 @@ function Companies() {
           return company.averageRating.toString().includes(searchLower);
         case 'credits':
           return company.credits.toString().includes(searchLower);
+        case 'il':
+          return koordinattanIlBul(company.location).toLowerCase().includes(searchLower);
         case 'all':
         default:
           return (
@@ -563,7 +594,8 @@ function Companies() {
             company.phone.toLowerCase().includes(searchLower) ||
             (company.email || '').toLowerCase().includes(searchLower) ||
             company.averageRating.toString().includes(searchLower) ||
-            company.credits.toString().includes(searchLower)
+            company.credits.toString().includes(searchLower) ||
+            koordinattanIlBul(company.location).toLowerCase().includes(searchLower)
           );
       }
     }
@@ -707,6 +739,7 @@ function Companies() {
             <option value="email">📧 Kayıtlı Mail</option>
             <option value="averageRating">⭐ Ortalama Puan</option>
             <option value="credits">💰 Krediler</option>
+            <option value="il">🏙️ İl</option>
           </select>
           
           <input
@@ -722,7 +755,8 @@ function Companies() {
               searchField === 'phone' ? 'Telefon ara...' :
               searchField === 'email' ? 'Kayıtlı mail ara...' :
               searchField === 'averageRating' ? 'Ortalama puan ara...' :
-              searchField === 'credits' ? 'Krediler ara...' : 'Ara...'}`}
+              searchField === 'credits' ? 'Krediler ara...' :
+              searchField === 'il' ? 'İl ara...' : 'Ara...'}`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -774,6 +808,7 @@ function Companies() {
         }}>
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Başlığı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Yetkilisi</th>
@@ -793,6 +828,7 @@ function Companies() {
           <tbody style={{ fontSize: "12px" }}>
             {filteredCompanies.map((company) => (
               <tr key={company.id} style={{ borderBottom: "1px solid #f1f3f4", overflow: "visible" }}>
+                <td style={{ padding: 12 }}>{koordinattanIlBul(company.location)}</td>
                 <td style={{ padding: 12 }}>
                   <strong>{company.company}</strong>
                 </td>
@@ -1192,7 +1228,8 @@ function Companies() {
             searchField === 'phone' ? 'telefonda' :
             searchField === 'email' ? 'kayıtlı mailde' :
             searchField === 'averageRating' ? 'ortalama puanda' :
-            searchField === 'credits' ? 'kredilerde' : 'aranan alanda'} için sonuç bulunamadı.` :
+            searchField === 'credits' ? 'kredilerde' :
+            searchField === 'il' ? 'ilinde' : 'aranan alanda'} için sonuç bulunamadı.` :
            "Henüz firma bulunmuyor."}
         </div>
       )}
