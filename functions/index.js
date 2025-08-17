@@ -21,6 +21,8 @@ const { companyNotification } = require('./companyNotification');
 // Delete user completely fonksiyonunu import et
 const { deleteUserCompletely } = require('./deleteUserCompletely');
 
+const { setUserDisabledV2 } = require('./setUserDisabledV2');
+
 // Export the functions
 exports.sendCompanyApprovalEmail = sendCompanyApprovalEmail;
 exports.sendBulkNotificationTrigger = sendBulkNotificationTrigger;
@@ -28,4 +30,5 @@ exports.sendCompanyApprovalNoticeTrigger = sendCompanyApprovalNoticeTrigger;
 exports.userNotification = userNotification;
 exports.companyNotification = companyNotification;
 exports.deleteUserCompletely = deleteUserCompletely;
+exports.setUserDisabledV2 = setUserDisabledV2;
 
