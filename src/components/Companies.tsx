@@ -581,7 +581,7 @@ function Companies() {
         case 'credits':
           return company.credits.toString().includes(searchLower);
         case 'il':
-          return koordinattanIlBul(company.location).toLowerCase().includes(searchLower);
+          return koordinattanIlBul(company.location || null).toLowerCase().includes(searchLower);
         case 'all':
         default:
           return (
@@ -595,7 +595,7 @@ function Companies() {
             (company.email || '').toLowerCase().includes(searchLower) ||
             company.averageRating.toString().includes(searchLower) ||
             company.credits.toString().includes(searchLower) ||
-            koordinattanIlBul(company.location).toLowerCase().includes(searchLower)
+            koordinattanIlBul(company.location || null).toLowerCase().includes(searchLower)
           );
       }
     }
@@ -828,7 +828,7 @@ function Companies() {
           <tbody style={{ fontSize: "12px" }}>
             {filteredCompanies.map((company) => (
               <tr key={company.id} style={{ borderBottom: "1px solid #f1f3f4", overflow: "visible" }}>
-                <td style={{ padding: 12 }}>{koordinattanIlBul(company.location)}</td>
+                <td style={{ padding: 12 }}>{koordinattanIlBul(company.location || null)}</td>
                 <td style={{ padding: 12 }}>
                   <strong>{company.company}</strong>
                 </td>
