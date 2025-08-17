@@ -280,28 +280,6 @@ function Users() {
       alert('Şifre sıfırlama sırasında hata oluştu.');
     }
   };
-  const handleToggleAccount = async (user: User) => {
-    try {
-      await UserService.updateUser(user.id, { disabled: !user.disabled });
-      alert(user.disabled ? 'Hesap açıldı.' : 'Hesap kapatıldı.');
-      fetchUsers();
-    } catch (error) {
-      alert('Hesap durumu değiştirilirken hata oluştu.');
-    }
-  };
-  const handleDeleteUser = async (userId: string, userName: string) => {
-    if (window.confirm(`${userName} adlı kullanıcıyı silmek istediğinizden emin misiniz?`)) {
-      try {
-        const db = getFirestore();
-        await deleteDoc(doc(db, "users", userId));
-        setUsers(users.filter(user => user.id !== userId));
-        alert("Kullanıcı başarıyla silindi.");
-      } catch (error) {
-        console.error("Kullanıcı silinirken hata:", error);
-        alert("Kullanıcı silinirken bir hata oluştu.");
-      }
-    }
-  };
 
   if (loading) {
     return <div style={{ padding: 20 }}>Kullanıcılar yükleniyor...</div>;
