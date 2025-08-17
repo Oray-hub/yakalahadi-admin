@@ -10,8 +10,7 @@ function koordinattanIlBul(location: { lat: number; lng: number } | null) {
   const point = turf.point([location.lng, location.lat]);
   for (const feature of ilGeoJson.features) {
     if (turf.booleanPointInPolygon(point, feature as any)) {
-      // Bazı GeoJSON'larda il adı 'name', bazılarında 'NAME_1' olarak gelir
-      return feature.properties.name || feature.properties.NAME_1 || "Bilinmiyor";
+      return feature.properties.name || "Bilinmiyor";
     }
   }
   return "Bilinmiyor";
