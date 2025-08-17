@@ -2,34 +2,6 @@ import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { NotificationService } from "../services/notificationService";
-import ilGeoJson from '../data/tr.json';
-import * as turf from '@turf/turf';
-
-function koordinattanIlBul(location: { lat: number; lng: number } | null) {
-  if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') return "Bilinmiyor";
-  const point = turf.point([location.lng, location.lat]);
-  for (const feature of ilGeoJson.features) {
-    if (turf.booleanPointInPolygon(point, feature as any)) {
-      return feature.properties.name || "Bilinmiyor";
-    }
-  }
-  return "Bilinmiyor";
-}
-
-function parseLocationString(locationStr: string): { lat: number, lng: number } | null {
-  if (!locationStr) return null;
-  // "37.04057071582833° N, 35.30349891632795° E"
-  const parts = locationStr.split(",");
-  if (parts.length !== 2) return null;
-  const latMatch = parts[0].trim().match(/([\d.]+)[^\d]+([NS])/i);
-  const lngMatch = parts[1].trim().match(/([\d.]+)[^\d]+([EW])/i);
-  if (!latMatch || !lngMatch) return null;
-  let lat = parseFloat(latMatch[1]);
-  let lng = parseFloat(lngMatch[1]);
-  if (latMatch[2].toUpperCase() === 'S') lat = -lat;
-  if (lngMatch[2].toUpperCase() === 'W') lng = -lng;
-  return { lat, lng };
-}
 
 interface Company {
   id: string;
@@ -47,7 +19,6 @@ interface Company {
   credits: number;
   totalPurchasedCredits?: number;
   creditPurchaseDate?: any;
-  location?: { lat: number; lng: number };
 }
 
 function Companies() {
@@ -163,7 +134,6 @@ function Companies() {
           credits: data.credits || 0,
           totalPurchasedCredits: data.totalPurchasedCredits || 0,
           creditPurchaseDate: data.creditPurchaseDate,
-          location: data.location || null,
         };
         
         companiesData.push(company);
@@ -581,8 +551,6 @@ function Companies() {
           return company.averageRating.toString().includes(searchLower);
         case 'credits':
           return company.credits.toString().includes(searchLower);
-        case 'il':
-          return koordinattanIlBul(company.location || null).toLowerCase().includes(searchLower);
         case 'all':
         default:
           return (
@@ -595,8 +563,7 @@ function Companies() {
             company.phone.toLowerCase().includes(searchLower) ||
             (company.email || '').toLowerCase().includes(searchLower) ||
             company.averageRating.toString().includes(searchLower) ||
-            company.credits.toString().includes(searchLower) ||
-            koordinattanIlBul(company.location || null).toLowerCase().includes(searchLower)
+            company.credits.toString().includes(searchLower)
           );
       }
     }
@@ -729,39 +696,33 @@ function Companies() {
             }}
           >
             <option value="all">🔍 Tüm Alanlarda Ara</option>
-            <option value="il">🏙️ İl</option>
             <option value="company">🏢 Firma Adı</option>
             <option value="companyTitle">📋 Firma Başlığı</option>
             <option value="companyOfficer">👤 Firma Yetkilisi</option>
             <option value="vkn">🏛️ VKN</option>
-            <option value="createdAt">📅 Kayıt Tarihi</option>
             <option value="firmType">🏭 Firma Türü</option>
             <option value="category">📂 Kategori</option>
             <option value="approved">✅ Onay Durumu</option>
-            <option value="email">📧 Kayıtlı Mail</option>
             <option value="phone">📞 Telefon</option>
+            <option value="email">📧 Kayıtlı Mail</option>
             <option value="averageRating">⭐ Ortalama Puan</option>
             <option value="credits">💰 Krediler</option>
           </select>
           
           <input
             type="text"
-            placeholder={`🔍 ${
-              searchField === 'all' ? 'Tüm alanlarda ara...' :
-              searchField === 'il' ? 'İl ara...' :
+            placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
               searchField === 'company' ? 'Firma adı ara...' :
               searchField === 'companyTitle' ? 'Firma başlığı ara...' :
               searchField === 'companyOfficer' ? 'Firma yetkilisi ara...' :
               searchField === 'vkn' ? 'VKN ara...' :
-              searchField === 'createdAt' ? 'Kayıt tarihi ara...' :
+              searchField === 'approved' ? 'Onay durumu ara...' :
               searchField === 'firmType' ? 'Firma türü ara...' :
               searchField === 'category' ? 'Kategori ara...' :
-              searchField === 'approved' ? 'Onay durumu ara...' :
-              searchField === 'email' ? 'Kayıtlı mail ara...' :
               searchField === 'phone' ? 'Telefon ara...' :
+              searchField === 'email' ? 'Kayıtlı mail ara...' :
               searchField === 'averageRating' ? 'Ortalama puan ara...' :
-              searchField === 'credits' ? 'Krediler ara...' : 'Ara...'
-            }`}
+              searchField === 'credits' ? 'Krediler ara...' : 'Ara...'}`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -813,7 +774,6 @@ function Companies() {
         }}>
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Başlığı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Yetkilisi</th>
@@ -824,6 +784,7 @@ function Companies() {
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Onay Durumu</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıtlı Mail</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
+
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Ortalama Puan</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
@@ -832,17 +793,6 @@ function Companies() {
           <tbody style={{ fontSize: "12px" }}>
             {filteredCompanies.map((company) => (
               <tr key={company.id} style={{ borderBottom: "1px solid #f1f3f4", overflow: "visible" }}>
-                <td style={{ padding: 12 }}>{
-                  (() => {
-                    let locObj = null;
-                    if (typeof company.location === "string") {
-                      locObj = parseLocationString(company.location);
-                    } else if (company.location && typeof company.location.lat === "number" && typeof company.location.lng === "number") {
-                      locObj = company.location;
-                    }
-                    return koordinattanIlBul(locObj);
-                  })()
-                }</td>
                 <td style={{ padding: 12 }}>
                   <strong>{company.company}</strong>
                 </td>
@@ -1232,17 +1182,15 @@ function Companies() {
       {filteredCompanies.length === 0 && (
         <div style={{ textAlign: "center", padding: 40, color: "#666" }}>
           {searchTerm ? `"${searchTerm}" ${searchField === 'all' ? 'tüm alanlarda' : 
-            searchField === 'il' ? 'ilinde' :
             searchField === 'company' ? 'firma adında' :
             searchField === 'companyTitle' ? 'firma başlığında' :
             searchField === 'companyOfficer' ? 'firma yetkilisinde' :
             searchField === 'vkn' ? 'VKN\'de' :
-            searchField === 'createdAt' ? 'kayıt tarihinde' :
+            searchField === 'approved' ? 'onay durumunda' :
             searchField === 'firmType' ? 'firma türünde' :
             searchField === 'category' ? 'kategoride' :
-            searchField === 'approved' ? 'onay durumunda' :
-            searchField === 'email' ? 'kayıtlı mailde' :
             searchField === 'phone' ? 'telefonda' :
+            searchField === 'email' ? 'kayıtlı mailde' :
             searchField === 'averageRating' ? 'ortalama puanda' :
             searchField === 'credits' ? 'kredilerde' : 'aranan alanda'} için sonuç bulunamadı.` :
            "Henüz firma bulunmuyor."}

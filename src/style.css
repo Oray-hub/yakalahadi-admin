@@ -204,9 +204,6 @@ button:focus-visible {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     max-width: 80px !important;
-    display: table-cell !important;
-    visibility: visible !important;
-    opacity: 1 !important;
   }
   
   .companies-table th {
@@ -531,6 +528,14 @@ button:focus-visible {
     padding: 4px 2px !important;
     font-size: 9px !important;
   }
+
+  /* Hide more columns on very small screens */
+  .companies-table th:nth-child(4),
+  .companies-table td:nth-child(4),
+  .companies-table th:nth-child(6),
+  .companies-table td:nth-child(6) {
+    display: none !important;
+  }
 }
 
 /* Tablet styles */
@@ -572,15 +577,5 @@ button:focus-visible {
   .accounting-table td {
     padding: 8px 6px !important;
     font-size: 11px !important;
-  }
-}
-
-/* Mobilde sadece önemli kolonlar görünsün */
-@media (max-width: 768px) {
-  .hide-mobile {
-    display: none !important;
-  }
-  .show-mobile {
-    display: table-cell !important;
   }
 }
