@@ -22,16 +22,89 @@ interface Company {
   location?: { lat: number; lng: number };
 }
 
-// 1. Türkiye il sınırları için basit bir koordinattan il bulma fonksiyonu ekle
-// Not: Gerçek projede daha kapsamlı bir GeoJSON veya npm paketi kullanılmalı.
+// Türkiye'deki tüm illerin merkez koordinatları (örnek, daha hassas için polygon gerekir)
 const ilListesi = [
   { ad: "Adana", lat: 37.0, lng: 35.3213 },
+  { ad: "Adıyaman", lat: 37.7648, lng: 38.2786 },
+  { ad: "Afyonkarahisar", lat: 38.7638, lng: 30.5403 },
+  { ad: "Ağrı", lat: 39.7191, lng: 43.0503 },
+  { ad: "Amasya", lat: 40.6539, lng: 35.8336 },
   { ad: "Ankara", lat: 39.9208, lng: 32.8541 },
+  { ad: "Antalya", lat: 36.8841, lng: 30.7056 },
+  { ad: "Artvin", lat: 41.1828, lng: 41.8183 },
+  { ad: "Aydın", lat: 37.8450, lng: 27.8396 },
+  { ad: "Balıkesir", lat: 39.6484, lng: 27.8826 },
+  { ad: "Bilecik", lat: 40.1420, lng: 29.9793 },
+  { ad: "Bingöl", lat: 39.0626, lng: 40.7696 },
+  { ad: "Bitlis", lat: 38.3938, lng: 42.1232 },
+  { ad: "Bolu", lat: 40.5760, lng: 31.5788 },
+  { ad: "Burdur", lat: 37.7203, lng: 30.2908 },
+  { ad: "Bursa", lat: 40.1828, lng: 29.0665 },
+  { ad: "Çanakkale", lat: 40.1553, lng: 26.4142 },
+  { ad: "Çankırı", lat: 40.6013, lng: 33.6134 },
+  { ad: "Çorum", lat: 40.5506, lng: 34.9556 },
+  { ad: "Denizli", lat: 37.7765, lng: 29.0864 },
+  { ad: "Diyarbakır", lat: 37.9144, lng: 40.2306 },
+  { ad: "Edirne", lat: 41.6772, lng: 26.5556 },
+  { ad: "Elazığ", lat: 38.6800, lng: 39.2264 },
+  { ad: "Erzincan", lat: 39.7500, lng: 39.5000 },
+  { ad: "Erzurum", lat: 39.9043, lng: 41.2679 },
+  { ad: "Eskişehir", lat: 39.7767, lng: 30.5206 },
+  { ad: "Gaziantep", lat: 37.0662, lng: 37.3833 },
+  { ad: "Giresun", lat: 40.9128, lng: 38.3895 },
+  { ad: "Gümüşhane", lat: 40.4603, lng: 39.4814 },
+  { ad: "Hakkari", lat: 37.5744, lng: 43.7408 },
+  { ad: "Hatay", lat: 36.4018, lng: 36.3498 },
+  { ad: "Isparta", lat: 37.7648, lng: 30.5566 },
+  { ad: "Mersin", lat: 36.8121, lng: 34.6415 },
   { ad: "İstanbul", lat: 41.0082, lng: 28.9784 },
   { ad: "İzmir", lat: 38.4192, lng: 27.1287 },
-  { ad: "Bursa", lat: 40.1828, lng: 29.0665 },
-  { ad: "Antalya", lat: 36.8841, lng: 30.7056 },
-  // ... diğer iller eklenebilir ...
+  { ad: "Kars", lat: 40.6167, lng: 43.1000 },
+  { ad: "Kastamonu", lat: 41.3897, lng: 33.7831 },
+  { ad: "Kayseri", lat: 38.7312, lng: 35.4787 },
+  { ad: "Kırklareli", lat: 41.7351, lng: 27.2250 },
+  { ad: "Kırşehir", lat: 39.1458, lng: 34.1606 },
+  { ad: "Kocaeli", lat: 40.8533, lng: 29.8815 },
+  { ad: "Konya", lat: 37.8746, lng: 32.4932 },
+  { ad: "Kütahya", lat: 39.4242, lng: 29.9833 },
+  { ad: "Malatya", lat: 38.3552, lng: 38.3095 },
+  { ad: "Manisa", lat: 38.6191, lng: 27.4289 },
+  { ad: "Kahramanmaraş", lat: 37.5736, lng: 36.9371 },
+  { ad: "Mardin", lat: 37.3212, lng: 40.7245 },
+  { ad: "Muğla", lat: 37.2153, lng: 28.3636 },
+  { ad: "Muş", lat: 38.9462, lng: 41.7539 },
+  { ad: "Nevşehir", lat: 38.6244, lng: 34.7239 },
+  { ad: "Niğde", lat: 37.9667, lng: 34.6833 },
+  { ad: "Ordu", lat: 40.9847, lng: 37.8789 },
+  { ad: "Rize", lat: 41.0201, lng: 40.5234 },
+  { ad: "Sakarya", lat: 40.7569, lng: 30.3781 },
+  { ad: "Samsun", lat: 41.2867, lng: 36.33 },
+  { ad: "Siirt", lat: 37.9274, lng: 41.9456 },
+  { ad: "Sinop", lat: 42.0267, lng: 35.1551 },
+  { ad: "Sivas", lat: 39.7477, lng: 37.0179 },
+  { ad: "Tekirdağ", lat: 40.9780, lng: 27.5110 },
+  { ad: "Tokat", lat: 40.3167, lng: 36.5500 },
+  { ad: "Trabzon", lat: 41.0015, lng: 39.7178 },
+  { ad: "Tunceli", lat: 39.3074, lng: 39.4388 },
+  { ad: "Şanlıurfa", lat: 37.1674, lng: 38.7955 },
+  { ad: "Uşak", lat: 38.6823, lng: 29.4082 },
+  { ad: "Van", lat: 38.5019, lng: 43.4167 },
+  { ad: "Yozgat", lat: 39.8181, lng: 34.8147 },
+  { ad: "Zonguldak", lat: 41.4564, lng: 31.7987 },
+  { ad: "Aksaray", lat: 38.3687, lng: 34.0360 },
+  { ad: "Bayburt", lat: 40.2552, lng: 40.2249 },
+  { ad: "Karaman", lat: 37.1759, lng: 33.2287 },
+  { ad: "Kırıkkale", lat: 39.8468, lng: 33.5153 },
+  { ad: "Batman", lat: 37.8812, lng: 41.1351 },
+  { ad: "Şırnak", lat: 37.4187, lng: 42.4918 },
+  { ad: "Bartın", lat: 41.6358, lng: 32.3375 },
+  { ad: "Ardahan", lat: 41.1105, lng: 42.7022 },
+  { ad: "Iğdır", lat: 39.8880, lng: 44.0048 },
+  { ad: "Yalova", lat: 40.6500, lng: 29.2667 },
+  { ad: "Karabük", lat: 41.2061, lng: 32.6204 },
+  { ad: "Kilis", lat: 36.7184, lng: 37.1212 },
+  { ad: "Osmaniye", lat: 37.0742, lng: 36.2478 },
+  { ad: "Düzce", lat: 40.8438, lng: 31.1565 },
 ];
 
 function koordinattanIlBul(location: { lat: number; lng: number } | null) {
@@ -809,18 +882,17 @@ function Companies() {
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Başlığı</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Yetkilisi</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Başlık</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yetkili</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>VKN</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Türü</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Türü</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategori</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Onay Durumu</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıtlı Mail</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Durum</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Mail</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
-
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Ortalama Puan</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Puan</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
