@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { auth } from "../firebase"; // Added for password reset
-import UserService from "../services/UserService"; // Added for disable user
+import { UserService } from '../services/firestoreService';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 interface User {
   id: string;
@@ -271,22 +272,11 @@ function Users() {
   };
 
   const handleResetPassword = async (user: User) => {
-    // Şifre sıfırlama işlemi (Firebase Auth ile)
     try {
-      await auth.sendPasswordResetEmail(user.email);
+      await sendPasswordResetEmail(auth, user.email);
       alert('Şifre sıfırlama e-postası gönderildi.');
     } catch (error) {
       alert('Şifre sıfırlama sırasında hata oluştu.');
-    }
-  };
-  const handleDisableUser = async (user: User) => {
-    // Askıya alma işlemi için Firestore'da bir alan güncellenebilir veya Cloud Function kullanılabilir
-    try {
-      await UserService.updateUser(user.id, { disabled: true });
-      alert('Kullanıcı askıya alındı.');
-      fetchUsers();
-    } catch (error) {
-      alert('Kullanıcı askıya alınırken hata oluştu.');
     }
   };
   const handleToggleAccount = async (user: User) => {
