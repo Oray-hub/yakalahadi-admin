@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { auth } from '../firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { functions } from '../firebase';
+import { httpsCallable } from 'firebase/functions';
 
 interface User {
   id: string;
@@ -308,8 +310,7 @@ function Users() {
   const handleDisableUser = async (user: User) => {
     if (!window.confirm(`${user.name} adlı kullanıcının hesabını kapatmak istediğinize emin misiniz?`)) return;
     try {
-      const db = getFirestore();
-      await updateDoc(doc(db, 'users', user.id), { disabled: true });
+      await httpsCallable(functions, 'setUserDisabledV2')({ uid: user.id, disabled: true });
       fetchUsers();
       alert('Hesap kapatıldı.');
     } catch (error) {
@@ -319,8 +320,7 @@ function Users() {
   const handleEnableUser = async (user: User) => {
     if (!window.confirm(`${user.name} adlı kullanıcının hesabını açmak istediğinize emin misiniz?`)) return;
     try {
-      const db = getFirestore();
-      await updateDoc(doc(db, 'users', user.id), { disabled: false });
+      await httpsCallable(functions, 'setUserDisabledV2')({ uid: user.id, disabled: false });
       fetchUsers();
       alert('Hesap açıldı.');
     } catch (error) {
@@ -330,10 +330,9 @@ function Users() {
   const handleDeleteUser = async (user: User) => {
     if (!window.confirm(`${user.name} adlı kullanıcıyı silmek istediğinize emin misiniz?`)) return;
     try {
-      const db = getFirestore();
-      await updateDoc(doc(db, 'users', user.id), { deleted: true });
+      await httpsCallable(functions, 'deleteUserCompletely')({ uid: user.id });
       fetchUsers();
-      alert('Kullanıcı silindi.');
+      alert('Kullanıcı tamamen silindi.');
     } catch (error) {
       alert('Kullanıcı silinemedi.');
     }
