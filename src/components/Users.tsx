@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { auth } from '../firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
@@ -284,7 +284,7 @@ function Users() {
     if (!window.confirm(`${user.name} adlı kullanıcının hesabını kapatmak istediğinize emin misiniz?`)) return;
     try {
       const db = getFirestore();
-      await db.collection('users').doc(user.id).update({ disabled: true });
+      await updateDoc(doc(db, 'users', user.id), { disabled: true });
       fetchUsers();
       alert('Hesap kapatıldı.');
     } catch (error) {
@@ -295,7 +295,7 @@ function Users() {
     if (!window.confirm(`${user.name} adlı kullanıcının hesabını açmak istediğinize emin misiniz?`)) return;
     try {
       const db = getFirestore();
-      await db.collection('users').doc(user.id).update({ disabled: false });
+      await updateDoc(doc(db, 'users', user.id), { disabled: false });
       fetchUsers();
       alert('Hesap açıldı.');
     } catch (error) {
@@ -306,7 +306,7 @@ function Users() {
     if (!window.confirm(`${user.name} adlı kullanıcıyı silmek istediğinize emin misiniz?`)) return;
     try {
       const db = getFirestore();
-      await db.collection('users').doc(user.id).update({ deleted: true });
+      await updateDoc(doc(db, 'users', user.id), { deleted: true });
       fetchUsers();
       alert('Kullanıcı silindi.');
     } catch (error) {
