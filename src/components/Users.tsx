@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, sendPasswordResetEmail } from "firebase/firestore";
 import { auth } from "../firebase"; // Added for password reset
-import { UserService } from '../services/firestoreService';
-import { sendPasswordResetEmail } from 'firebase/auth';
 
 interface User {
   id: string;
