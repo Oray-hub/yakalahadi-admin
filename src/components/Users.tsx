@@ -502,7 +502,6 @@ function Users() {
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kullanıcı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>E-posta</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
-              <th style={{ padding: "12px", textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>E-posta</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Sözleşme</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Yakalanan</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>QR Kod</th>
@@ -547,7 +546,9 @@ function Users() {
                     <strong>{user.name}</strong>
                   </div>
                 </td>
+                {/* E-posta */}
                 <td style={{ padding: 12 }}>{user.email}</td>
+                {/* Kayıt Tarihi */}
                 <td style={{ padding: 12 }}>
                   {user.createdAt ? new Date(user.createdAt.toDate()).toLocaleDateString('tr-TR') : "Bilinmiyor"}
                 </td>
@@ -566,6 +567,7 @@ function Users() {
                     {user.privacyAccepted && user.termsAccepted ? "Kabul Edildi" : "Kabul Edilmedi"}
                   </span>
                 </td>
+                {/* Yakalanan */}
                 <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
@@ -577,7 +579,7 @@ function Users() {
                     {user.claimedCampaigns || 0}
                   </span>
                 </td>
-                {/* QR Kod sütunu */}
+                {/* QR Kod */}
                 <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
@@ -589,6 +591,7 @@ function Users() {
                     {user.qrScannedCount || 0}
                   </span>
                 </td>
+                {/* Kategoriler */}
                 <td style={{ padding: 12 }}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                     {user.selectedCategories.slice(0, 3).map((category, index) => (
