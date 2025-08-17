@@ -19,6 +19,7 @@ interface User {
   claimedCampaigns?: number;
   qrScanned?: boolean;
   disabled?: boolean; // Added for disable user
+  deleted?: boolean; // Added for soft delete
 }
 
 function Users() {
@@ -170,6 +171,7 @@ function Users() {
           claimedCampaigns: userClaimedCounts.get(userId) || 0,
           qrScanned: userQrScanned.get(userId) || false,
           disabled: data.disabled || false, // Add disabled status
+          deleted: data.deleted || false, // Add deleted status
         });
       }
       
@@ -469,6 +471,7 @@ function Users() {
         }}>
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Durum</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kullanıcı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>E-posta</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
@@ -484,22 +487,38 @@ function Users() {
           <tbody style={{ fontSize: "12px" }}>
             {filteredUsers.map((user) => (
               <tr key={user.id} style={{ borderBottom: "1px solid #f1f3f4" }}>
+                {/* Durum sütunu */}
+                <td style={{ padding: 12 }}>
+                  {user.deleted ? (
+                    <span style={{
+                      padding: "4px 10px",
+                      backgroundColor: "#f8d7da",
+                      color: "#721c24",
+                      borderRadius: 8,
+                      fontWeight: 600
+                    }}>Silinmiş</span>
+                  ) : user.disabled ? (
+                    <span style={{
+                      padding: "4px 10px",
+                      backgroundColor: "#fff3cd",
+                      color: "#856404",
+                      borderRadius: 8,
+                      fontWeight: 600
+                    }}>Hesap Kapalı</span>
+                  ) : (
+                    <span style={{
+                      padding: "4px 10px",
+                      backgroundColor: "#d4edda",
+                      color: "#155724",
+                      borderRadius: 8,
+                      fontWeight: 600
+                    }}>Hesap Açık</span>
+                  )}
+                </td>
+                {/* Kullanıcı ismi */}
                 <td style={{ padding: 12 }}>
                   <div>
                     <strong>{user.name}</strong>
-                    {user.disabled && (
-                      <span style={{
-                        marginLeft: 8,
-                        padding: '2px 8px',
-                        backgroundColor: '#f8d7da',
-                        color: '#721c24',
-                        borderRadius: 8,
-                        fontSize: '0.8em',
-                        fontWeight: 600
-                      }}>
-                        Kapalı Hesap
-                      </span>
-                    )}
                   </div>
                 </td>
                 <td style={{ padding: 12 }}>{user.email}</td>
@@ -586,64 +605,22 @@ function Users() {
                     )}
                   </div>
                 </td>
-                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
-                  <div style={{ position: "relative" }}>
-                    <button
-                      onClick={(e) => toggleDropdown(user.id, e)}
-                      style={{
-                        padding: "6px 12px",
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: 4,
-                        cursor: deletingUser === user.id ? "not-allowed" : "pointer",
-                        fontSize: "0.8em",
-                        opacity: deletingUser === user.id ? 0.6 : 1
-                      }}
-                      disabled={deletingUser === user.id}
-                    >
-                      {deletingUser === user.id ? "Siliniyor..." : "⋮"}
-                    </button>
-                    {openDropdown === user.id && dropdownPosition && (
-                      <div
-                        data-user-dropdown-container
-                        style={{
-                          position: "fixed",
-                          top: dropdownPosition.y,
-                          left: dropdownPosition.x,
-                          backgroundColor: "white",
-                          border: "1px solid #ddd",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                          zIndex: 999999,
-                          minWidth: "180px",
-                          padding: "6px 0"
-                        }}
-                      >
-                        <div
-                          data-user-dropdown-container
-                          style={{ padding: "8px 12px", borderBottom: "1px solid #eee", cursor: "pointer", fontSize: "0.9em" }}
-                          onClick={() => { handleResetPassword(user); setOpenDropdown(null); }}
-                        >
-                          🔑 Şifre Sıfırla
-                        </div>
-                        <div
-                          data-user-dropdown-container
-                          style={{ padding: "8px 12px", borderBottom: "1px solid #eee", cursor: "pointer", fontSize: "0.9em" }}
-                          onClick={() => { handleToggleAccount(user); setOpenDropdown(null); }}
-                        >
-                          {user.disabled ? '🔓 Hesabı Aç' : '🚫 Hesabı Kapat'}
-                        </div>
-                        <div
-                          data-user-dropdown-container
-                          style={{ padding: "8px 12px", color: "#dc3545", cursor: "pointer", fontSize: "0.9em" }}
-                          onClick={() => handleDeleteUserMenu(user)}
-                        >
-                          🗑️ Hesabı Sil
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                {/* İşlemler sütunu */}
+                <td style={{ padding: 12 }}>
+                  <button
+                    onClick={() => handleResetPassword(user)}
+                    style={{
+                      padding: "6px 12px",
+                      backgroundColor: "#1976d2",
+                      color: "white",
+                      border: "none",
+                      borderRadius: 4,
+                      cursor: "pointer",
+                      fontSize: "0.8em"
+                    }}
+                  >
+                    🔑 Şifre Sıfırla
+                  </button>
                 </td>
               </tr>
             ))}
