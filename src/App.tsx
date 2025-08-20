@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import type { User } from "firebase/auth";
 import Login from "./Login";
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import Companies from "./components/Companies";
@@ -98,55 +100,54 @@ function Panel({ onLogout }: { onLogout: () => void }) {
           </p>
         </div>
         
-        <nav style={{ flex: 1, overflow: "hidden" }}>
-          {menu.map(item => (
-            <div key={item.path}>
-              <Link 
-                to={item.path} 
-                onClick={() => {
-                  setActiveMenu(item.path);
-                  closeSidebar(); // Mobile'da menüyü kapat
-                }}
-                style={{ 
-                  color: "#fff", 
-                  textDecoration: "none", 
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "12px 16px",
-                  margin: "4px 0",
-                  borderRadius: 8,
-                  backgroundColor: activeMenu === item.path ? "rgba(255,255,255,0.2)" : "transparent",
-                  transition: "all 0.3s ease",
-                  fontSize: 16
-                }}
-              >
-                <span style={{ marginRight: 12, fontSize: 18 }}>{item.icon}</span>
+        {/* Navigation Menu */}
+        <nav style={{ marginBottom: 32 }}>
+          {menu.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => {
+                setActiveMenu(item.path);
+                closeSidebar();
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "12px 16px",
+                color: "#fff",
+                textDecoration: "none",
+                borderRadius: 8,
+                marginBottom: 4,
+                transition: "all 0.3s ease",
+                backgroundColor: activeMenu === item.path ? "rgba(255,255,255,0.2)" : "transparent"
+              }}
+              onMouseEnter={(e) => {
+                if (activeMenu !== item.path) {
+                  e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeMenu !== item.path) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }
+              }}
+            >
+              <span style={{ marginRight: 12, fontSize: 18 }}>{item.icon}</span>
+              <span style={{ fontSize: 14, fontWeight: activeMenu === item.path ? "600" : "400" }}>
                 {item.label}
-              </Link>
-            </div>
-                    ))}
+              </span>
+            </Link>
+          ))}
         </nav>
 
-        {/* Çıkış Yap Butonu */}
-        <div style={{
-          marginTop: "auto",
-          padding: "16px 0",
-          borderTop: "1px solid rgba(255,255,255,0.1)"
-        }}>
+        {/* Logout Button */}
+        <div style={{ marginTop: "auto", paddingTop: 16 }}>
           <button
-            onClick={() => {
-              onLogout();
-              closeSidebar(); // Mobile'da menüyü kapat
-            }}
+            onClick={onLogout}
             style={{
               width: "100%",
-              color: "#fff",
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
               padding: "12px 16px",
-              margin: "4px 0",
-              borderRadius: 8,
+              color: "#fff",
               backgroundColor: "transparent",
               border: "none",
               transition: "all 0.3s ease",
@@ -214,6 +215,52 @@ function Panel({ onLogout }: { onLogout: () => void }) {
 
 function App() {
   const [role, setRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const auth = getAuth();
+    
+    // Firebase Auth durumunu dinle
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      if (user) {
+        // Kullanıcı oturum açmış
+        if (user.email === "admin@yakalahadi.com") {
+          setRole("admin");
+        } else {
+          setRole(null);
+        }
+      } else {
+        // Kullanıcı oturum açmamış
+        setRole(null);
+      }
+      setLoading(false);
+    });
+
+    // Cleanup function
+    return () => unsubscribe();
+  }, []);
+
+  // Yükleme durumunda loading göster
+  if (loading) {
+    return (
+      <div style={{ 
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      }}>
+        <div style={{ 
+          textAlign: "center",
+          color: "white"
+        }}>
+          <div style={{ fontSize: "48px", marginBottom: "16px" }}>🎯</div>
+          <h2 style={{ margin: "0 0 8px 0" }}>YakalaHadi</h2>
+          <p style={{ margin: 0, opacity: 0.8 }}>Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (role === null) {
     return <Login onLogin={setRole} />;
@@ -241,7 +288,11 @@ function App() {
 
   return (
     <Router>
-      <Panel onLogout={() => setRole(null)} />
+      <Panel onLogout={() => {
+        const auth = getAuth();
+        auth.signOut();
+        setRole(null);
+      }} />
     </Router>
   );
 }

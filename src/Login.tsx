@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { verifyTOTP, generateOTPAuthURL, generateTOTP } from "./utils/totp";
+import { verifyTOTP, generateOTPAuthURL } from "./utils/totp";
 import QRCode from "react-qr-code";
 
 interface LoginProps {
@@ -17,7 +17,6 @@ function Login({ onLogin }: LoginProps) {
   const [showQR, setShowQR] = useState(false);
   const [secret, setSecret] = useState("");
   const [qrUrl, setQrUrl] = useState("");
-  const [currentToken, setCurrentToken] = useState("");
 
   // Admin için sabit secret (gerçek uygulamada bu veritabanında saklanmalı)
   const ADMIN_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP"; // YakalaHadi Admin için sabit secret
@@ -29,19 +28,6 @@ function Login({ onLogin }: LoginProps) {
       setQrUrl(url);
     }
     }, [secret, email]);
-
-  useEffect(() => {
-    // Her 30 saniyede bir yeni token oluştur
-    const updateToken = async () => {
-      const token = await generateTOTP(ADMIN_SECRET);
-      setCurrentToken(token);
-    };
-    
-    updateToken();
-    const interval = setInterval(updateToken, 30000);
-    
-    return () => clearInterval(interval);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,16 +42,12 @@ function Login({ onLogin }: LoginProps) {
       // Sadece admin@yakalahadi.com e-posta adresine sahip kullanıcı admin olabilir
       if (email === "admin@yakalahadi.com") {
         // 2FA doğrulaması yap
-        console.log("Girilen token:", totpToken);
-        console.log("Secret:", ADMIN_SECRET);
-        
         const isValidToken = await verifyTOTP(ADMIN_SECRET, totpToken);
-        console.log("Token geçerli mi:", isValidToken);
         
         if (isValidToken) {
           onLogin("admin");
         } else {
-          setError(`Google Authenticator kodunu yanlış girdiniz. Girdiğiniz kod: ${totpToken}`);
+          setError("Google Authenticator kodunu yanlış girdiniz.");
           await auth.signOut();
         }
       } else {
@@ -262,8 +244,6 @@ function Login({ onLogin }: LoginProps) {
               textAlign: "center"
             }}>
               Google Authenticator uygulamasından 6 haneli kodu girin
-              <br />
-              <strong>Test için mevcut kod: {currentToken}</strong>
             </div>
           </div>
 
