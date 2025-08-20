@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { generateTOTP, verifyTOTP, generateOTPAuthURL } from "./utils/totp";
+import { verifyTOTP, generateOTPAuthURL } from "./utils/totp";
 import QRCode from "react-qr-code";
 
 interface LoginProps {
@@ -17,10 +17,9 @@ function Login({ onLogin }: LoginProps) {
   const [showQR, setShowQR] = useState(false);
   const [secret, setSecret] = useState("");
   const [qrUrl, setQrUrl] = useState("");
-  const [currentToken, setCurrentToken] = useState("");
 
   // Admin için sabit secret (gerçek uygulamada bu veritabanında saklanmalı)
-  const ADMIN_SECRET = "JBSWY3DPEHPK3PXP"; // YakalaHadi Admin için sabit secret
+  const ADMIN_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP"; // YakalaHadi Admin için sabit secret
 
   useEffect(() => {
     // QR kod URL'ini oluştur
@@ -30,18 +29,7 @@ function Login({ onLogin }: LoginProps) {
     }
   }, [secret, email]);
 
-  useEffect(() => {
-    // Her 30 saniyede bir yeni token oluştur
-    const updateToken = async () => {
-      const token = await generateTOTP(ADMIN_SECRET);
-      setCurrentToken(token);
-    };
-    
-    updateToken();
-    const interval = setInterval(updateToken, 30000);
-    
-    return () => clearInterval(interval);
-  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,7 +245,7 @@ function Login({ onLogin }: LoginProps) {
               color: "#666",
               textAlign: "center"
             }}>
-              Mevcut kod: <strong style={{ fontFamily: "monospace" }}>{currentToken}</strong>
+              Google Authenticator uygulamasından 6 haneli kodu girin
             </div>
           </div>
 
