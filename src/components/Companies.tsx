@@ -262,16 +262,96 @@ function Companies() {
         if (notificationResult.success) {
           console.log("✅ Mail başarıyla gönderildi:", notificationResult.message);
           if (approved) {
-            alert(`✅ Firma onaylandı!\n\n📧 Mail başarıyla gönderildi`);
+            const alertDiv = document.createElement('div');
+            alertDiv.innerHTML = `✅ Firma onaylandı!<br><br>📧 Mail başarıyla gönderildi`;
+            alertDiv.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: white;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              z-index: 9999999;
+              font-size: 16px;
+              text-align: center;
+              max-width: 400px;
+              border: 2px solid #28a745;
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+              document.body.removeChild(alertDiv);
+            }, 3000);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n📧 Mail başarıyla gönderildi`);
+            const alertDiv = document.createElement('div');
+            alertDiv.innerHTML = `❌ Firma onaylanmadı!<br><br>📧 Mail başarıyla gönderildi`;
+            alertDiv.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: white;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              z-index: 9999999;
+              font-size: 16px;
+              text-align: center;
+              max-width: 400px;
+              border: 2px solid #dc3545;
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+              document.body.removeChild(alertDiv);
+            }, 3000);
           }
         } else {
           console.error("❌ Mail gönderilemedi:", notificationResult.message);
           if (approved) {
-            alert(`✅ Firma onaylandı!\n\n⚠️ Mail gönderilemedi: ${notificationResult.message}`);
+            const alertDiv = document.createElement('div');
+            alertDiv.innerHTML = `✅ Firma onaylandı!<br><br>⚠️ Mail gönderilemedi: ${notificationResult.message}`;
+            alertDiv.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: white;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              z-index: 9999999;
+              font-size: 16px;
+              text-align: center;
+              max-width: 400px;
+              border: 2px solid #ffc107;
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+              document.body.removeChild(alertDiv);
+            }, 3000);
           } else {
-            alert(`❌ Firma onaylanmadı!\n\n⚠️ Mail gönderilemedi: ${notificationResult.message}`);
+            const alertDiv = document.createElement('div');
+            alertDiv.innerHTML = `❌ Firma onaylanmadı!<br><br>⚠️ Mail gönderilemedi: ${notificationResult.message}`;
+            alertDiv.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: white;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              z-index: 9999999;
+              font-size: 16px;
+              text-align: center;
+              max-width: 400px;
+              border: 2px solid #ffc107;
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+              document.body.removeChild(alertDiv);
+            }, 3000);
           }
         }
         
@@ -281,9 +361,49 @@ function Companies() {
         
         // Mail hatası olsa bile onay durumu değişti
         if (approved) {
-          alert(`✅ Firma onaylandı!\n\n⚠️ Mail gönderilemedi: ${notificationError.message}`);
+          const alertDiv = document.createElement('div');
+          alertDiv.innerHTML = `✅ Firma onaylandı!<br><br>⚠️ Mail gönderilemedi: ${notificationError.message}`;
+          alertDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 9999999;
+            font-size: 16px;
+            text-align: center;
+            max-width: 400px;
+            border: 2px solid #ffc107;
+          `;
+          document.body.appendChild(alertDiv);
+          setTimeout(() => {
+            document.body.removeChild(alertDiv);
+          }, 3000);
         } else {
-          alert(`❌ Firma onaylanmadı!\n\n⚠️ Mail gönderilemedi: ${notificationError.message}`);
+          const alertDiv = document.createElement('div');
+          alertDiv.innerHTML = `❌ Firma onaylanmadı!<br><br>⚠️ Mail gönderilemedi: ${notificationError.message}`;
+          alertDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 9999999;
+            font-size: 16px;
+            text-align: center;
+            max-width: 400px;
+            border: 2px solid #ffc107;
+          `;
+          document.body.appendChild(alertDiv);
+          setTimeout(() => {
+            document.body.removeChild(alertDiv);
+          }, 3000);
         }
       }
       
@@ -378,10 +498,50 @@ function Companies() {
       // Seçili firmayı da güncelle
       setSelectedCompany(editingCompany);
       
-      alert("✅ Firma bilgileri başarıyla güncellendi!");
+      const alertDiv = document.createElement('div');
+      alertDiv.innerHTML = `✅ Firma bilgileri başarıyla güncellendi!`;
+      alertDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 9999999;
+        font-size: 16px;
+        text-align: center;
+        max-width: 400px;
+        border: 2px solid #28a745;
+      `;
+      document.body.appendChild(alertDiv);
+      setTimeout(() => {
+        document.body.removeChild(alertDiv);
+      }, 3000);
     } catch (error) {
       console.error("Firma güncellenirken hata:", error);
-      alert("❌ Firma güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
+      const alertDiv = document.createElement('div');
+      alertDiv.innerHTML = `❌ Firma güncellenirken bir hata oluştu. Lütfen tekrar deneyin.`;
+      alertDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 9999999;
+        font-size: 16px;
+        text-align: center;
+        max-width: 400px;
+        border: 2px solid #dc3545;
+      `;
+      document.body.appendChild(alertDiv);
+      setTimeout(() => {
+        document.body.removeChild(alertDiv);
+      }, 3000);
     }
   };
 
@@ -1228,11 +1388,11 @@ function Companies() {
                       style={{
                         padding: '4px 12px',
                         border: '2px solid #e3f2fd',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         fontSize: '14px',
                         color: '#1976d2',
                         backgroundColor: '#e3f2fd',
-                        width: '150px',
+                        width: '200px',
                         textAlign: 'center'
                       }}
                     />
@@ -1246,11 +1406,11 @@ function Companies() {
                       style={{
                         padding: '4px 12px',
                         border: '2px solid #f3e5f5',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         fontSize: '14px',
                         color: '#7b1fa2',
                         backgroundColor: '#f3e5f5',
-                        width: '150px',
+                        width: '200px',
                         textAlign: 'center'
                       }}
                     >
@@ -1268,11 +1428,11 @@ function Companies() {
                       style={{
                         padding: '4px 12px',
                         border: '2px solid #e9ecef',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         fontSize: '14px',
                         color: '#495057',
                         backgroundColor: '#e9ecef',
-                        width: '150px',
+                        width: '200px',
                         textAlign: 'center'
                       }}
                     >
@@ -1414,19 +1574,30 @@ function Companies() {
                     <span style={{ fontWeight: 'bold', color: '#555' }}>Firma Yetkilisi:</span>
                     <input
                       type="text"
-                      value={editingCompany?.companyOfficer || ''}
-                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, companyOfficer: e.target.value } : null)}
+                      value={editingCompany?.companyOfficerName && editingCompany?.companyOfficerSurname 
+                        ? `${editingCompany.companyOfficerName} ${editingCompany.companyOfficerSurname}`
+                        : editingCompany?.companyOfficer || ''
+                      }
+                      onChange={(e) => {
+                        const names = e.target.value.split(' ');
+                        setEditingCompany(prev => prev ? { 
+                          ...prev, 
+                          companyOfficerName: names[0] || '',
+                          companyOfficerSurname: names.slice(1).join(' ') || '',
+                          companyOfficer: e.target.value
+                        } : null);
+                      }}
                       style={{
                         padding: '4px 12px',
                         border: '2px solid #e0e0e0',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         fontSize: '14px',
                         color: '#666',
                         backgroundColor: '#f8f9fa',
-                        width: '150px',
+                        width: '200px',
                         textAlign: 'center'
                       }}
-                      placeholder="Yetkili Adı"
+                      placeholder="Ad Soyad"
                     />
                   </div>
                   
@@ -1439,11 +1610,11 @@ function Companies() {
                       style={{
                         padding: '4px 12px',
                         border: '2px solid #e8f4fd',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         fontSize: '14px',
                         color: '#0d6efd',
                         backgroundColor: '#e8f4fd',
-                        width: '150px',
+                        width: '250px',
                         textAlign: 'center'
                       }}
                     />
@@ -1458,11 +1629,11 @@ function Companies() {
                       style={{
                         padding: '4px 12px',
                         border: '2px solid #e0e0e0',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         fontSize: '14px',
                         color: '#666',
                         backgroundColor: '#f8f9fa',
-                        width: '150px',
+                        width: '200px',
                         textAlign: 'center'
                       }}
                     />
