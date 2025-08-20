@@ -1260,7 +1260,7 @@ function Companies() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 999999
+          zIndex: 99999
         }}>
           <div style={{
             backgroundColor: 'white',
