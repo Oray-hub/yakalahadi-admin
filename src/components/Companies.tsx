@@ -23,6 +23,11 @@ interface Company {
   totalPurchasedCredits?: number;
   creditPurchaseDate?: any;
   logo?: string;
+  // Adres alanları
+  address?: string;
+  postalCode?: string;
+  district?: string;
+  province?: string;
 }
 
 function Companies() {
@@ -132,6 +137,10 @@ function Companies() {
           totalPurchasedCredits: data.totalPurchasedCredits || 0,
           creditPurchaseDate: data.creditPurchaseDate,
           logo: data.logoUrl || "",
+          address: data.address || "",
+          postalCode: data.postalCode || "",
+          district: data.district || "",
+          province: data.province || "",
         };
         
         companiesData.push(company);
@@ -582,6 +591,8 @@ function Companies() {
           return company.phone.toLowerCase().includes(searchLower);
         case 'email':
           return (company.email || '').toLowerCase().includes(searchLower);
+        case 'province':
+          return (company.province || '').toLowerCase().includes(searchLower);
         case 'all':
         default:
           const officerNameForAll = company.companyOfficerName && company.companyOfficerSurname 
@@ -595,7 +606,8 @@ function Companies() {
             company.firmType.toLowerCase().includes(searchLower) ||
             company.category.toLowerCase().includes(searchLower) ||
             company.phone.toLowerCase().includes(searchLower) ||
-            (company.email || '').toLowerCase().includes(searchLower)
+            (company.email || '').toLowerCase().includes(searchLower) ||
+            (company.province || '').toLowerCase().includes(searchLower)
           );
       }
     }
@@ -733,6 +745,7 @@ function Companies() {
             <option value="approved">✅ Onay Durumu</option>
             <option value="phone">📞 Telefon</option>
             <option value="email">📧 Kayıtlı Mail</option>
+            <option value="province">🏙️ İl</option>
           </select>
           
           <input
@@ -742,7 +755,8 @@ function Companies() {
               searchField === 'vkn' ? 'VKN ara...' :
               searchField === 'approved' ? 'Onay durumu ara...' :
               searchField === 'phone' ? 'Telefon ara...' :
-              searchField === 'email' ? 'Kayıtlı mail ara...' : 'Ara...'}`}
+              searchField === 'email' ? 'Kayıtlı mail ara...' :
+              searchField === 'province' ? 'İl ara...' : 'Ara...'}`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -835,7 +849,7 @@ function Companies() {
                       fontSize: '12px',
                       color: '#0066cc'
                     }}>
-                      {company.firmType || "Bilinmiyor"}
+                      {company.province || "Bilinmiyor"}
                     </span>
                     <span style={{
                       padding: '2px 8px',
@@ -977,7 +991,7 @@ function Companies() {
                     fontSize: "0.8em",
                     color: "#0066cc"
                   }}>
-                    {company.firmType || "Bilinmiyor"}
+                    {company.province || "Bilinmiyor"}
                   </span>
                 </td>
                 <td style={{ padding: 12 }}>
@@ -1708,6 +1722,26 @@ function Companies() {
                         Konum bilgisi yok
                       </span>
                     )}
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Adres:</span>
+                    <div style={{
+                      padding: '4px 12px',
+                      border: '2px solid #e0e0e0',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      color: '#666',
+                      backgroundColor: '#f8f9fa',
+                      width: '200px',
+                      textAlign: 'left',
+                      minHeight: '20px'
+                    }}>
+                      {editingCompany?.address && editingCompany?.postalCode && editingCompany?.district && editingCompany?.province ? 
+                        `${editingCompany.address}, ${editingCompany.postalCode} ${editingCompany.district}/${editingCompany.province}` : 
+                        'Adres bilgisi yok'
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
