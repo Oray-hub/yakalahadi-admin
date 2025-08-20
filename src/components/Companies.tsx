@@ -1282,8 +1282,6 @@ function Companies() {
             padding: window.innerWidth <= 768 ? '16px' : '32px',
             maxWidth: '800px',
             width: '95%',
-            maxHeight: '90vh',
-            overflowY: 'auto',
             boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
             position: 'relative'
           }}>
