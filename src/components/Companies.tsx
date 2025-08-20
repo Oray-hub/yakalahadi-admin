@@ -21,6 +21,7 @@ interface Company {
   credits: number;
   totalPurchasedCredits?: number;
   creditPurchaseDate?: any;
+  logo?: string;
 }
 
 function Companies() {
@@ -128,6 +129,7 @@ function Companies() {
           credits: data.credits || 0,
           totalPurchasedCredits: data.totalPurchasedCredits || 0,
           creditPurchaseDate: data.creditPurchaseDate,
+          logo: data.logo || "",
         };
         
         companiesData.push(company);
@@ -1315,9 +1317,35 @@ function Companies() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '2px dashed #dee2e6'
+                border: '2px dashed #dee2e6',
+                overflow: 'hidden'
               }}>
-                <span style={{ fontSize: '48px', color: '#6c757d' }}>🏢</span>
+                {editingCompany?.logo ? (
+                  <img 
+                    src={editingCompany.logo} 
+                    alt={`${editingCompany.company} Logo`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      borderRadius: '8px'
+                    }}
+                    onError={(e) => {
+                      // Logo yüklenemezse placeholder göster
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        const placeholder = document.createElement('span');
+                        placeholder.textContent = '🏢';
+                        placeholder.style.cssText = 'font-size: 48px; color: #6c757d;';
+                        parent.appendChild(placeholder);
+                      }
+                    }}
+                  />
+                ) : (
+                  <span style={{ fontSize: '48px', color: '#6c757d' }}>🏢</span>
+                )}
               </div>
               <div style={{ marginBottom: '16px' }}>
                 <input
