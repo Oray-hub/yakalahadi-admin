@@ -273,7 +273,7 @@ function Companies() {
               padding: 20px;
               border-radius: 8px;
               box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-              z-index: 9999999;
+              z-index: 99999999;
               font-size: 16px;
               text-align: center;
               max-width: 400px;
@@ -295,7 +295,7 @@ function Companies() {
               padding: 20px;
               border-radius: 8px;
               box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-              z-index: 9999999;
+              z-index: 99999999;
               font-size: 16px;
               text-align: center;
               max-width: 400px;
@@ -320,7 +320,7 @@ function Companies() {
               padding: 20px;
               border-radius: 8px;
               box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-              z-index: 9999999;
+              z-index: 99999999;
               font-size: 16px;
               text-align: center;
               max-width: 400px;
@@ -342,7 +342,7 @@ function Companies() {
               padding: 20px;
               border-radius: 8px;
               box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-              z-index: 9999999;
+              z-index: 99999999;
               font-size: 16px;
               text-align: center;
               max-width: 400px;
@@ -372,7 +372,7 @@ function Companies() {
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 9999999;
+            z-index: 99999999;
             font-size: 16px;
             text-align: center;
             max-width: 400px;
@@ -394,7 +394,7 @@ function Companies() {
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 9999999;
+            z-index: 99999999;
             font-size: 16px;
             text-align: center;
             max-width: 400px;
@@ -509,7 +509,7 @@ function Companies() {
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        z-index: 9999999;
+        z-index: 99999999;
         font-size: 16px;
         text-align: center;
         max-width: 400px;
@@ -532,7 +532,7 @@ function Companies() {
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        z-index: 9999999;
+        z-index: 99999999;
         font-size: 16px;
         text-align: center;
         max-width: 400px;
