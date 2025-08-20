@@ -1452,7 +1452,7 @@ function Companies() {
                           backgroundColor: selectedCompany.approved ? '#d4edda' : '#fff3cd',
                           color: selectedCompany.approved ? '#155724' : '#856404',
                           border: '2px solid #ddd',
-                          borderRadius: '20px',
+                          borderRadius: '4px',
                           fontSize: '14px',
                           cursor: 'pointer',
                           transition: 'all 0.3s ease',
@@ -1614,7 +1614,7 @@ function Companies() {
                         fontSize: '14px',
                         color: '#0d6efd',
                         backgroundColor: '#e8f4fd',
-                        width: '250px',
+                        width: '200px',
                         textAlign: 'center'
                       }}
                     />
@@ -1713,22 +1713,14 @@ function Companies() {
                  border: '1px solid #e1bee7'
                }}>
                  <div style={{ fontSize: '32px', marginBottom: '8px' }}>💳</div>
-                 <input
-                   type="number"
-                   min="0"
-                   value={editingCompany?.totalPurchasedCredits || 0}
-                   onChange={(e) => setEditingCompany(prev => prev ? { ...prev, totalPurchasedCredits: parseInt(e.target.value) || 0 } : null)}
-                   style={{
-                     fontSize: '24px',
-                     fontWeight: 'bold',
-                     color: '#7b1fa2',
-                     marginBottom: '4px',
-                     border: 'none',
-                     backgroundColor: 'transparent',
-                     textAlign: 'center',
-                     width: '100%'
-                   }}
-                 />
+                 <div style={{
+                   fontSize: '24px',
+                   fontWeight: 'bold',
+                   color: '#7b1fa2',
+                   marginBottom: '4px'
+                 }}>
+                   {editingCompany?.totalPurchasedCredits || 0}
+                 </div>
                  <div style={{ fontSize: '14px', color: '#666' }}>Toplam Alınan Kredi</div>
                </div>
             </div>
