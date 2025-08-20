@@ -37,18 +37,7 @@ function Login({ onLogin }: LoginProps) {
     const auth = getAuth();
     try {
       // Önce email/şifre ile giriş yap
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      console.log("Firebase Auth kullanıcısı:", {
-        uid: user.uid,
-        email: user.email,
-        emailVerified: user.emailVerified
-      });
-      
-      // Token'ı al ve claims'leri kontrol et
-      const idTokenResult = await user.getIdTokenResult();
-      console.log("Firebase Auth claims:", idTokenResult.claims);
+      await signInWithEmailAndPassword(auth, email, password);
       
       // Sadece admin@yakalahadi.com e-posta adresine sahip kullanıcı admin olabilir
       if (email === "admin@yakalahadi.com") {

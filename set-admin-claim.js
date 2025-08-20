@@ -13,7 +13,8 @@ admin.initializeApp({
 });
 
 // Admin claim'i vereceğiniz kullanıcının UID'si
-const targetUID = 'cvtXMH7IY0P8uCW7aAupqcdNUY13'; // admin@yakalahadi.com kullanıcısının UID'si
+// Console'da görünen UID'yi buraya yazın
+const targetUID = 'BURAYA_CONSOLE_DA_GORUNEN_UID_YAZIN'; // admin@yakalahadi.com kullanıcısının UID'si
 
 async function setAdminClaim() {
   try {
