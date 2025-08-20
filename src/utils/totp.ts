@@ -1,5 +1,10 @@
 import { authenticator } from 'otplib';
 
+// Buffer polyfill for browser environment
+if (typeof window !== 'undefined' && !window.Buffer) {
+  (window as any).Buffer = require('buffer').Buffer;
+}
+
 // TOTP token oluşturma
 export async function generateTOTP(secret: string): Promise<string> {
   try {
