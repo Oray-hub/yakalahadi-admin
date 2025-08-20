@@ -30,12 +30,7 @@ function Companies() {
   const [deletingCompany, setDeletingCompany] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{x: number, y: number} | null>(null);
-  const [openCategoryDropdown, setOpenCategoryDropdown] = useState<string | null>(null);
-  const [categoryDropdownPosition, setCategoryDropdownPosition] = useState<{x: number, y: number} | null>(null);
-  const [openFirmTypeDropdown, setOpenFirmTypeDropdown] = useState<string | null>(null);
-  const [firmTypeDropdownPosition, setFirmTypeDropdownPosition] = useState<{x: number, y: number} | null>(null);
-  const [editingField, setEditingField] = useState<{companyId: string, field: 'averageRating' | 'credits'} | null>(null);
-  const [editValue, setEditValue] = useState<string>('');
+
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchField, setSearchField] = useState<string>('all');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -95,23 +90,15 @@ function Companies() {
         setOpenDropdown(null);
         setDropdownPosition(null);
       }
-      if (openCategoryDropdown && !target.closest('[data-category-dropdown-container]')) {
-        setOpenCategoryDropdown(null);
-        setCategoryDropdownPosition(null);
-      }
-      if (openFirmTypeDropdown && !target.closest('[data-firmtype-dropdown-container]')) {
-        setOpenFirmTypeDropdown(null);
-        setFirmTypeDropdownPosition(null);
-      }
     };
 
-    if (openDropdown || openCategoryDropdown || openFirmTypeDropdown) {
+    if (openDropdown) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [openDropdown, openCategoryDropdown, openFirmTypeDropdown]);
+  }, [openDropdown]);
 
   const fetchCompanies = async () => {
     try {
@@ -184,43 +171,7 @@ function Companies() {
     }
   };
 
-  const updateCompanyCategory = async (companyId: string, category: string) => {
-    try {
-      const db = getFirestore();
-      const companyRef = doc(db, "companies", companyId);
-      await updateDoc(companyRef, { category });
-      
-      setCompanies(prev => prev.map(company => 
-        company.id === companyId 
-          ? { ...company, category }
-          : company
-      ));
-      
-      console.log(`Firma ${companyId} kategorisi ${category} olarak güncellendi`);
-    } catch (error) {
-      console.error("Firma kategorisi güncellenirken hata:", error);
-      alert("Firma kategorisi güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
-    }
-  };
 
-  const updateCompanyFirmType = async (companyId: string, firmType: string) => {
-    try {
-      const db = getFirestore();
-      const companyRef = doc(db, "companies", companyId);
-      await updateDoc(companyRef, { firmType });
-      
-      setCompanies(prev => prev.map(company => 
-        company.id === companyId 
-          ? { ...company, firmType }
-          : company
-      ));
-      
-      console.log(`Firma ${companyId} firma türü ${firmType} olarak güncellendi`);
-    } catch (error) {
-      console.error("Firma türü güncellenirken hata:", error);
-      alert("Firma türü güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
-    }
-  };
 
   const handleDeleteCompany = async (companyId: string, companyName: string) => {
     if (window.confirm(`${companyName} adlı firmayı silmek istediğinizden emin misiniz?`)) {
@@ -258,41 +209,7 @@ function Companies() {
     }
   };
 
-  const toggleCategoryDropdown = (companyId: string, event: React.MouseEvent) => {
-    console.log("Category dropdown toggle clicked for company:", companyId);
-    console.log("Current openCategoryDropdown:", openCategoryDropdown);
-    
-    if (openCategoryDropdown === companyId) {
-      setOpenCategoryDropdown(null);
-      setCategoryDropdownPosition(null);
-    } else {
-      const button = event.currentTarget as HTMLElement;
-      const rect = button.getBoundingClientRect();
-      setCategoryDropdownPosition({
-        x: rect.left,
-        y: rect.bottom + 4
-      });
-      setOpenCategoryDropdown(companyId);
-    }
-  };
 
-  const toggleFirmTypeDropdown = (companyId: string, event: React.MouseEvent) => {
-    console.log("Firm type dropdown toggle clicked for company:", companyId);
-    console.log("Current openFirmTypeDropdown:", openFirmTypeDropdown);
-    
-    if (openFirmTypeDropdown === companyId) {
-      setOpenFirmTypeDropdown(null);
-      setFirmTypeDropdownPosition(null);
-    } else {
-      const button = event.currentTarget as HTMLElement;
-      const rect = button.getBoundingClientRect();
-      setFirmTypeDropdownPosition({
-        x: rect.left,
-        y: rect.bottom + 4
-      });
-      setOpenFirmTypeDropdown(companyId);
-    }
-  };
 
   const handleApprovalChange = async (companyId: string, approved: boolean) => {
     console.log("handleApprovalChange called with:", { companyId, approved });
@@ -380,141 +297,16 @@ function Companies() {
 
 
 
-  const handleCategoryChange = async (companyId: string, category: string) => {
-    console.log("handleCategoryChange called with:", { companyId, category });
-    try {
-      await updateCompanyCategory(companyId, category);
-      console.log("updateCompanyCategory completed successfully");
-      setOpenCategoryDropdown(null);
-      setCategoryDropdownPosition(null);
-    } catch (error) {
-      console.error("Kategori değiştirilirken hata:", error);
-    }
-  };
 
-  const handleFirmTypeChange = async (companyId: string, firmType: string) => {
-    console.log("handleFirmTypeChange called with:", { companyId, firmType });
-    try {
-      await updateCompanyFirmType(companyId, firmType);
-      console.log("updateCompanyFirmType completed successfully");
-      setOpenFirmTypeDropdown(null);
-      setFirmTypeDropdownPosition(null);
-    } catch (error) {
-      console.error("Firma türü değiştirilirken hata:", error);
-    }
-  };
 
-  const handleEditField = (companyId: string, field: 'averageRating' | 'credits', currentValue: number) => {
-    setEditingField({ companyId, field });
-    setEditValue(currentValue.toString());
-  };
 
-  const handleSaveEdit = async () => {
-    if (!editingField) return;
-    
-    const { companyId, field } = editingField;
-    const numericValue = parseFloat(editValue);
-    
-    if (isNaN(numericValue)) {
-      alert("Lütfen geçerli bir sayı girin!");
-      return;
-    }
-
-    // Kredi miktarı için özel kontrol
-    if (field === 'credits') {
-      const currentCompany = companies.find(c => c.id === companyId);
-      if (currentCompany) {
-        // Kredi miktarı azaltılıyorsa uyarı ver
-        if (numericValue < currentCompany.credits) {
-          const confirmDecrease = window.confirm(
-            `⚠️ DİKKAT: Mevcut kullanılabilir krediyi ${currentCompany.credits}'den ${numericValue}'ye düşürmek istediğinizden emin misiniz?\n\n` +
-            `Bu işlem sadece mevcut kullanılabilir krediyi etkiler.\n` +
-            `Toplam alınan kredi miktarı (muhasebe) değişmez.\n\n` +
-            `Eğer bu Flutter uygulamasından gelen bir hata ise, lütfen Flutter kodunu kontrol edin.`
-          );
-          
-          if (!confirmDecrease) {
-            return;
-          }
-        }
-        
-        // Kredi miktarı artırılıyorsa totalPurchasedCredits'i de güncelle
-        if (numericValue > currentCompany.credits) {
-          const creditIncrease = numericValue - currentCompany.credits;
-          const newTotalPurchasedCredits = (currentCompany.totalPurchasedCredits || 0) + creditIncrease;
-          
-          try {
-            const db = getFirestore();
-            const companyRef = doc(db, "companies", companyId);
-            await updateDoc(companyRef, { 
-              [field]: numericValue,
-              totalPurchasedCredits: newTotalPurchasedCredits,
-              creditPurchaseDate: new Date()
-            });
-            
-            setCompanies(prev => prev.map(company => 
-              company.id === companyId 
-                ? { 
-                    ...company, 
-                    [field]: numericValue,
-                    totalPurchasedCredits: newTotalPurchasedCredits,
-                    creditPurchaseDate: new Date()
-                  }
-                : company
-            ));
-            
-            console.log(`Firma ${companyId} mevcut kredi ${numericValue} ve toplam alınan kredi ${newTotalPurchasedCredits} olarak güncellendi`);
-            setEditingField(null);
-            setEditValue('');
-            alert(`Krediler başarıyla güncellendi!\nMevcut kullanılabilir kredi: ${numericValue}\nToplam alınan kredi: ${newTotalPurchasedCredits}`);
-            return;
-          } catch (error) {
-            console.error("Kredi güncellenirken hata:", error);
-            alert("Kredi güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
-            return;
-          }
-        }
-      }
-    }
-
-    try {
-      const db = getFirestore();
-      const companyRef = doc(db, "companies", companyId);
-      await updateDoc(companyRef, { [field]: numericValue });
-      
-      setCompanies(prev => prev.map(company => 
-        company.id === companyId 
-          ? { ...company, [field]: numericValue }
-          : company
-      ));
-      
-      console.log(`Firma ${companyId} ${field} değeri ${numericValue} olarak güncellendi`);
-      setEditingField(null);
-      setEditValue('');
-      alert(`${field === 'averageRating' ? 'Ortalama Puan' : 'Krediler'} başarıyla güncellendi!`);
-    } catch (error) {
-      console.error("Alan güncellenirken hata:", error);
-      alert("Alan güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingField(null);
-    setEditValue('');
-  };
 
   const handleAverageRatingClick = (companyId: string, companyName: string) => {
     // URL parametresi olarak firma ID'sini ve adını gönder
     navigate(`/reviews?companyId=${companyId}&companyName=${encodeURIComponent(companyName)}`);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSaveEdit();
-    } else if (e.key === 'Escape') {
-      handleCancelEdit();
-    }
-  };
+
 
   const handleRejectionSubmit = async () => {
     if (!rejectionModal.companyId) return;
