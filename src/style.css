@@ -139,6 +139,15 @@ button:focus-visible {
     overflow-y: visible !important;
   }
   
+  /* Mobile cards for companies */
+  .mobile-cards {
+    display: flex !important;
+  }
+  
+  .desktop-table {
+    display: none !important;
+  }
+  
   .companies-container h1 {
     font-size: 14px !important;
     margin-bottom: 8px !important;
@@ -535,6 +544,17 @@ button:focus-visible {
   .companies-table th:nth-child(6),
   .companies-table td:nth-child(6) {
     display: none !important;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .mobile-cards {
+    display: none !important;
+  }
+  
+  .desktop-table {
+    display: table !important;
   }
 }
 

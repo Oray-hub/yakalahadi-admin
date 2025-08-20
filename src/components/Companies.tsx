@@ -38,6 +38,9 @@ function Companies() {
   const [editValue, setEditValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchField, setSearchField] = useState<string>('all');
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [showDetailCard, setShowDetailCard] = useState<boolean>(false);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   
   // Firma onay red sebebi modal state'leri
   const [rejectionModal, setRejectionModal] = useState<{
@@ -167,6 +170,12 @@ function Companies() {
           ? { ...company, approved }
           : company
       ));
+      
+      // Eğer detay kartı açıksa, seçili firmayı da güncelle
+      if (selectedCompany && selectedCompany.id === companyId) {
+        setSelectedCompany(prev => prev ? { ...prev, approved } : null);
+        setEditingCompany(prev => prev ? { ...prev, approved } : null);
+      }
       
       console.log(`Firma ${companyId} onay durumu ${approved ? 'onaylandı' : 'onay bekliyor'} olarak güncellendi`);
     } catch (error) {
@@ -525,6 +534,80 @@ function Companies() {
 
 
 
+  const handleCloseDetailCard = () => {
+    setSelectedCompany(null);
+    setShowDetailCard(false);
+    setEditingCompany(null);
+  };
+
+  const handleShowDetailCard = (company: Company) => {
+    setSelectedCompany(company);
+    setEditingCompany({ ...company }); // Düzenleme için kopya oluştur
+    setShowDetailCard(true);
+  };
+
+  const handleUpdateCompany = async () => {
+    if (!editingCompany) return;
+    
+    const confirmUpdate = window.confirm(
+      `${editingCompany.company} firmasının bilgilerini güncellemek istediğinizden emin misiniz?`
+    );
+    
+    if (!confirmUpdate) return;
+    
+    try {
+      const db = getFirestore();
+      const companyRef = doc(db, "companies", editingCompany.id);
+      
+      // Güncellenecek alanları hazırla
+      const updateData: any = {
+        company: editingCompany.company,
+        companyTitle: editingCompany.companyTitle,
+        companyOfficer: editingCompany.companyOfficer,
+        companyOfficerName: editingCompany.companyOfficerName,
+        companyOfficerSurname: editingCompany.companyOfficerSurname,
+        vkn: editingCompany.vkn,
+        firmType: editingCompany.firmType,
+        category: editingCompany.category,
+        email: editingCompany.email,
+        phone: editingCompany.phone,
+        averageRating: editingCompany.averageRating,
+        credits: editingCompany.credits,
+        totalPurchasedCredits: editingCompany.totalPurchasedCredits
+      };
+      
+      await updateDoc(companyRef, updateData);
+      
+      // Local state'i güncelle
+      setCompanies(prev => prev.map(company => 
+        company.id === editingCompany.id ? editingCompany : company
+      ));
+      
+      // Seçili firmayı da güncelle
+      setSelectedCompany(editingCompany);
+      
+      alert("✅ Firma bilgileri başarıyla güncellendi!");
+    } catch (error) {
+      console.error("Firma güncellenirken hata:", error);
+      alert("❌ Firma güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
+    }
+  };
+
+  const handleDeleteFromCard = async () => {
+    if (!selectedCompany) return;
+    
+    const confirmDelete = window.confirm(
+      `${selectedCompany.company} firmasını silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!`
+    );
+    
+    if (!confirmDelete) return;
+    
+    await handleDeleteCompany(selectedCompany.id, selectedCompany.company);
+    handleCloseDetailCard();
+  };
+
+
+
   const filteredCompanies = companies.filter(company => {
     // Normal arama filtresi
     if (searchTerm) {
@@ -534,30 +617,15 @@ function Companies() {
       switch (searchField) {
         case 'company':
           return company.company.toLowerCase().includes(searchLower);
-        case 'companyTitle':
-          return company.companyTitle.toLowerCase().includes(searchLower);
-        case 'companyOfficer':
-          const officerNameForSearch = company.companyOfficerName && company.companyOfficerSurname 
-            ? `${company.companyOfficerName} ${company.companyOfficerSurname}`.toLowerCase()
-            : company.companyOfficer.toLowerCase();
-          return officerNameForSearch.includes(searchLower);
         case 'vkn':
           return company.vkn.toLowerCase().includes(searchLower);
         case 'approved':
           const approvalStatus = company.approved ? 'onaylandı' : 'onay bekliyor';
           return approvalStatus.includes(searchLower);
-        case 'firmType':
-          return company.firmType.toLowerCase().includes(searchLower);
-        case 'category':
-          return company.category.toLowerCase().includes(searchLower);
         case 'phone':
           return company.phone.toLowerCase().includes(searchLower);
         case 'email':
           return (company.email || '').toLowerCase().includes(searchLower);
-        case 'averageRating':
-          return company.averageRating.toString().includes(searchLower);
-        case 'credits':
-          return company.credits.toString().includes(searchLower);
         case 'all':
         default:
           const officerNameForAll = company.companyOfficerName && company.companyOfficerSurname 
@@ -571,9 +639,7 @@ function Companies() {
             company.firmType.toLowerCase().includes(searchLower) ||
             company.category.toLowerCase().includes(searchLower) ||
             company.phone.toLowerCase().includes(searchLower) ||
-            (company.email || '').toLowerCase().includes(searchLower) ||
-            company.averageRating.toString().includes(searchLower) ||
-            company.credits.toString().includes(searchLower)
+            (company.email || '').toLowerCase().includes(searchLower)
           );
       }
     }
@@ -707,32 +773,20 @@ function Companies() {
           >
             <option value="all">🔍 Tüm Alanlarda Ara</option>
             <option value="company">🏢 Firma Adı</option>
-            <option value="companyTitle">📋 Firma Başlığı</option>
-            <option value="companyOfficer">👤 Firma Yetkilisi</option>
             <option value="vkn">🏛️ VKN</option>
-            <option value="firmType">🏭 Firma Türü</option>
-            <option value="category">📂 Kategori</option>
             <option value="approved">✅ Onay Durumu</option>
             <option value="phone">📞 Telefon</option>
             <option value="email">📧 Kayıtlı Mail</option>
-            <option value="averageRating">⭐ Ortalama Puan</option>
-            <option value="credits">💰 Krediler</option>
           </select>
           
           <input
             type="text"
             placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
               searchField === 'company' ? 'Firma adı ara...' :
-              searchField === 'companyTitle' ? 'Firma başlığı ara...' :
-              searchField === 'companyOfficer' ? 'Firma yetkilisi ara...' :
               searchField === 'vkn' ? 'VKN ara...' :
               searchField === 'approved' ? 'Onay durumu ara...' :
-              searchField === 'firmType' ? 'Firma türü ara...' :
-              searchField === 'category' ? 'Kategori ara...' :
               searchField === 'phone' ? 'Telefon ara...' :
-              searchField === 'email' ? 'Kayıtlı mail ara...' :
-              searchField === 'averageRating' ? 'Ortalama puan ara...' :
-              searchField === 'credits' ? 'Krediler ara...' : 'Ara...'}`}
+              searchField === 'email' ? 'Kayıtlı mail ara...' : 'Ara...'}`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -777,41 +831,217 @@ function Companies() {
         backgroundColor: "#f8f9fa",
         overscrollBehavior: "none"
       }}>
-        <table className="companies-table" style={{ 
+        {/* Mobil için kart görünümü */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          padding: '12px'
+        }} className="mobile-cards">
+          {filteredCompanies.map((company) => (
+            <div key={company.id} style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '16px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid #e0e0e0'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '12px'
+              }}>
+                <div style={{ flex: 1 }}>
+                  <h3 
+                    style={{
+                      margin: '0 0 8px 0',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      color: '#007bff',
+                      textDecoration: 'underline',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleShowDetailCard(company)}
+                  >
+                    {company.company}
+                  </h3>
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{
+                      padding: '2px 8px',
+                      backgroundColor: '#f0f8ff',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#0066cc'
+                    }}>
+                      {company.firmType || "Bilinmiyor"}
+                    </span>
+                    <span style={{
+                      padding: '2px 8px',
+                      backgroundColor: '#e3f2fd',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#1976d2'
+                    }}>
+                      {company.vkn}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={(e) => toggleDropdown(company.id, e)}
+                  style={{
+                    padding: '4px 8px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    backgroundColor: company.approved ? '#d4edda' : '#fff3cd',
+                    color: company.approved ? '#155724' : '#856404',
+                    border: 'none',
+                    cursor: 'pointer',
+                    minWidth: '100px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '4px'
+                  }}
+                >
+                  {company.approved ? "✅ Onaylandı" : "⏳ Bekliyor"}
+                  <span style={{ fontSize: '10px' }}>▼</span>
+                </button>
+              </div>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '8px',
+                fontSize: '12px'
+              }}>
+                <div>
+                  <strong>📧 E-posta:</strong>
+                  <div style={{ color: '#666', wordBreak: 'break-all' }}>{company.email}</div>
+                </div>
+                <div>
+                  <strong>📞 Telefon:</strong>
+                  <div style={{ color: '#666' }}>{company.phone}</div>
+                </div>
+              </div>
+              
+              {openDropdown === company.id && dropdownPosition && (
+                <div 
+                  data-dropdown-container
+                  style={{
+                    position: "fixed",
+                    top: dropdownPosition.y,
+                    left: dropdownPosition.x,
+                    backgroundColor: "white",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                    zIndex: 999999,
+                    minWidth: "150px",
+                    padding: "6px 0"
+                  }}
+                >
+                  <div
+                    data-dropdown-container
+                    style={{
+                      padding: "8px 12px",
+                      borderBottom: "1px solid #eee",
+                      cursor: "pointer",
+                      fontSize: "0.8em",
+                      color: company.approved ? "#155724" : "#666",
+                      backgroundColor: company.approved ? "#f8f9fa" : "transparent"
+                    }}
+                    onClick={() => handleApprovalChange(company.id, true)}
+                  >
+                    ✅ Onaylandı
+                  </div>
+                  <div
+                    data-dropdown-container
+                    style={{
+                      padding: "8px 12px",
+                      borderBottom: "1px solid #eee",
+                      cursor: "pointer",
+                      fontSize: "0.8em",
+                      color: !company.approved ? "#856404" : "#666",
+                      backgroundColor: !company.approved ? "#f8f9fa" : "transparent"
+                    }}
+                    onClick={() => handleApprovalChange(company.id, false)}
+                  >
+                    ⏳ Onay Bekliyor
+                  </div>
+                  <div
+                    data-dropdown-container
+                    style={{
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      fontSize: "0.8em",
+                      color: "#dc3545",
+                      backgroundColor: "transparent"
+                    }}
+                    onClick={() => handleApprovalChange(company.id, false)}
+                  >
+                    ❌ Onaylanmadı
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        {/* Desktop için tablo görünümü */}
+        <table className="companies-table desktop-table" style={{ 
           width: "100%", 
           borderCollapse: "collapse", 
           backgroundColor: "white"
         }}>
           <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#f8f9fa" }}>
             <tr>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Başlığı</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Yetkilisi</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>VKN</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıt Tarihi</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Türü</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategori</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Onay Durumu</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıtlı Mail</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
 
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Ortalama Puan</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Krediler</th>
-              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İşlemler</th>
             </tr>
           </thead>
           <tbody style={{ fontSize: "12px" }}>
             {filteredCompanies.map((company) => (
               <tr key={company.id} style={{ borderBottom: "1px solid #f1f3f4", overflow: "visible" }}>
                 <td style={{ padding: 12 }}>
-                  <strong>{company.company}</strong>
+                  <span style={{
+                    padding: "4px 8px",
+                    backgroundColor: "#f0f8ff",
+                    borderRadius: 12,
+                    fontSize: "0.8em",
+                    color: "#0066cc"
+                  }}>
+                    {company.firmType || "Bilinmiyor"}
+                  </span>
                 </td>
-                <td style={{ padding: 12 }}>{company.companyTitle}</td>
                 <td style={{ padding: 12 }}>
-                  {company.companyOfficerName && company.companyOfficerSurname 
-                    ? `${company.companyOfficerName} ${company.companyOfficerSurname}`
-                    : company.companyOfficer || "Yetkili Yok"
-                  }
+                  <strong 
+                    style={{
+                      cursor: 'pointer',
+                      color: '#007bff',
+                      textDecoration: 'underline',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onClick={() => handleShowDetailCard(company)}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.color = '#0056b3';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.color = '#007bff';
+                    }}
+                  >
+                    {company.company}
+                  </strong>
                 </td>
                 <td style={{ padding: 12 }}>
                   <span style={{
@@ -823,145 +1053,6 @@ function Companies() {
                   }}>
                     {company.vkn}
                   </span>
-                </td>
-                <td style={{ padding: 12 }}>
-                  {company.createdAt ? new Date(company.createdAt.toDate()).toLocaleDateString('tr-TR') : "Bilinmiyor"}
-                </td>
-                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
-                  <div style={{ position: "relative" }}>
-                    <button
-                      onClick={(e) => toggleFirmTypeDropdown(company.id, e)}
-                      style={{
-                        padding: "4px 8px",
-                        borderRadius: 12,
-                        fontSize: "0.8em",
-                        backgroundColor: "#f3e5f5",
-                        color: "#7b1fa2",
-                        border: "none",
-                        cursor: "pointer",
-                        transition: "all 0.3s ease",
-                        minWidth: "100px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "4px"
-                      }}
-                    >
-                      {company.firmType}
-                      <span style={{ fontSize: "10px" }}>▼</span>
-                    </button>
-                    
-                    {openFirmTypeDropdown === company.id && firmTypeDropdownPosition && (
-                      <div 
-                        data-firmtype-dropdown-container
-                        style={{
-                          position: "fixed",
-                          top: firmTypeDropdownPosition.y,
-                          left: firmTypeDropdownPosition.x,
-                          backgroundColor: "white",
-                          border: "1px solid #ddd",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                          zIndex: 999999,
-                          minWidth: "150px",
-                          padding: "6px 0"
-                        }}
-                      >
-                        {firmTypeOptions.map((firmType) => (
-                          <div
-                            key={firmType}
-                            data-firmtype-dropdown-container
-                            style={{
-                              padding: "8px 12px",
-                              borderBottom: "1px solid #eee",
-                              cursor: "pointer",
-                              fontSize: "0.8em",
-                              color: company.firmType === firmType ? "#7b1fa2" : "#666",
-                              backgroundColor: company.firmType === firmType ? "#f8f9fa" : "transparent"
-                            }}
-                            onClick={() => handleFirmTypeChange(company.id, firmType)}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "#f8f9fa";
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor = company.firmType === firmType ? "#f8f9fa" : "transparent";
-                            }}
-                          >
-                            {firmType}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
-                  <div style={{ position: "relative" }}>
-                    <button
-                      onClick={(e) => toggleCategoryDropdown(company.id, e)}
-                      style={{
-                        padding: "4px 8px",
-                        borderRadius: 12,
-                        fontSize: "0.8em",
-                        backgroundColor: "#e9ecef",
-                        color: "#495057",
-                        border: "none",
-                        cursor: "pointer",
-                        transition: "all 0.3s ease",
-                        minWidth: "100px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "4px"
-                      }}
-                    >
-                      {company.category}
-                      <span style={{ fontSize: "10px" }}>▼</span>
-                    </button>
-                    
-                    {openCategoryDropdown === company.id && categoryDropdownPosition && (
-                      <div 
-                        data-category-dropdown-container
-                        style={{
-                          position: "fixed",
-                          top: categoryDropdownPosition.y,
-                          left: categoryDropdownPosition.x,
-                          backgroundColor: "white",
-                          border: "1px solid #ddd",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                          zIndex: 999999,
-                          minWidth: "150px",
-                          maxHeight: "300px",
-                          overflowY: "auto",
-                          padding: "6px 0"
-                        }}
-                      >
-                        {categoryOptions.map((category) => (
-                          <div
-                            key={category}
-                            data-category-dropdown-container
-                            style={{
-                              padding: "8px 12px",
-                              borderBottom: "1px solid #eee",
-                              cursor: "pointer",
-                              fontSize: "0.8em",
-                              color: company.category === category ? "#495057" : "#666",
-                              backgroundColor: company.category === category ? "#f8f9fa" : "transparent"
-                            }}
-                            onClick={() => handleCategoryChange(company.id, category)}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "#f8f9fa";
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor = company.category === category ? "#f8f9fa" : "transparent";
-                            }}
-                          >
-                            {category}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 </td>
                 <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
                   <div style={{ position: "relative" }}>
@@ -1079,115 +1170,6 @@ function Companies() {
                 </td>
                 <td style={{ padding: 12 }}>{company.phone}</td>
 
-                <td style={{ padding: 12 }}>
-                  <span 
-                    style={{
-                      padding: "4px 8px",
-                      backgroundColor: "#fff3e0",
-                      borderRadius: 12,
-                      fontSize: "0.8em",
-                      color: "#f57c00",
-                      cursor: "pointer",
-                      display: "inline-block",
-                      transition: "all 0.3s ease"
-                    }}
-                    onClick={() => handleAverageRatingClick(company.id, company.company)}
-                    title="Bu firmanın yorumlarını görüntülemek için tıklayın"
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "#ffe0b2";
-                      e.currentTarget.style.transform = "scale(1.05)";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "#fff3e0";
-                      e.currentTarget.style.transform = "scale(1)";
-                    }}
-                  >
-                    ⭐ {company.averageRating.toFixed(1)}
-                  </span>
-                </td>
-                <td style={{ padding: 12 }}>
-                  {editingField?.companyId === company.id && editingField?.field === 'credits' ? (
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                      <input
-                        type="number"
-                        min="0"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        style={{
-                          width: '60px',
-                          padding: '4px 6px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          fontSize: '0.8em'
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        onClick={handleSaveEdit}
-                        style={{
-                          padding: '2px 6px',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.7em'
-                        }}
-                      >
-                        ✓
-                      </button>
-                      <button
-                        onClick={handleCancelEdit}
-                        style={{
-                          padding: '2px 6px',
-                          backgroundColor: '#6c757d',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.7em'
-                        }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <span 
-                      style={{
-                        padding: "4px 8px",
-                        backgroundColor: "#e8f5e8",
-                        borderRadius: 12,
-                        fontSize: "0.8em",
-                        color: "#2e7d32",
-                        cursor: "pointer",
-                        display: "inline-block"
-                      }}
-                      onClick={() => handleEditField(company.id, 'credits', company.credits)}
-                      title="Düzenlemek için tıklayın"
-                    >
-                      💰 {company.credits}
-                    </span>
-                  )}
-                </td>
-                <td style={{ padding: 12 }}>
-                  <button
-                    onClick={() => handleDeleteCompany(company.id, company.company)}
-                    disabled={deletingCompany === company.id}
-                    style={{
-                      padding: "6px 12px",
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      border: "none",
-                      borderRadius: 4,
-                      cursor: deletingCompany === company.id ? "not-allowed" : "pointer",
-                      fontSize: "0.8em",
-                      opacity: deletingCompany === company.id ? 0.6 : 1
-                    }}
-                  >
-                    {deletingCompany === company.id ? "Siliniyor..." : "Sil"}
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
@@ -1304,6 +1286,579 @@ function Companies() {
                 }}
               >
                 Reddet ve Bildirim Gönder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Firma Detay Kartı Modal */}
+      {showDetailCard && selectedCompany && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999999
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: window.innerWidth <= 768 ? '16px' : '32px',
+            maxWidth: '800px',
+            width: '95%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+            position: 'relative'
+          }}>
+            {/* Kapatma Butonu */}
+            <button
+              onClick={handleCloseDetailCard}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#666',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0f0f0';
+                e.currentTarget.style.color = '#333';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#666';
+              }}
+            >
+              ✕
+            </button>
+
+            {/* Firma Logo */}
+            <div style={{
+              textAlign: 'center',
+              marginBottom: '24px'
+            }}>
+              <div style={{
+                width: '120px',
+                height: '120px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '12px',
+                margin: '0 auto 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px dashed #dee2e6'
+              }}>
+                <span style={{ fontSize: '48px', color: '#6c757d' }}>🏢</span>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <input
+                  type="text"
+                  value={editingCompany?.company || ''}
+                  onChange={(e) => setEditingCompany(prev => prev ? { ...prev, company: e.target.value } : null)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    backgroundColor: '#f8f9fa',
+                    color: '#333'
+                  }}
+                  placeholder="Firma Adı"
+                />
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <input
+                  type="text"
+                  value={editingCompany?.companyTitle || ''}
+                  onChange={(e) => setEditingCompany(prev => prev ? { ...prev, companyTitle: e.target.value } : null)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    fontSize: '16px',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    backgroundColor: '#f8f9fa',
+                    color: '#666'
+                  }}
+                  placeholder="Firma Başlığı"
+                />
+              </div>
+            </div>
+
+            {/* Firma Bilgileri Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: window.innerWidth <= 768 ? '16px' : '24px',
+              marginBottom: '32px'
+            }}>
+              {/* Sol Kolon */}
+              <div>
+                <h3 style={{
+                  margin: '0 0 16px 0',
+                  color: '#333',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  borderBottom: '2px solid #007bff',
+                  paddingBottom: '8px'
+                }}>
+                  📋 Temel Bilgiler
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>VKN:</span>
+                    <input
+                      type="text"
+                      value={editingCompany?.vkn || ''}
+                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, vkn: e.target.value } : null)}
+                      style={{
+                        padding: '4px 12px',
+                        border: '2px solid #e3f2fd',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        color: '#1976d2',
+                        backgroundColor: '#e3f2fd',
+                        width: '150px',
+                        textAlign: 'center'
+                      }}
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Firma Türü:</span>
+                    <select
+                      value={editingCompany?.firmType || ''}
+                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, firmType: e.target.value } : null)}
+                      style={{
+                        padding: '4px 12px',
+                        border: '2px solid #f3e5f5',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        color: '#7b1fa2',
+                        backgroundColor: '#f3e5f5',
+                        width: '150px',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {firmTypeOptions.map((firmType) => (
+                        <option key={firmType} value={firmType}>{firmType}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Kategori:</span>
+                    <select
+                      value={editingCompany?.category || ''}
+                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, category: e.target.value } : null)}
+                      style={{
+                        padding: '4px 12px',
+                        border: '2px solid #e9ecef',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        color: '#495057',
+                        backgroundColor: '#e9ecef',
+                        width: '150px',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {categoryOptions.map((category) => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Onay Durumu:</span>
+                    <div style={{ position: 'relative' }}>
+                      <button
+                        onClick={(e) => toggleDropdown(selectedCompany.id, e)}
+                        style={{
+                          padding: '4px 12px',
+                          backgroundColor: selectedCompany.approved ? '#d4edda' : '#fff3cd',
+                          color: selectedCompany.approved ? '#155724' : '#856404',
+                          border: '2px solid #ddd',
+                          borderRadius: '20px',
+                          fontSize: '14px',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          minWidth: '150px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '4px'
+                        }}
+                      >
+                        {selectedCompany.approved ? '✅ Onaylandı' : '⏳ Onay Bekliyor'}
+                        <span style={{ fontSize: '10px' }}>▼</span>
+                      </button>
+                      
+                      {openDropdown === selectedCompany.id && dropdownPosition && (
+                        <div 
+                          data-dropdown-container
+                          style={{
+                            position: "fixed",
+                            top: dropdownPosition.y,
+                            left: dropdownPosition.x,
+                            backgroundColor: "white",
+                            border: "1px solid #ddd",
+                            borderRadius: "8px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                            zIndex: 999999,
+                            minWidth: "150px",
+                            padding: "6px 0"
+                          }}
+                        >
+                          <div
+                            data-dropdown-container
+                            style={{
+                              padding: "8px 12px",
+                              borderBottom: "1px solid #eee",
+                              cursor: "pointer",
+                              fontSize: "0.8em",
+                              color: selectedCompany.approved ? "#155724" : "#666",
+                              backgroundColor: selectedCompany.approved ? "#f8f9fa" : "transparent"
+                            }}
+                            onClick={() => handleApprovalChange(selectedCompany.id, true)}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "#f8f9fa";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = selectedCompany.approved ? "#f8f9fa" : "transparent";
+                            }}
+                          >
+                            ✅ Onaylandı
+                          </div>
+                          <div
+                            data-dropdown-container
+                            style={{
+                              padding: "8px 12px",
+                              borderBottom: "1px solid #eee",
+                              cursor: "pointer",
+                              fontSize: "0.8em",
+                              color: !selectedCompany.approved ? "#856404" : "#666",
+                              backgroundColor: !selectedCompany.approved ? "#f8f9fa" : "transparent"
+                            }}
+                            onClick={() => handleApprovalChange(selectedCompany.id, false)}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "#f8f9fa";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = !selectedCompany.approved ? "#f8f9fa" : "transparent";
+                            }}
+                          >
+                            ⏳ Onay Bekliyor
+                          </div>
+                          <div
+                            data-dropdown-container
+                            style={{
+                              padding: "8px 12px",
+                              cursor: "pointer",
+                              fontSize: "0.8em",
+                              color: "#dc3545",
+                              backgroundColor: "transparent"
+                            }}
+                            onClick={() => handleApprovalChange(selectedCompany.id, false)}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "#f8f9fa";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                            }}
+                          >
+                            ❌ Onaylanmadı
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Kayıt Tarihi:</span>
+                    <span style={{ fontSize: '14px', color: '#666' }}>
+                      {selectedCompany.createdAt ? new Date(selectedCompany.createdAt.toDate()).toLocaleDateString('tr-TR') : "Bilinmiyor"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sağ Kolon */}
+              <div>
+                <h3 style={{
+                  margin: '0 0 16px 0',
+                  color: '#333',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  borderBottom: '2px solid #28a745',
+                  paddingBottom: '8px'
+                }}>
+                  👤 İletişim Bilgileri
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Firma Yetkilisi:</span>
+                    <input
+                      type="text"
+                      value={editingCompany?.companyOfficer || ''}
+                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, companyOfficer: e.target.value } : null)}
+                      style={{
+                        padding: '4px 12px',
+                        border: '2px solid #e0e0e0',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        color: '#666',
+                        backgroundColor: '#f8f9fa',
+                        width: '150px',
+                        textAlign: 'center'
+                      }}
+                      placeholder="Yetkili Adı"
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>E-posta:</span>
+                    <input
+                      type="email"
+                      value={editingCompany?.email || ''}
+                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, email: e.target.value } : null)}
+                      style={{
+                        padding: '4px 12px',
+                        border: '2px solid #e8f4fd',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        color: '#0d6efd',
+                        backgroundColor: '#e8f4fd',
+                        width: '150px',
+                        textAlign: 'center'
+                      }}
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Telefon:</span>
+                    <input
+                      type="text"
+                      value={editingCompany?.phone || ''}
+                      onChange={(e) => setEditingCompany(prev => prev ? { ...prev, phone: e.target.value } : null)}
+                      style={{
+                        padding: '4px 12px',
+                        border: '2px solid #e0e0e0',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        color: '#666',
+                        backgroundColor: '#f8f9fa',
+                        width: '150px',
+                        textAlign: 'center'
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* İstatistikler */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: window.innerWidth <= 768 ? '12px' : '16px',
+              marginBottom: '32px'
+            }}>
+                             <div style={{
+                 backgroundColor: '#fff3e0',
+                 borderRadius: '12px',
+                 padding: '20px',
+                 textAlign: 'center',
+                 border: '1px solid #ffe0b2'
+               }}>
+                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>⭐</div>
+                 <input
+                   type="number"
+                   step="0.1"
+                   min="0"
+                   max="5"
+                   value={editingCompany?.averageRating || 0}
+                   onChange={(e) => setEditingCompany(prev => prev ? { ...prev, averageRating: parseFloat(e.target.value) || 0 } : null)}
+                   style={{
+                     fontSize: '24px',
+                     fontWeight: 'bold',
+                     color: '#f57c00',
+                     marginBottom: '4px',
+                     border: 'none',
+                     backgroundColor: 'transparent',
+                     textAlign: 'center',
+                     width: '100%'
+                   }}
+                 />
+                 <div style={{ fontSize: '14px', color: '#666' }}>Ortalama Puan</div>
+               </div>
+               
+               <div style={{
+                 backgroundColor: '#e8f5e8',
+                 borderRadius: '12px',
+                 padding: '20px',
+                 textAlign: 'center',
+                 border: '1px solid #c8e6c9'
+               }}>
+                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>💰</div>
+                 <input
+                   type="number"
+                   min="0"
+                   value={editingCompany?.credits || 0}
+                   onChange={(e) => setEditingCompany(prev => prev ? { ...prev, credits: parseInt(e.target.value) || 0 } : null)}
+                   style={{
+                     fontSize: '24px',
+                     fontWeight: 'bold',
+                     color: '#2e7d32',
+                     marginBottom: '4px',
+                     border: 'none',
+                     backgroundColor: 'transparent',
+                     textAlign: 'center',
+                     width: '100%'
+                   }}
+                 />
+                 <div style={{ fontSize: '14px', color: '#666' }}>Mevcut Kredi</div>
+               </div>
+               
+               <div style={{
+                 backgroundColor: '#f3e5f5',
+                 borderRadius: '12px',
+                 padding: '20px',
+                 textAlign: 'center',
+                 border: '1px solid #e1bee7'
+               }}>
+                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>💳</div>
+                 <input
+                   type="number"
+                   min="0"
+                   value={editingCompany?.totalPurchasedCredits || 0}
+                   onChange={(e) => setEditingCompany(prev => prev ? { ...prev, totalPurchasedCredits: parseInt(e.target.value) || 0 } : null)}
+                   style={{
+                     fontSize: '24px',
+                     fontWeight: 'bold',
+                     color: '#7b1fa2',
+                     marginBottom: '4px',
+                     border: 'none',
+                     backgroundColor: 'transparent',
+                     textAlign: 'center',
+                     width: '100%'
+                   }}
+                 />
+                 <div style={{ fontSize: '14px', color: '#666' }}>Toplam Alınan Kredi</div>
+               </div>
+            </div>
+
+            {/* İşlem Butonları */}
+            <div style={{
+              display: 'flex',
+              gap: window.innerWidth <= 768 ? '8px' : '16px',
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}>
+              <button
+                onClick={() => handleAverageRatingClick(selectedCompany.id, selectedCompany.company)}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#ff9800',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f57c00';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ff9800';
+                }}
+              >
+                ⭐ Yorumları Görüntüle
+              </button>
+              
+              <button
+                onClick={handleUpdateCompany}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#218838';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#28a745';
+                }}
+              >
+                ✅ Güncelle
+              </button>
+              
+              <button
+                onClick={handleDeleteFromCard}
+                disabled={deletingCompany === selectedCompany.id}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: deletingCompany === selectedCompany.id ? 'not-allowed' : 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  opacity: deletingCompany === selectedCompany.id ? 0.6 : 1
+                }}
+                onMouseOver={(e) => {
+                  if (deletingCompany !== selectedCompany.id) {
+                    e.currentTarget.style.backgroundColor = '#c82333';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (deletingCompany !== selectedCompany.id) {
+                    e.currentTarget.style.backgroundColor = '#dc3545';
+                  }
+                }}
+              >
+                {deletingCompany === selectedCompany.id ? '🗑️ Siliniyor...' : '🗑️ Sil'}
               </button>
             </div>
           </div>
