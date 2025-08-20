@@ -8,6 +8,8 @@ interface Company {
   company: string;
   companyTitle: string;
   companyOfficer: string;
+  companyOfficerName?: string;
+  companyOfficerSurname?: string;
   vkn: string;
   createdAt: any;
   firmType: string;
@@ -123,6 +125,8 @@ function Companies() {
           company: data.company || "Firma Adı Yok",
           companyTitle: data.companyTitle || "Firma Başlığı Yok",
           companyOfficer: data.companyOfficer || "Yetkili Yok",
+          companyOfficerName: data.companyOfficerName || "",
+          companyOfficerSurname: data.companyOfficerSurname || "",
           vkn: data.vkn || "VKN Yok",
           createdAt: data.createdAt,
           firmType: data.firmType || "Firma Türü Yok",
@@ -533,7 +537,10 @@ function Companies() {
         case 'companyTitle':
           return company.companyTitle.toLowerCase().includes(searchLower);
         case 'companyOfficer':
-          return company.companyOfficer.toLowerCase().includes(searchLower);
+          const officerName = company.companyOfficerName && company.companyOfficerSurname 
+            ? `${company.companyOfficerName} ${company.companyOfficerSurname}`.toLowerCase()
+            : company.companyOfficer.toLowerCase();
+          return officerName.includes(searchLower);
         case 'vkn':
           return company.vkn.toLowerCase().includes(searchLower);
         case 'approved':
@@ -553,10 +560,13 @@ function Companies() {
           return company.credits.toString().includes(searchLower);
         case 'all':
         default:
+          const officerName = company.companyOfficerName && company.companyOfficerSurname 
+            ? `${company.companyOfficerName} ${company.companyOfficerSurname}`.toLowerCase()
+            : company.companyOfficer.toLowerCase();
           return (
             company.company.toLowerCase().includes(searchLower) ||
             company.companyTitle.toLowerCase().includes(searchLower) ||
-            company.companyOfficer.toLowerCase().includes(searchLower) ||
+            officerName.includes(searchLower) ||
             company.vkn.toLowerCase().includes(searchLower) ||
             company.firmType.toLowerCase().includes(searchLower) ||
             company.category.toLowerCase().includes(searchLower) ||
@@ -797,7 +807,12 @@ function Companies() {
                   <strong>{company.company}</strong>
                 </td>
                 <td style={{ padding: 12 }}>{company.companyTitle}</td>
-                <td style={{ padding: 12 }}>{company.companyOfficer}</td>
+                <td style={{ padding: 12 }}>
+                  {company.companyOfficerName && company.companyOfficerSurname 
+                    ? `${company.companyOfficerName} ${company.companyOfficerSurname}`
+                    : company.companyOfficer || "Yetkili Yok"
+                  }
+                </td>
                 <td style={{ padding: 12 }}>
                   <span style={{
                     padding: "4px 8px",
