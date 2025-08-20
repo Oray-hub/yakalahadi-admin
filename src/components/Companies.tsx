@@ -129,7 +129,7 @@ function Companies() {
           credits: data.credits || 0,
           totalPurchasedCredits: data.totalPurchasedCredits || 0,
           creditPurchaseDate: data.creditPurchaseDate,
-          logo: data.logo || "",
+          logo: data.logoUrl || "",
         };
         
         companiesData.push(company);
