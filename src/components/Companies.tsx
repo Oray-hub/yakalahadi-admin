@@ -537,10 +537,10 @@ function Companies() {
         case 'companyTitle':
           return company.companyTitle.toLowerCase().includes(searchLower);
         case 'companyOfficer':
-          const officerName = company.companyOfficerName && company.companyOfficerSurname 
+          const officerNameForSearch = company.companyOfficerName && company.companyOfficerSurname 
             ? `${company.companyOfficerName} ${company.companyOfficerSurname}`.toLowerCase()
             : company.companyOfficer.toLowerCase();
-          return officerName.includes(searchLower);
+          return officerNameForSearch.includes(searchLower);
         case 'vkn':
           return company.vkn.toLowerCase().includes(searchLower);
         case 'approved':
@@ -560,13 +560,13 @@ function Companies() {
           return company.credits.toString().includes(searchLower);
         case 'all':
         default:
-          const officerName = company.companyOfficerName && company.companyOfficerSurname 
+          const officerNameForAll = company.companyOfficerName && company.companyOfficerSurname 
             ? `${company.companyOfficerName} ${company.companyOfficerSurname}`.toLowerCase()
             : company.companyOfficer.toLowerCase();
           return (
             company.company.toLowerCase().includes(searchLower) ||
             company.companyTitle.toLowerCase().includes(searchLower) ||
-            officerName.includes(searchLower) ||
+            officerNameForAll.includes(searchLower) ||
             company.vkn.toLowerCase().includes(searchLower) ||
             company.firmType.toLowerCase().includes(searchLower) ||
             company.category.toLowerCase().includes(searchLower) ||
