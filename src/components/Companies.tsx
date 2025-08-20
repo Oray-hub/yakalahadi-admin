@@ -17,6 +17,7 @@ interface Company {
   approved: boolean;
   email: string;
   phone: string;
+  location?: any;
   averageRating: number;
   credits: number;
   totalPurchasedCredits?: number;
@@ -125,6 +126,7 @@ function Companies() {
           approved: data.approved || false,
           email: data.email || "E-posta Yok",
           phone: data.phone || "Telefon Yok",
+          location: data.location || null,
           averageRating: data.averageRating || 0,
           credits: data.credits || 0,
           totalPurchasedCredits: data.totalPurchasedCredits || 0,
@@ -1665,6 +1667,47 @@ function Companies() {
                         textAlign: 'center'
                       }}
                     />
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#555' }}>Konum:</span>
+                    {editingCompany?.location ? (
+                      <button
+                        onClick={() => {
+                          const lat = editingCompany.location.latitude;
+                          const lng = editingCompany.location.longitude;
+                          const url = `https://www.google.com/maps?q=${lat},${lng}`;
+                          window.open(url, '_blank');
+                        }}
+                        style={{
+                          padding: '4px 12px',
+                          border: '2px solid #e0e0e0',
+                          borderRadius: '4px',
+                          fontSize: '14px',
+                          color: '#007bff',
+                          backgroundColor: '#f8f9fa',
+                          width: '200px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          textDecoration: 'underline'
+                        }}
+                      >
+                        📍 Haritada Göster
+                      </button>
+                    ) : (
+                      <span style={{
+                        padding: '4px 12px',
+                        border: '2px solid #e0e0e0',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        color: '#999',
+                        backgroundColor: '#f8f9fa',
+                        width: '200px',
+                        textAlign: 'center'
+                      }}>
+                        Konum bilgisi yok
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
