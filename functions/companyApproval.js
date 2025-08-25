@@ -55,15 +55,22 @@ exports.sendCompanyApprovalNoticeTrigger = functions
       
       console.log("📱 FCM token found:", fcmToken.substring(0, 20) + "...");
       
+      // Şirket yetkilisinin adını ve soyadını birleştir
+      const companyOfficerName = company.companyOfficerName || '';
+      const companyOfficerSurname = company.companyOfficerSurname || '';
+      const companyOfficer = companyOfficerName && companyOfficerSurname 
+        ? `${companyOfficerName} ${companyOfficerSurname}` 
+        : (company.companyOfficer || 'Değerli Kullanıcı');
+      
       // Bildirim mesajını hazırla
       let notificationTitle, notificationBody;
       
       if (approvalStatus === "approved") {
         notificationTitle = "✅ Başvurunuz Onaylandı!";
-        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz başarıyla onaylandı. Artık kampanyalarınızı oluşturabilirsiniz.`;
+        notificationBody = `Merhaba ${companyOfficer}, ${companyName} başvurunuz başarıyla onaylandı. Artık kampanyalarınızı oluşturabilirsiniz.`;
       } else {
         notificationTitle = "❌ Başvurunuz Onaylanmadı";
-        notificationBody = `Merhaba ${company.companyOfficer || 'Değerli Kullanıcı'}, ${companyName} başvurunuz onaylanmadı. Detaylar için gönderdiğimiz maili inceleyebilirsiniz.`;
+        notificationBody = `Merhaba ${companyOfficer}, ${companyName} başvurunuz onaylanmadı. Detaylar için gönderdiğimiz maili inceleyebilirsiniz.`;
       }
       
       // FCM mesajını hazırla

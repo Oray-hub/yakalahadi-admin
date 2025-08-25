@@ -12,25 +12,8 @@ const { sendBulkNotificationTrigger } = require('./bulkNotification');
 // Firma onay bildirimi fonksiyonunu import et
 const { sendCompanyApprovalNoticeTrigger } = require('./companyApproval');
 
-// Kullanıcı bildirimi fonksiyonunu import et
-const { userNotification } = require('./userNotification');
-
-// Firma bildirimi fonksiyonunu import et
-const { companyNotification } = require('./companyNotification');
-
-// Delete user completely fonksiyonunu import et
-const { deleteUserCompletely } = require('./deleteUserCompletely');
-
-const { setUserDisabledV2 } = require('./setUserDisabledV2');
-const { setUserDisabledAdmin } = require('./setUserDisabledAdmin');
-
-// Export the functions
+// Export the functions - Sadece bu 3 fonksiyon deploy edilecek
 exports.sendCompanyApprovalEmail = sendCompanyApprovalEmail;
 exports.sendBulkNotificationTrigger = sendBulkNotificationTrigger;
 exports.sendCompanyApprovalNoticeTrigger = sendCompanyApprovalNoticeTrigger;
-exports.userNotification = userNotification;
-exports.companyNotification = companyNotification;
-exports.deleteUserCompletely = deleteUserCompletely;
-exports.setUserDisabledV2 = setUserDisabledV2;
-exports.setUserDisabledAdmin = setUserDisabledAdmin;
 

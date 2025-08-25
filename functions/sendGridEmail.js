@@ -39,7 +39,13 @@ exports.sendCompanyApprovalEmail = functions
       const company = companyDoc.data();
       const companyName = company.company || company.companyTitle || "Firma";
       const companyEmail = company.email;
-      const companyOfficer = company.companyOfficer || "Değerli Kullanıcı";
+      
+      // Şirket yetkilisinin adını ve soyadını birleştir
+      const companyOfficerName = company.companyOfficerName || '';
+      const companyOfficerSurname = company.companyOfficerSurname || '';
+      const companyOfficer = companyOfficerName && companyOfficerSurname 
+        ? `${companyOfficerName} ${companyOfficerSurname}` 
+        : (company.companyOfficer || 'Değerli Kullanıcı');
       
       if (!companyEmail) {
         console.log("⚠️ No email address found for company:", companyId);

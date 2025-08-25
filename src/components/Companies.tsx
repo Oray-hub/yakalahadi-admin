@@ -974,6 +974,8 @@ function Companies() {
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>İl</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Firma Adı</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>VKN</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Türü</th>
+              <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kategori</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Onay Durumu</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Kayıtlı Mail</th>
               <th style={{ padding: 12, textAlign: "left", borderBottom: "1px solid #dee2e6", fontSize: "13px" }}>Telefon</th>
@@ -1022,6 +1024,28 @@ function Companies() {
                     color: "#1976d2"
                   }}>
                     {company.vkn}
+                  </span>
+                </td>
+                <td style={{ padding: 12 }}>
+                  <span style={{
+                    padding: "4px 8px",
+                    backgroundColor: "#fff3cd",
+                    borderRadius: 12,
+                    fontSize: "0.8em",
+                    color: "#856404"
+                  }}>
+                    {company.firmType || "Belirtilmemiş"}
+                  </span>
+                </td>
+                <td style={{ padding: 12 }}>
+                  <span style={{
+                    padding: "4px 8px",
+                    backgroundColor: "#d1ecf1",
+                    borderRadius: 12,
+                    fontSize: "0.8em",
+                    color: "#0c5460"
+                  }}>
+                    {company.category || "Belirtilmemiş"}
                   </span>
                 </td>
                 <td style={{ padding: 12, position: "relative", overflow: "visible" }}>
