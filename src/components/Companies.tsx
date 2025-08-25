@@ -868,6 +868,24 @@ function Companies() {
                     }}>
                       {company.vkn}
                     </span>
+                    <span style={{
+                      padding: '2px 8px',
+                      backgroundColor: '#fff3cd',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#856404'
+                    }}>
+                      {company.firmType || "Belirtilmemiş"}
+                    </span>
+                    <span style={{
+                      padding: '2px 8px',
+                      backgroundColor: '#d1ecf1',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#0c5460'
+                    }}>
+                      {company.category || "Belirtilmemiş"}
+                    </span>
                   </div>
                 </div>
                 <button
