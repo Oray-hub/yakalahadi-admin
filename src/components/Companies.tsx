@@ -584,6 +584,10 @@ function Companies() {
           return company.company.toLowerCase().includes(searchLower);
         case 'vkn':
           return company.vkn.toLowerCase().includes(searchLower);
+        case 'firmType':
+          return (company.firmType || '').toLowerCase().includes(searchLower);
+        case 'category':
+          return (company.category || '').toLowerCase().includes(searchLower);
         case 'approved':
           const approvalStatus = company.approved ? 'onaylandı' : 'onay bekliyor';
           return approvalStatus.includes(searchLower);
@@ -742,6 +746,8 @@ function Companies() {
             <option value="all">🔍 Tüm Alanlarda Ara</option>
             <option value="company">🏢 Firma Adı</option>
             <option value="vkn">🏛️ VKN</option>
+            <option value="firmType">🏷️ Türü</option>
+            <option value="category">📂 Kategori</option>
             <option value="approved">✅ Onay Durumu</option>
             <option value="phone">📞 Telefon</option>
             <option value="email">📧 Kayıtlı Mail</option>
@@ -753,6 +759,8 @@ function Companies() {
             placeholder={`🔍 ${searchField === 'all' ? 'Tüm alanlarda ara...' : 
               searchField === 'company' ? 'Firma adı ara...' :
               searchField === 'vkn' ? 'VKN ara...' :
+              searchField === 'firmType' ? 'Türü ara...' :
+              searchField === 'category' ? 'Kategori ara...' :
               searchField === 'approved' ? 'Onay durumu ara...' :
               searchField === 'phone' ? 'Telefon ara...' :
               searchField === 'email' ? 'Kayıtlı mail ara...' :
@@ -1178,8 +1186,8 @@ function Companies() {
             searchField === 'companyOfficer' ? 'firma yetkilisinde' :
             searchField === 'vkn' ? 'VKN\'de' :
             searchField === 'approved' ? 'onay durumunda' :
-            searchField === 'firmType' ? 'firma türünde' :
-            searchField === 'category' ? 'kategoride' :
+            searchField === 'firmType' ? 'Türü' :
+            searchField === 'category' ? 'Kategori' :
             searchField === 'phone' ? 'telefonda' :
             searchField === 'email' ? 'kayıtlı mailde' :
             searchField === 'averageRating' ? 'ortalama puanda' :
